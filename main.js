@@ -31,6 +31,9 @@ var discord = new Discord.Client();
 messenger.newTopic('newThread');
 require('./modules/bot')(discord, db, messenger, logger);
 
+messenger.newTopic('newFeedItem');
+require('./modules/rss')(messenger, logger);
+
 // Start services
 discord.login(discordToken);
 

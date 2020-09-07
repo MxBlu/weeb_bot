@@ -14,11 +14,9 @@
     "discord.js": "^11.5.0",
     "dotenv": "^8.0.0",
     "erlpack": "hammerandchisel/erlpack",
-    "jsdom": "^16.2.1",
-    "mail-listener2": "^0.3.1",
-    "mongodb": "^3.2.6",
-    "nodemon": "^1.19.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8"
+    "rss-parser": "^3.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
   }
 }
