@@ -72,9 +72,9 @@ module.exports = (discord, db, imm, logger) => {
   function listsubsHandler(command) {
     const titles = db.getValue('titles');
     if (titles == null || titles.size == 0) {
-      sendCmdMessage(command.message, 'No subscriptions', 2);
+      sendCmdMessage(command.message, 'No subscriptions', 3);
     }
-    sendCmdMessage(command.message, Array.from(titles.values()).join('\n'), 2);
+    sendCmdMessage(command.message, Array.from(titles.values()).join('\n'), 3);
   }
 
   function newChapterHandler(topic, chapter) {
