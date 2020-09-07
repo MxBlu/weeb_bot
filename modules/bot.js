@@ -12,6 +12,8 @@ const commandSyntax = /!([A-Za-z]+) ?((?:[^ ]+ ?)+)/;
 
 module.exports = (discord, db, imm, logger) => {
 
+  var errLogDisabled = false;
+
   const commandHandlers = {
     'sub': subscribeHandler,
     'unsub': unsubscribeHandler
@@ -84,8 +86,16 @@ module.exports = (discord, db, imm, logger) => {
   }
 
   function errorLogHandler(topic, log) {
-    var targetChannel = discord.guilds.get(targetGuild).channels.get(errStream);
-    sendMessage(targetChannel, log);
+    if (!errLogDisabled) {
+      try {
+        var targetChannel = discord.guilds.get(targetGuild).channels.get(errStream);
+        sendMessage(targetChannel, log);
+      } catch (e) {
+        console.log('Discord error log exception, disabling error log');
+        console.log(e);
+        errLogDisabled = true;
+      }
+    }
   }
 
   function chunkString(str, len) {
