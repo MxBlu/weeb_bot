@@ -2,13 +2,14 @@ const mangadex = require('../util/mangadex');
 
 const targetGuild = process.env.DISCORD_TARGETGUILD;
 const targetChannel = process.env.DISCORD_TARGETCHANNEL;
+const targetRole = process.env.DISCORD_TARGETROLE;
 const cmdChannel = process.env.DISCORD_CMDCHANNEL;
 const errStream = process.env.DISCORD_ERRSTREAM;
 const adminUser = process.env.DISCORD_ADMINUSER;
 
 const DISCORD_MAX_LEN = 1900;
 
-const commandSyntax = /!([A-Za-z]+) ?((?:[^ ]+ ?)+)/;
+const commandSyntax = /!([A-Za-z]+)((?: [^ ]+)+)?/;
 
 module.exports = (discord, db, imm, logger) => {
 
@@ -16,7 +17,8 @@ module.exports = (discord, db, imm, logger) => {
 
   const commandHandlers = {
     'sub': subscribeHandler,
-    'unsub': unsubscribeHandler
+    'unsub': unsubscribeHandler,
+    'listsubs': listsubsHandler
   };
 
   function readyHandler() {
@@ -67,22 +69,22 @@ module.exports = (discord, db, imm, logger) => {
     sendCmdMessage(command.message, `Removed title ID ${titleId}`, 2);
   }
 
-  function newThreadHandler(topic, thread) {
-    // var targetChannelStr = getTargetChannel(thread.forum);
-    // if (targetChannelStr == null) {
-    //   logger.error(`Thread has no valid destination channel: ${thread.forum}`);
-    //   return;
-    // }
+  function listsubsHandler(command) {
+    const titles = db.getValue('titles');
+    if (titles == null || titles.size == 0) {
+      sendCmdMessage(command.message, 'No subscriptions', 2);
+    }
+    sendCmdMessage(command.message, Array.from(titles.values()).join('\n'), 2);
+  }
 
-    // var targetChannel = discord.guilds.get(targetGuild).channels.get(targetChannelStr);
-    // var text = cleanText(thread.text);
+  function newChapterHandler(topic, chapter) {
+    var channel = discord.guilds.get(targetGuild).channels.get(targetChannel);
 
-    // var msg = 
-    //   `**${thread.title} - ${thread.openingPoster} - <${thread.url}>**\n` +
-    //   `Location: **${thread.location}**\n\n` +
-    //   `${text}\n`;
+    var msg = 
+      `${chapter.title} <@${targetRole}>\n` +
+      `${chapter.link}`
     
-    // sendMessage(targetChannel, msg);
+    sendMessage(channel, msg);
   }
 
   function errorLogHandler(topic, log) {
@@ -142,6 +144,6 @@ module.exports = (discord, db, imm, logger) => {
   discord.once('ready', readyHandler);
   discord.on('message', messageHandler);
 
-  imm.subscribe('newThread', newThreadHandler);
+  imm.subscribe('newChapter', newChapterHandler);
   imm.subscribe('newErrorLog', errorLogHandler);
 }

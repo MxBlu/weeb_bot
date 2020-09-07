@@ -11,11 +11,12 @@ module.exports = (db, imm, logger) => {
     }
     
     // Check whether the manga has a existing subscription
-    const subscribedTitles = db.get('titles');
+    const subscribedTitles = db.getValue('titles');
     if (!subscribedTitles.has(titleId)) {
       return;
     }
     
+    logger.info(`New subscribed chapter: ${item.title}`, 2)
     imm.notify('newChapter', {
       title: item.title,
       link: item.link

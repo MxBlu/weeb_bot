@@ -26,8 +26,8 @@ module.exports = (dbfile, logger) => {
 
     return {
 
-        get: async (key) => {
-            return key in db ? Array.from(db[key].values()) : new Set();
+        getValue: (key) => {
+            return key in db ? db[key] : new Set();
         },
 
         append: async (key, value) => {
