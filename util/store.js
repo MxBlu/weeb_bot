@@ -7,7 +7,10 @@ module.exports = (dbfile, logger) => {
 
     const loadDb = () => {
         try {
-            db = JSON.parse(fs.readFileSync(dbfile));
+            var tempDb = JSON.parse(fs.readFileSync(dbfile));
+            Object.keys(tempDb).forEach((key) => {
+                db[key] = new Set(tempDb[key]);
+            })
         } catch (e) {
             logger.error(e);
         }
@@ -19,7 +22,11 @@ module.exports = (dbfile, logger) => {
         } catch (e) {
             logger.info('No previous db, no replica created', 2);
         }
-        fs.writeFileSync(dbfile, JSON.stringify(db));
+        var tempDb = {};
+        Object.keys(db).forEach((key) => {
+            tempDb[key] = Array.from(db[key].values());
+        })
+        fs.writeFileSync(dbfile, JSON.stringify(tempDb));
     }
 
     loadDb();
