@@ -74,7 +74,8 @@ module.exports = (discord, db, imm, logger) => {
     if (titles == null || titles.size == 0) {
       sendCmdMessage(command.message, 'No subscriptions', 3);
     }
-    sendCmdMessage(command.message, Array.from(titles.values()).join('\n'), 3);
+    let str = Array.from(titles.values()).map(t => mangadex.toTitleUrl(t)).join('\n');
+    sendCmdMessage(command.message, str, 3);
   }
 
   function newChapterHandler(topic, chapter) {

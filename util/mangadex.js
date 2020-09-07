@@ -8,3 +8,7 @@ exports.parseUrl = (url) => {
     }
     return matchObj[1];
 }
+
+exports.toTitleUrl = (titleId) => {
+    return `https://mangadex.org/title/${titleId}/`;
+}
