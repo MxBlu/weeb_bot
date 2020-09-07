@@ -20,17 +20,14 @@ var db = require('./util/store')(dbFile, logger);
 const discordToken = process.env.DISCORD_TOKEN;
 var discord = new Discord.Client();
 
-// OCAU Client
-// const ocauUser = process.env.OCAU_USER;
-// const ocauPwd = process.env.OCAU_PWD;
-
 // Setup parser services
-// require('./modules/parser')(db, ocau, messenger, logger);
+require('./modules/parser')(db, messenger, logger);
 
 // Setup Discord services
 messenger.newTopic('newThread');
 require('./modules/bot')(discord, db, messenger, logger);
 
+// Setup RSS feed listener
 messenger.newTopic('newFeedItem');
 require('./modules/rss')(messenger, logger);
 

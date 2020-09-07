@@ -7,7 +7,11 @@ module.exports = (imm, logger) => {
 
   const startTime = new Date();
   const guidSet = new Set();
-  const rssParser = new Parser();
+  const rssParser = new Parser({
+    customFields: {
+      item: ['mangaLink']
+    }
+  });
 
   async function timerTask() {
     logger.info('Running RSS feed parser', 3);
