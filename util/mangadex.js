@@ -1,5 +1,5 @@
 
-const mangadexTitleSyntax = /https:\/\/mangadex\.org\/title\/(\d+)\/.+/;
+const mangadexTitleSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/(?:title|manga)\/(\d+).*/;
 
 exports.parseUrl = (url) => {
     const matchObj = url.match(mangadexTitleSyntax);
