@@ -38,7 +38,7 @@ module.exports = (logger) => {
       }
 
       topics[topic].subscribers.push(func);
-      logger.info(`Function ${func.name} subscribed from Topic ${topic}`, 3);
+      logger.info(`Function ${func.name} subscribed to Topic ${topic}`, 3);
     },
 
 		unsubscribe: (topic, func) => {
