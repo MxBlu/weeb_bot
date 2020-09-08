@@ -82,7 +82,7 @@ module.exports = (discord, db, imm, logger) => {
     var channel = discord.guilds.get(targetGuild).channels.get(targetChannel);
 
     var msg = 
-      `${chapter.title} <@${targetRole}>\n` +
+      `${chapter.title} <@&${targetRole}>\n` +
       `${chapter.link}`
     
     sendMessage(channel, msg);
