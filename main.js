@@ -20,16 +20,16 @@ var db = require('./util/store')(dbFile, logger);
 const discordToken = process.env.DISCORD_TOKEN;
 var discord = new Discord.Client();
 
-// Setup parser services
-require('./modules/parser')(db, messenger, logger);
-
-// Setup Discord services
-messenger.newTopic('newThread');
-require('./modules/bot')(discord, db, messenger, logger);
-
 // Setup RSS feed listener
 messenger.newTopic('newFeedItem');
 require('./modules/rss')(messenger, logger);
+
+// Setup parser services
+messenger.newTopic('newChapter');
+require('./modules/parser')(db, messenger, logger);
+
+// Setup Discord services
+require('./modules/bot')(discord, db, messenger, logger);
 
 // Start services
 discord.login(discordToken);
