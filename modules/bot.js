@@ -23,6 +23,19 @@ module.exports = (discord, db, imm, logger) => {
 
   function readyHandler() {
     logger.info("Discord connected", 1);
+    
+    let guilds = discord.guilds.map(g => g.id);
+    db.addGuilds(...guilds);
+  }
+
+  function joinServerHandler(guild) {
+    logger.info(`Joined guild: ${guild.name}`, 2);
+    db.addGuilds(guild.id);
+  }
+
+  function leaveServerHandler(guild) {
+    logger.info(`Left guild: ${guild.name}`, 2);
+    db.removeGuild(guild.id);
   }
 
   function messageHandler(message) {
@@ -33,7 +46,8 @@ module.exports = (discord, db, imm, logger) => {
 
     const command = parseCommand(message);
     if (command != null && command.command in commandHandlers) {
-      logger.info(`Command received from ${message.author.username}: ${command.command} - '${command.arguments.join(' ')}'`, 2);
+      logger.info(`Command received from ${message.author.username} in ${message.channel.guild.name}: ` +
+          `${command.command} - '${command.arguments.join(' ')}'`, 2);
       commandHandlers[command.command](command);
     }
     return;
@@ -144,7 +158,11 @@ module.exports = (discord, db, imm, logger) => {
 
   discord.once('ready', readyHandler);
   discord.on('message', messageHandler);
+  discord.on('guildCreate', joinServerHandler);
+  discord.on('guildDelete', leaveServerHandler);
 
   imm.subscribe('newChapter', newChapterHandler);
   imm.subscribe('newErrorLog', errorLogHandler);
+  
+  discord.login(discordToken);
 }

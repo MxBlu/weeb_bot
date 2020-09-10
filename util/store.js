@@ -1,74 +1,72 @@
 const fs            = require('fs');
-const AsyncLock     = require('async-lock');
+const Redis         = require('ioredis');
 
-module.exports = (dbfile, logger) => {
-    var db = {};
-    const dbLock = new AsyncLock();
+/*
+Using redis...
+ - <guildId>_notifChannel: Integer
+ - <guildId>_titles: Set() [ <titleId> ]
+ - title_<titleId>: String
+*/
 
-    const loadDb = () => {
-        try {
-            var tempDb = JSON.parse(fs.readFileSync(dbfile));
-            Object.keys(tempDb).forEach((key) => {
-                db[key] = new Set(tempDb[key]);
-            })
-        } catch (e) {
-            logger.error(e);
-        }
+module.exports = (redisHost, redisPort, logger) => {
+  const rclient = new Redis(redisPort, redisHost);
+  
+  // Guilds can be ephemeral
+  var guilds = new Set();
+
+  rclient.on('error', (err) => {
+    logger.error(`Redis error: ${err}`);
+  });
+
+  rclient.once('connect', () => {
+    logger.info('Redis connected', 1);
+  });
+
+  return {
+
+    getGuilds: async () => {
+      return guilds;
+    },
+
+    addGuilds: async (...guildIds) => {
+      guildIds.forEach((g) => guilds.add(g));
+    },
+
+    removeGuild: async (guildId) => {
+      guilds.delete(guildId);
+    },
+
+    getNotifChannel: async (guildId) => {
+      return rclient.get(`${guildId}_notifChannel`);
+    },
+
+    setNotifChannel: async (guildId, channelId) => {
+      return rclient.set(`${guildId}_notifChannel`, channelId);
+    },
+
+    getTitles: async (guildId) => {
+      return rclient.smembers(`${guildId}_titles`);
+    },
+
+    addTitle: async (guildId, titleId) => {
+      return rclient.sadd(`${guildId}_titles`, titleId);
+    },
+
+    delTitle: async (guildId, titleId) => {
+      return rclient.srem(`${guildId}_titles`, titleId);
+    },
+
+    clearTitles: async (guildId) => {
+      return rclient.del(`${guildId}_titles`);
+    },
+
+    getTitleName: async (titleId) => {
+      return rclient.get(`title_${titleId}`);
+    },
+
+    setTitleName: async (titleId) => {
+      return rclient.set(`title_${titleId}`);
     }
 
-    const saveDb = () => {
-        try {
-            fs.copyFileSync(dbfile, dbfile + '.' + new Date().getTime().toString());
-        } catch (e) {
-            logger.info('No previous db, no replica created', 2);
-        }
-        var tempDb = {};
-        Object.keys(db).forEach((key) => {
-            tempDb[key] = Array.from(db[key].values());
-        })
-        fs.writeFileSync(dbfile, JSON.stringify(tempDb));
-    }
-
-    loadDb();
-
-    return {
-
-        getValue: (key) => {
-            return key in db ? db[key] : new Set();
-        },
-
-        append: async (key, value) => {
-            dbLock.acquire(key, () => {
-                if (!(key in db)) {
-                    db[key] = new Set();
-                }
-                db[key].add(value);
-                saveDb();
-            }).catch((err) => {
-                logger.error(`store.append failed: ${err}`);
-            });
-        },
-
-        remove: async (key, value) => {
-            dbLock.acquire(key, () => {
-                if (key in db) {
-                    db[key].delete(value);
-                    saveDb();
-                }
-            }).catch((err) => {
-                logger.error(`store.remove failed: ${err}`);
-            });
-        },
-
-        clear: async (key, value) => {
-            dbLock.acquire(key, () => {
-                if (key in db) {
-                    db[key].clear();
-                    saveDb();
-                }
-            }).catch((err) => {
-                logger.error(`store.cler failed: ${err}`);
-            });
-        }
-    }
+  }
 }

@@ -13,8 +13,9 @@ logger.registerMessenger(messenger);
 messenger.newTopic('newErrorLog');
 
 // Set DB
-const dbFile = process.env.DB_FILE;
-var db = require('./util/store')(dbFile, logger);
+const redisHost = process.env.REDIS_HOST;
+const redisPort = process.env.REDIS_PORT;
+var db = require('./util/store')(redisHost, redisPort, logger);
 
 // Discord Client
 const discordToken = process.env.DISCORD_TOKEN;
@@ -30,8 +31,5 @@ require('./modules/parser')(db, messenger, logger);
 
 // Setup Discord services
 require('./modules/bot')(discord, db, messenger, logger);
-
-// Start services
-discord.login(discordToken);
 
 logger.info(`Server started`);
