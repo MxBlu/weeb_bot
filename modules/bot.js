@@ -8,7 +8,7 @@ const adminUser = process.env.DISCORD_ADMINUSER;
 
 const DISCORD_MAX_LEN = 1900;
 
-const commandSyntax = /!([A-Za-z]+)((?: [^ ]+)+)?/;
+const commandSyntax = /^\s*!([A-Za-z]+)((?: [^ ]+)+)?\s*$/;
 
 module.exports = (discord, db, imm, logger) => {
 
