@@ -25,15 +25,15 @@ module.exports = (redisHost, redisPort, logger) => {
 
   return {
 
-    getGuilds: async () => {
+    getGuilds: () => {
       return guilds;
     },
 
-    addGuilds: async (...guildIds) => {
+    addGuilds: (...guildIds) => {
       guildIds.forEach((g) => guilds.add(g));
     },
 
-    removeGuild: async (guildId) => {
+    removeGuild: (guildId) => {
       guilds.delete(guildId);
     },
 

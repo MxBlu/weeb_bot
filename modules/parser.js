@@ -11,16 +11,29 @@ module.exports = (db, imm, logger) => {
     }
     
     // Check whether the manga has a existing subscription
-    const subscribedTitles = db.getValue('titles');
-    if (!subscribedTitles.has(titleId)) {
-      return;
+    const guilds = db.getGuilds();
+    for (let guildId of guilds) {
+      // If any guild has any roles that have subscribed to this manga
+      // Notify for a new chapter with a list of roles subbed
+      const roles = await db.getRoles(guildId);
+      var rolesToAlert = new Set();
+      for (let roleId of roles) {
+        const titles = await db.getTitles(guildId, roleId);
+        if (titles.has(titleId)) {
+          rolesToAlert.add(roleId);
+        }
+      }
+      if (rolesToAlert.size > 0) {
+        logger.info(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
+            `${item.title}`, 2)
+        imm.notify('newChapter', {
+          title: item.title,
+          guild: guildId,
+          roles: rolesToAlert,
+          link: item.link
+        });
+      }
     }
-    
-    logger.info(`New subscribed chapter: ${item.title}`, 2)
-    imm.notify('newChapter', {
-      title: item.title,
-      link: item.link
-    });
   }
 
   imm.subscribe('newFeedItem', itemHandler);

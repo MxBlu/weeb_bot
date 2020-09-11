@@ -3,7 +3,6 @@ const mangadex = require('../util/mangadex');
 const targetGuild = process.env.DISCORD_TARGETGUILD;
 const targetChannel = process.env.DISCORD_TARGETCHANNEL;
 const targetRole = process.env.DISCORD_TARGETROLE;
-const cmdChannel = process.env.DISCORD_CMDCHANNEL;
 const errStream = process.env.DISCORD_ERRSTREAM;
 const adminUser = process.env.DISCORD_ADMINUSER;
 
@@ -93,9 +92,9 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let rolesManager = await guild.roles.fetch();
-    let role = rolesManager.cache.find(r => r.name == roleName);
+    let role = guild.roles.find(r => r.name == roleName);
 
+    await db.delRole(guild.id, role.id);
     await db.delNotifChannel(guild.id, role.id);
     sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2);
   }
@@ -119,8 +118,7 @@ module.exports = (discord, db, imm, logger) => {
     }
     
     let guild = command.message.guild;
-    let rolesManager = await guild.roles.fetch();
-    let role = rolesManager.cache.find(r => r.name == roleName);
+    let role = guild.roles.find(r => r.name == roleName);
 
     await db.addTitle(guild.id, role.id, titleId);
     // TODO: Use Mangadex api to fetch and cache title in db
@@ -146,8 +144,7 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     let guild = command.message.guild;
-    let rolesManager = await guild.roles.fetch();
-    let role = rolesManager.cache.find(r => r.name == roleName);
+    let role = guild.roles.find(r => r.name == roleName);
 
     await db.delTitle(guild.id, role.id, titleId);
     // TODO: Use Mangadex api to display title from db
@@ -167,8 +164,7 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let rolesManager = await guild.roles.fetch();
-    let role = rolesManager.cache.find(r => r.name == roleName);
+    let role = guild.roles.find(r => r.name == roleName);
 
     const titles = await db.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
@@ -180,14 +176,36 @@ module.exports = (discord, db, imm, logger) => {
 
   // Message bus event handlers
 
-  function newChapterHandler(topic, chapter) {
-    var channel = discord.guilds.get(targetGuild).channels.get(targetChannel);
+  async function newChapterHandler(topic, chapter) {
+    const guild = discord.guilds.get(chapter.guild);
+    if (guild == null) {
+      logger.error(`Error: notifying for a guild no longer available: ${chapter.guild}`);
+      return;
+    }
 
-    var msg = 
-      `${chapter.title} <@&${targetRole}>\n` +
-      `${chapter.link}`
-    
-    sendMessage(channel, msg);
+    let channels = {};
+    for (let roleId of chapter.roles) {
+      let nc = await db.getNotifChannel(guild.id, roleId);
+      if (nc == null) {
+        continue;
+      }
+      if (nc in channels) {
+        channels[nc].push(roleId);
+      } else {
+        channels[nc] = [ roleId ];
+      }
+    }
+
+    for (let [channelId, roles] of Object.entries(channels)) {
+      let channel = guild.channels.get(channelId);
+      let pingStr = roles.map(tr => `<@&${tr}>`).join(' ');
+
+      var msg = 
+        `${chapter.title} ${pingStr}\n` +
+        `${chapter.link}`
+      
+      sendMessage(channel, msg);
+    }
   }
 
   function errorLogHandler(topic, log) {

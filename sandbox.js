@@ -1,19 +1,32 @@
 require('dotenv').config();
 
+// Logger
+const verbosity = process.env.LOG_LEVEL || 3;
+var logger = require('./util/logger')(verbosity);
+
+// Inter-module messenger
+var messenger = require('./util/imm')(logger);
+// For discord logging of logs
+logger.registerMessenger(messenger);
+messenger.newTopic('newErrorLog');
+
+// Set DB
+const redisHost = process.env.REDIS_HOST;
+const redisPort = process.env.REDIS_PORT;
+var db = require('./util/store')(redisHost, redisPort, logger);
+
+messenger.newTopic('newFeedItem');
+messenger.newTopic('newChapter');
+require('./modules/parser')(db, messenger, logger);
+
+db.addGuilds('606704263053180929');
+
 main = async () => {
-    const targetForums = process.env.DISCORD_TARGETFORUMS.split(',');
-    const targetChannels = process.env.DISCORD_TARGETCHANNELS.split(',');
-
-    const getTargetChannel = (forum) => {
-        var idx = targetForums.indexOf(forum);
-        if (idx > 0)
-            return targetChannels[idx];
-        else
-            return null;
-    }
-
-    console.log(targetChannels);
-    console.log(targetForums);
-    console.log(getTargetChannel("For Sale - PC Related"));
+  messenger.subscribe('newChapter', console.log);
+	messenger.notify('newFeedItem', {
+    title: 'Classmate Relationship? - Chapter 116',
+    mangaLink: 'https://mangadex.org/title/23216',
+    link: 'https://mangadex.org/chapter/1032885'
+	});
 };
-main();
+setTimeout(main, 500);
