@@ -192,7 +192,7 @@ module.exports = (discord, db, imm, logger) => {
       titleNames[title] = await db.getTitleName(title);
     }
 
-    let str = Array.from(titles.values()).map(t => `${titleNames[t]} <${mangadex.toTitleUrl(t)}>`).join('\n');
+    let str = Array.from(titles.values()).map(t => `${titleNames[t]} - <${mangadex.toTitleUrl(t)}>`).join('\n');
     sendCmdMessage(command.message, str, 3);
   }
 
