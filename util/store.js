@@ -81,8 +81,8 @@ module.exports = (redisHost, redisPort, logger) => {
       return rclient.get(`title_${titleId}`);
     },
 
-    setTitleName: async (titleId) => {
-      return rclient.set(`title_${titleId}`);
+    setTitleName: async (titleId, titleName) => {
+      return rclient.set(`title_${titleId}`, titleName);
     }
 
   }

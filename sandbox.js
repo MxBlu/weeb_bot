@@ -22,11 +22,14 @@ require('./modules/parser')(db, messenger, logger);
 db.addGuilds('606704263053180929');
 
 main = async () => {
-  messenger.subscribe('newChapter', console.log);
-	messenger.notify('newFeedItem', {
-    title: 'Classmate Relationship? - Chapter 116',
-    mangaLink: 'https://mangadex.org/title/23216',
-    link: 'https://mangadex.org/chapter/1032885'
-	});
+  // messenger.subscribe('newChapter', console.log);
+	// messenger.notify('newFeedItem', {
+  //   title: 'Classmate Relationship? - Chapter 116',
+  //   mangaLink: 'https://mangadex.org/title/23216',
+  //   link: 'https://mangadex.org/chapter/1032885'
+  // });
+  const Mangadex = require('mangadex-api');
+	const details = await Mangadex.getChapter(parseInt('1032885'));
+	console.log(mangaDetails);
 };
 setTimeout(main, 500);
