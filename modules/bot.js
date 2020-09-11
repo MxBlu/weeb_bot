@@ -1,8 +1,6 @@
 const mangadex = require('../util/mangadex');
 
-const targetGuild = process.env.DISCORD_TARGETGUILD;
-const targetChannel = process.env.DISCORD_TARGETCHANNEL;
-const targetRole = process.env.DISCORD_TARGETROLE;
+const errGuild = process.env.DISCORD_ERRGUILD;
 const errStream = process.env.DISCORD_ERRSTREAM;
 const adminUser = process.env.DISCORD_ADMINUSER;
 
@@ -233,7 +231,7 @@ module.exports = (discord, db, imm, logger) => {
   function errorLogHandler(topic, log) {
     if (!errLogDisabled) {
       try {
-        var targetChannel = discord.guilds.get(targetGuild).channels.get(errStream);
+        var targetChannel = discord.guilds.get(errGuild).channels.get(errStream);
         sendMessage(targetChannel, log);
       } catch (e) {
         console.log('Discord error log exception, disabling error log');
