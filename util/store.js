@@ -1,10 +1,11 @@
-const fs            = require('fs');
 const Redis         = require('ioredis');
 
 /*
 Using redis...
- - <guildId>_notifChannel: Integer
- - <guildId>_titles: Set() [ <titleId> ]
+ - <guildId>_roles: Set() [ <roleId> ]
+ - <guildId>_<roleId>_name: String
+ - <guildId>_<roleId>_notifChannel: Integer
+ - <guildId>_<roleId>_titles: Set() [ <titleId> ]
  - title_<titleId>: String
 */
 
@@ -36,28 +37,44 @@ module.exports = (redisHost, redisPort, logger) => {
       guilds.delete(guildId);
     },
 
-    getNotifChannel: async (guildId) => {
-      return rclient.get(`${guildId}_notifChannel`);
+    getRoles: async (guildId) => {
+      return new Set(await rclient.smembers(`${guildId}_roles`));
     },
 
-    setNotifChannel: async (guildId, channelId) => {
-      return rclient.set(`${guildId}_notifChannel`, channelId);
+    addRole: async (guildId, roleId) => {
+      return rclient.sadd(`${guildId}_roles`, roleId);
     },
 
-    getTitles: async (guildId) => {
-      return rclient.smembers(`${guildId}_titles`);
+    delRole: async (guildId, roleId) => {
+      return rclient.srem(`${guildId}_roles`, roleId);
     },
 
-    addTitle: async (guildId, titleId) => {
-      return rclient.sadd(`${guildId}_titles`, titleId);
+    getNotifChannel: async (guildId, roleId) => {
+      return rclient.get(`${guildId}_${roleId}_notifChannel`);
     },
 
-    delTitle: async (guildId, titleId) => {
-      return rclient.srem(`${guildId}_titles`, titleId);
+    setNotifChannel: async (guildId, roleId, channelId) => {
+      return rclient.set(`${guildId}_${roleId}_notifChannel`, channelId);
+    },
+    
+    delNotifChannel: async (guildId, roleId) => {
+      return rclient.del(`${guildId}_${roleId}_notifChannel`);
     },
 
-    clearTitles: async (guildId) => {
-      return rclient.del(`${guildId}_titles`);
+    getTitles: async (guildId, roleId) => {
+      return new Set(await rclient.smembers(`${guildId}_${roleId}_titles`));
+    },
+
+    addTitle: async (guildId, roleId, titleId) => {
+      return rclient.sadd(`${guildId}_${roleId}_titles`, titleId);
+    },
+
+    delTitle: async (guildId, roleId, titleId) => {
+      return rclient.srem(`${guildId}_${roleId}_titles`, titleId);
+    },
+
+    clearTitles: async (guildId, roleId) => {
+      return rclient.del(`${guildId}_${roleId}_titles`);
     },
 
     getTitleName: async (titleId) => {

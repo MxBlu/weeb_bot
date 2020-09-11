@@ -16,10 +16,14 @@ module.exports = (discord, db, imm, logger) => {
   var errLogDisabled = false;
 
   const commandHandlers = {
+    'notifchannel': notifchannelHandler,
+    'unnotif': unnotifHandler,
     'sub': subscribeHandler,
     'unsub': unsubscribeHandler,
     'listsubs': listsubsHandler
   };
+
+  // Discord event handlers
 
   function readyHandler() {
     logger.info("Discord connected", 1);
@@ -38,59 +42,143 @@ module.exports = (discord, db, imm, logger) => {
     db.removeGuild(guild.id);
   }
 
-  function messageHandler(message) {
-    // Only process message if it's in the command channel
-    if (message.channel.id != cmdChannel || message.author.bot) {
+  async function messageHandler(message) {
+    // Ignore bot messages to avoid messy situations
+    if (message.author.bot) {
       return;
     }
 
     const command = parseCommand(message);
-    if (command != null && command.command in commandHandlers) {
-      logger.info(`Command received from ${message.author.username} in ${message.channel.guild.name}: ` +
-          `${command.command} - '${command.arguments.join(' ')}'`, 2);
+    if (command != null) {
+      logger.info(`Command received from '${message.author.username}' in '${message.guild.name}': ` +
+          `!${command.command} - '${command.arguments.join(' ')}'`, 2);
       commandHandlers[command.command](command);
     }
     return;
   }
 
-  function subscribeHandler(command) {
+  // Command handlers
+
+  async function notifchannelHandler(command) {
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide title URL', 3);
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', 3);
       return;
     }
-    const titleId = mangadex.parseUrl(command.arguments[0]);
+    const roleName = command.arguments[0];
+
+    let guild = command.message.guild;
+    let channel = command.message.channel;
+    let role = guild.roles.find(r => r.name == roleName);
+    
+    if (role == null) {
+      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      return;
+    }
+
+    await db.addRole(guild.id, role.id);
+    await db.setNotifChannel(guild.id, role.id, channel.id);
+    sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, 2);
+  }
+
+  async function unnotifHandler(command) {
+    if (! await checkIfSubscribed(command.message)) {
+      // Only handle if listening to this channel already
+      logger.info(`Not listening to channel #${command.message.channel.name}`);
+      return;
+    }
+    if (command.arguments.length == 0) {
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to unregister', 3);
+      return;
+    }
+    const roleName = command.arguments[0];
+
+    let guild = command.message.guild;
+    let rolesManager = await guild.roles.fetch();
+    let role = rolesManager.cache.find(r => r.name == roleName);
+
+    await db.delNotifChannel(guild.id, role.id);
+    sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2);
+  }
+
+  async function subscribeHandler(command) {
+    if (! await checkIfSubscribed(command.message)) {
+      // Only handle if listening to this channel already
+      logger.info(`Not listening to channel #${command.message.channel.name}`);
+      return;
+    }
+    if (command.arguments.length < 2) {
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3);
+      return;
+    }
+    const roleName = command.arguments[0];
+    const titleId = mangadex.parseUrl(command.arguments[1]);
+
+    if (titleId == null) {
+      sendCmdMessage(command.message, 'Error: bad title URL', 3);
+      return;
+    }
+    
+    let guild = command.message.guild;
+    let rolesManager = await guild.roles.fetch();
+    let role = rolesManager.cache.find(r => r.name == roleName);
+
+    await db.addTitle(guild.id, role.id, titleId);
+    // TODO: Use Mangadex api to fetch and cache title in db
+    sendCmdMessage(command.message, `Added title ${titleId} to role @${role.name}`, 2);
+  }
+
+  async function unsubscribeHandler(command) {
+    if (! await checkIfSubscribed(command.message)) {
+      // Only handle if listening to this channel already
+      logger.info(`Not listening to channel #${command.message.channel.name}`);
+      return;
+    }
+    if (command.arguments.length == 0) {
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3);
+      return;
+    }
+    const roleName = command.arguments[0];
+    const titleId = mangadex.parseUrl(command.arguments[1]);
+
     if (titleId == null) {
       sendCmdMessage(command.message, 'Error: bad title URL', 3);
       return;
     }
 
-    db.append('titles', titleId);
-    sendCmdMessage(command.message, `Added title ID ${titleId}`, 2);
+    let guild = command.message.guild;
+    let rolesManager = await guild.roles.fetch();
+    let role = rolesManager.cache.find(r => r.name == roleName);
+
+    await db.delTitle(guild.id, role.id, titleId);
+    // TODO: Use Mangadex api to display title from db
+    sendCmdMessage(command.message, `Removed title ${titleId} from role @${role.name}`, 2);
   }
 
-  function unsubscribeHandler(command) {
+  async function listsubsHandler(command) {
+    if (! await checkIfSubscribed(command.message)) {
+      // Only handle if listening to this channel already
+      logger.info(`Not listening to channel #${command.message.channel.name}`);
+      return;
+    }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide title URL', 3);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role', 3);
       return;
     }
-    const titleId = mangadex.parseUrl(command.arguments[0]);
-    if (titleId == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3);
-      return;
-    }
+    const roleName = command.arguments[0];
 
-    db.remove('titles', titleId);
-    sendCmdMessage(command.message, `Removed title ID ${titleId}`, 2);
-  }
+    let guild = command.message.guild;
+    let rolesManager = await guild.roles.fetch();
+    let role = rolesManager.cache.find(r => r.name == roleName);
 
-  function listsubsHandler(command) {
-    const titles = db.getValue('titles');
+    const titles = await db.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
       sendCmdMessage(command.message, 'No subscriptions', 3);
     }
     let str = Array.from(titles.values()).map(t => `<${mangadex.toTitleUrl(t)}>`).join('\n');
     sendCmdMessage(command.message, str, 3);
   }
+
+  // Message bus event handlers
 
   function newChapterHandler(topic, chapter) {
     var channel = discord.guilds.get(targetGuild).channels.get(targetChannel);
@@ -115,6 +203,8 @@ module.exports = (discord, db, imm, logger) => {
     }
   }
 
+  // Utility functions
+
   function chunkString(str, len) {
     const size = Math.ceil(str.length/len);
     const r = Array(size);
@@ -129,7 +219,7 @@ module.exports = (discord, db, imm, logger) => {
   }
 
   function sendCmdMessage(message, msg, level) {
-    logger.info(`${message.author.username} - ${msg}`, level);
+    logger.info(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
     sendMessage(message.channel, msg);
   }
 
@@ -145,7 +235,7 @@ module.exports = (discord, db, imm, logger) => {
     var matchObj = cmdMessage.content.match(commandSyntax);
 
     // Check if command is valid
-    if (matchObj == null) {
+    if (matchObj == null || !(matchObj[1] in commandHandlers)) {
       return null;
     }
 
@@ -156,6 +246,21 @@ module.exports = (discord, db, imm, logger) => {
     };
   }
 
+  async function checkIfSubscribed(message) {
+    const guild = message.guild;
+    const channel = message.channel;
+    const roles = await db.getRoles(guild.id);
+
+    for (let r of roles) {
+      let nc = await db.getNotifChannel(guild.id, r);
+      if (nc == channel.id) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
   discord.once('ready', readyHandler);
   discord.on('message', messageHandler);
   discord.on('guildCreate', joinServerHandler);
@@ -163,6 +268,4 @@ module.exports = (discord, db, imm, logger) => {
 
   imm.subscribe('newChapter', newChapterHandler);
   imm.subscribe('newErrorLog', errorLogHandler);
-  
-  discord.login(discordToken);
 }

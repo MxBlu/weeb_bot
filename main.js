@@ -32,4 +32,5 @@ require('./modules/parser')(db, messenger, logger);
 // Setup Discord services
 require('./modules/bot')(discord, db, messenger, logger);
 
+discord.login(discordToken);
 logger.info(`Server started`);
