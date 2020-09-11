@@ -129,8 +129,9 @@ module.exports = (discord, db, imm, logger) => {
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
 
+    let titleName = "";
     try {
-      let titleName = await mangadex.getMangaTitle(titleId);
+      titleName = await mangadex.getMangaTitle(titleId);
     } catch (e) {
       sendCmdMessage(command.message, 'Error: Mangadex connection issues, try again', 2);
     }
