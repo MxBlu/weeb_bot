@@ -26,10 +26,16 @@ module.exports = (db, imm, logger) => {
       }
       if (rolesToAlert.size > 0) {
         logger.info(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
-            `${item.title}`, 2)
+            `${item.title}`, 2);
+        let pageCount = 0;
+        try {
+          pageCount = await mangadex.getChapterPageCount(chapterId);
+        } catch (e) {
+          logger.error(command.message, 'Mangadex connection issues, defaulting to 0 pages', 2);
+        }
         imm.notify('newChapter', {
           title: item.title,
-          pageCount: await mangadex.getChapterPageCount(chapterId),
+          pageCount: pageCount,
           guild: guildId,
           roles: rolesToAlert,
           link: item.link

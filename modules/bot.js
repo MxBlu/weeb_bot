@@ -14,12 +14,21 @@ module.exports = (discord, db, imm, logger) => {
 
   var errLogDisabled = false;
 
+  function testHandler() {
+    imm.notify('newFeedItem', {
+      title: 'Classmate Relationship? - Chapter 116',
+      mangaLink: 'https://mangadex.org/title/23216',
+      link: 'https://mangadex.org/chapter/1032885'
+    });
+  }
+
   const commandHandlers = {
     'notifchannel': notifchannelHandler,
     'unnotif': unnotifHandler,
     'sub': subscribeHandler,
     'unsub': unsubscribeHandler,
-    'listsubs': listsubsHandler
+    'listsubs': listsubsHandler,
+    'test': testHandler
   };
 
   // Discord event handlers
@@ -110,7 +119,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     const roleName = command.arguments[0];
-    const titleId = mangadex.parseUrl(command.arguments[1]);
+    const titleId = mangadex.parseTitleUrl(command.arguments[1]);
 
     if (titleId == null) {
       sendCmdMessage(command.message, 'Error: bad title URL', 3);
@@ -120,9 +129,14 @@ module.exports = (discord, db, imm, logger) => {
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
 
+    try {
+      let titleName = await mangadex.getMangaTitle(titleId);
+    } catch (e) {
+      sendCmdMessage(command.message, 'Error: Mangadex connection issues, try again', 2);
+    }
+    await db.setTitleName(titleId, titleName);
     await db.addTitle(guild.id, role.id, titleId);
-    // TODO: Use Mangadex api to fetch and cache title in db
-    sendCmdMessage(command.message, `Added title ${titleId} to role @${role.name}`, 2);
+    sendCmdMessage(command.message, `Added title '${titleName}' to role @${role.name}`, 2);
   }
 
   async function unsubscribeHandler(command) {
@@ -136,7 +150,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     const roleName = command.arguments[0];
-    const titleId = mangadex.parseUrl(command.arguments[1]);
+    const titleId = mangadex.parseTitleUrl(command.arguments[1]);
 
     if (titleId == null) {
       sendCmdMessage(command.message, 'Error: bad title URL', 3);
@@ -146,9 +160,10 @@ module.exports = (discord, db, imm, logger) => {
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
 
+    let titleName = await db.getTitleName(titleId);
     await db.delTitle(guild.id, role.id, titleId);
     // TODO: Use Mangadex api to display title from db
-    sendCmdMessage(command.message, `Removed title ${titleId} from role @${role.name}`, 2);
+    sendCmdMessage(command.message, `Removed title '${titleName}' from role @${role.name}`, 2);
   }
 
   async function listsubsHandler(command) {
@@ -170,7 +185,13 @@ module.exports = (discord, db, imm, logger) => {
     if (titles == null || titles.size == 0) {
       sendCmdMessage(command.message, 'No subscriptions', 3);
     }
-    let str = Array.from(titles.values()).map(t => `<${mangadex.toTitleUrl(t)}>`).join('\n');
+    
+    let titleNames = {};
+    for (let title of titles) {
+      titleNames[title] = await db.getTitleName(title);
+    }
+
+    let str = Array.from(titles.values()).map(t => `${titleNames[t]} <${mangadex.toTitleUrl(t)}>`).join('\n');
     sendCmdMessage(command.message, str, 3);
   }
 
@@ -201,7 +222,7 @@ module.exports = (discord, db, imm, logger) => {
       let pingStr = roles.map(tr => `<@&${tr}>`).join(' ');
 
       var msg = 
-        `${chapter.title} ${pingStr}\n` +
+        `${chapter.title} - ${chapter.pageCount} pages ${pingStr}\n` +
         `${chapter.link}`
       
       sendMessage(channel, msg);
