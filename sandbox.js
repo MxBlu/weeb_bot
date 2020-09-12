@@ -1,5 +1,9 @@
 require('dotenv').config();
 
+/*
+  Generic alternative main file for testing whatever needs to be tested
+*/
+
 // Logger
 const verbosity = process.env.LOG_LEVEL || 3;
 var logger = require('./util/logger')(verbosity);

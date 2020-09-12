@@ -8,11 +8,11 @@ var logger = require('./util/logger')(verbosity);
 
 // Inter-module messenger
 var messenger = require('./util/imm')(logger);
-// For discord logging of logs
+// For discord logging of errors
 logger.registerMessenger(messenger);
 messenger.newTopic('newErrorLog');
 
-// Set DB
+// Redis DB
 const redisHost = process.env.REDIS_HOST;
 const redisPort = process.env.REDIS_PORT;
 var db = require('./util/store')(redisHost, redisPort, logger);
@@ -31,6 +31,6 @@ require('./modules/parser')(db, messenger, logger);
 
 // Setup Discord services
 require('./modules/bot')(discord, db, messenger, logger);
-
 discord.login(discordToken);
+
 logger.info(`Server started`);
