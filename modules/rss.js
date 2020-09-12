@@ -1,12 +1,18 @@
 const Parser = require('rss-parser');
 
+// Feed requesting settings
 const feedUrl = process.env.MANGEDEX_FEED_URL;
 const refreshInterval = process.env.MANGEDEX_FEED_REFRESH_INTERVAL;
 
 module.exports = (imm, logger) => {
 
+  // Start time, used for filtering
   const startTime = new Date();
+
+  // Set of GUIDs seen, used for filtering
   const guidSet = new Set();
+
+  // Customised parser for mangadex entries
   const rssParser = new Parser({
     customFields: {
       item: ['mangaLink']
@@ -36,5 +42,6 @@ module.exports = (imm, logger) => {
     }
   }
 
+  // Run timerTask at regular intervals 
   setInterval(timerTask, refreshInterval);
 }
