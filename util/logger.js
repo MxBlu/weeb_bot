@@ -22,7 +22,7 @@ module.exports = (v) => {
 		error: (message) => {
 			if (v >= 0) {
 				var logStr = `[ERROR] ${getTime()} ${message}`;
-				console.log(logStr);
+				console.error(logStr);
 				if (imm != null)
 					imm.notify('newErrorLog', logStr);
 			}
