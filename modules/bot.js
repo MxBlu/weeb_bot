@@ -12,21 +12,12 @@ module.exports = (discord, db, imm, logger) => {
 
   var errLogDisabled = false;
 
-  function testHandler() {
-    imm.notify('newFeedItem', {
-      title: 'Classmate Relationship? - Chapter 116',
-      mangaLink: 'https://mangadex.org/title/23216',
-      link: 'https://mangadex.org/chapter/1032885'
-    });
-  }
-
   const commandHandlers = {
     'notifchannel': notifchannelHandler,
     'unnotif': unnotifHandler,
     'sub': subscribeHandler,
     'unsub': unsubscribeHandler,
-    'listsubs': listsubsHandler,
-    'test': testHandler
+    'listsubs': listsubsHandler
   };
 
   // Discord event handlers
