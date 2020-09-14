@@ -123,6 +123,7 @@ module.exports = (discord, db, imm, logger) => {
       titleName = await mangadex.getMangaTitle(titleId);
     } catch (e) {
       sendCmdMessage(command.message, 'Error: Mangadex connection issues, try again', 2);
+      return;
     }
     await db.setTitleName(titleId, titleName);
     await db.addTitle(guild.id, role.id, titleId);
