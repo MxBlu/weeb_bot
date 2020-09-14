@@ -122,7 +122,7 @@ module.exports = (discord, db, imm, logger) => {
     try {
       titleName = await mangadex.getMangaTitle(titleId);
     } catch (e) {
-      sendCmdMessage(command.message, 'Error: Mangadex connection issues, try again', 2);
+      sendCmdMessage(command.message, 'Error: Invalid url or Mangadex connection issues, try again', 2);
       return;
     }
     await db.setTitleName(titleId, titleName);
