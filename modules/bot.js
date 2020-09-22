@@ -57,12 +57,6 @@ module.exports = (discord, db, imm, logger) => {
 
   // Command handlers
 
-  let D2 = require('discord.js')
-
-  let d2 = new D2.Client();
-  let m2 = new D2.Message();
-  m2.author.id
-
   async function testHandler(command) {
     if (command.message.author.id != adminUser) {
       logger.info(`Non-admin user ${command.message.author.username} attempted to use !test`);
