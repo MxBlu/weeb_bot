@@ -17,7 +17,8 @@ module.exports = (discord, db, imm, logger) => {
     'unnotif': unnotifHandler,
     'sub': subscribeHandler,
     'unsub': unsubscribeHandler,
-    'listsubs': listsubsHandler
+    'listsubs': listsubsHandler,
+    'test': testHandler
   };
 
   // Discord event handlers
@@ -56,6 +57,25 @@ module.exports = (discord, db, imm, logger) => {
 
   // Command handlers
 
+  let D2 = require('discord.js')
+
+  let d2 = new D2.Client();
+  let m2 = new D2.Message();
+  m2.author.id
+
+  async function testHandler(command) {
+    if (command.message.author.id != adminUser) {
+      logger.info(`Non-admin user ${command.message.author.username} attempted to use !test`);
+      return;
+    }
+
+    imm.notify('newFeedItem', {
+      title: 'The 100 Girlfriends Who Really, Really, Really, Really, Really Love You - Volume 3, Chapter 23.5',
+      link: 'https://mangadex.org/chapter/1044641',
+      mangaLink: 'https://mangadex.org/title/44394'
+    });
+  }
+
   async function notifchannelHandler(command) {
     if (command.arguments.length == 0) {
       sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', 3);
@@ -92,6 +112,11 @@ module.exports = (discord, db, imm, logger) => {
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
 
+    if (role == null) {
+      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      return;
+    }
+
     await db.delRole(guild.id, role.id);
     await db.delNotifChannel(guild.id, role.id);
     sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2);
@@ -117,6 +142,11 @@ module.exports = (discord, db, imm, logger) => {
     
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
+
+    if (role == null) {
+      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      return;
+    }
 
     let titleName = "";
     try {
@@ -151,6 +181,11 @@ module.exports = (discord, db, imm, logger) => {
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
 
+    if (role == null) {
+      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      return;
+    }
+
     let titleName = await db.getTitleName(titleId);
     await db.delTitle(guild.id, role.id, titleId);
     // TODO: Use Mangadex api to display title from db
@@ -171,6 +206,11 @@ module.exports = (discord, db, imm, logger) => {
 
     let guild = command.message.guild;
     let role = guild.roles.find(r => r.name == roleName);
+
+    if (role == null) {
+      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      return;
+    }
 
     const titles = await db.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
