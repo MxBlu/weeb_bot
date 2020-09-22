@@ -250,7 +250,11 @@ module.exports = (discord, db, imm, logger) => {
         `${chapter.title} - ${chapter.pageCount} pages ${pingStr}\n` +
         `${chapter.link}`
       
-      sendMessage(channel, msg);
+      try {
+        sendMessage(channel, msg); 
+      } catch (e) {
+        logger.error(`Failed to send notification to ${guild.id}@${channelId}: ${e}`);
+      }
     }
   }
 
@@ -260,8 +264,8 @@ module.exports = (discord, db, imm, logger) => {
         var targetChannel = discord.guilds.get(errGuild).channels.get(errStream);
         sendMessage(targetChannel, log);
       } catch (e) {
-        console.log('Discord error log exception, disabling error log');
-        console.log(e);
+        console.error('Discord error log exception, disabling error log');
+        console.error(e);
         errLogDisabled = true;
       }
     }
