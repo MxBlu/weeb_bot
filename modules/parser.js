@@ -31,7 +31,7 @@ module.exports = (db, imm, logger) => {
         try {
           pageCount = await mangadex.getChapterPageCount(chapterId);
         } catch (e) {
-          logger.error(command.message, 'Mangadex connection issues, defaulting to 0 pages', 2);
+          logger.error('Mangadex connection issues, defaulting to 0 pages', 2);
         }
         imm.notify('newChapter', {
           title: item.title,
