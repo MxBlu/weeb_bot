@@ -273,6 +273,38 @@ module.exports = (discord, db, imm, logger) => {
 
   // Utility functions
 
+  function chunkString2(str) {
+    let chunks = [];
+    let strBuffer = '';
+
+    // Split by newline and concat strings until ideal length
+    // Then add so chunks list
+    str.split("\n").forEach(s => {
+      // A single oversized string, chunk by length
+      if (s.length > DISCORD_MAX_LEN) {
+        // Flush buffer as a chunk if there's any
+        if (strBuffer.length > 0) {
+          chunks.push(strBuffer);
+          strBuffer = '';
+        }
+        for (let i = 0; i < s.length; i += DISCORD_MAX_LEN) {
+          chunks.push(s.substr(i, DISCORD_MAX_LEN));
+        }
+      // Adding the current string would cause it to go oversized
+      // Add the current buffer as a chunk, then set the buffer 
+      //   to the current str
+      } else if (strBuffer.length + s.length + 1 > DISCORD_MAX_LEN) {
+        chunks.push(strBuffer);
+        strBuffer = s;
+      // Otherwise, add the string the the buffer
+      } else {
+        strBuffer += s;
+      }
+    });
+
+    return chunks;
+  }
+
   function chunkString(str) {
     let chunks = [];
     let chunkOffset = 0;
@@ -308,7 +340,7 @@ module.exports = (discord, db, imm, logger) => {
   }
 
   function sendMessage(targetChannel, msg) {
-    var msgChunks = chunkString(msg, DISCORD_MAX_LEN);
+    var msgChunks = chunkString2(msg, DISCORD_MAX_LEN);
     msgChunks.forEach(
       (chunk) => targetChannel.send(chunk));
   }
