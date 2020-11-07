@@ -1,7 +1,7 @@
 {
   "name": "weeb_bot",
   "version": "0.1.0",
-  "description": "Track and display buy/sell listings from OCAU",
+  "description": "Notify on new manga from Mangadex",
   "main": "main.js",
   "scripts": {
     "start": "nodemon main.js",
@@ -10,7 +10,7 @@
   "dependencies": {
     "bufferutil": "4.0.2",
     "discord.js": "12.4.1",
-    "dotenv": "^8.0.0",
+    "dotenv": "8.0.0",
     "erlpack": "discord/erlpack",
     "ioredis": "^4.17.3",
     "mangadex-api": "^2.0.10",
