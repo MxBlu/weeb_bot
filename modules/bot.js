@@ -273,7 +273,7 @@ module.exports = (discord, db, imm, logger) => {
 
   // Utility functions
 
-  function chunkString2(str) {
+  function chunkString(str) {
     let chunks = [];
     let strBuffer = '';
 
@@ -311,42 +311,13 @@ module.exports = (discord, db, imm, logger) => {
     return chunks;
   }
 
-  function chunkString(str) {
-    let chunks = [];
-    let chunkOffset = 0;
-    let workingOffset = 0;
-    // Iterate through the entire string
-    while (workingOffset !== -1 && workingOffset < str.length) {
-      // Get index of next newline
-      let nextOffset = str.indexOf("\n", workingOffset + 1);
-      // -1 offset indicates no more newlines
-      if (nextOffset === -1) {
-        // Split up the last chunk if ncessary
-        let lastChunk = str.substring(chunkOffset);
-        for (let i = 0; i < lastChunk.length; i += DISCORD_MAX_LEN) {
-          chunks.push(lastChunk.substr(i, DISCORD_MAX_LEN));
-        }    
-      }
-      // If length of substr from last chunk end to the next newline exceeds the limit
-      // Create a chunk from the last chunk end to the last offset before length excess (workingOffset)
-      else if (nextOffset - chunkOffset >= DISCORD_MAX_LEN) {
-        chunks.push(str.substring(chunkOffset, workingOffset + 1));
-        chunkOffset = workingOffset + 1;
-      }
-
-      workingOffset = nextOffset;
-    }
-    
-    return chunks;
-  }
-
   function sendCmdMessage(message, msg, level) {
     logger.info(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
     sendMessage(message.channel, msg);
   }
 
   function sendMessage(targetChannel, msg) {
-    var msgChunks = chunkString2(msg, DISCORD_MAX_LEN);
+    var msgChunks = chunkString(msg, DISCORD_MAX_LEN);
     msgChunks.forEach(
       (chunk) => targetChannel.send(chunk));
   }
