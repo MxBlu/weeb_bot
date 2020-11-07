@@ -295,12 +295,18 @@ module.exports = (discord, db, imm, logger) => {
       //   to the current str
       } else if (strBuffer.length + s.length + 1 > DISCORD_MAX_LEN) {
         chunks.push(strBuffer);
-        strBuffer = s;
+        strBuffer = s + "\n";
       // Otherwise, add the string the the buffer
       } else {
-        strBuffer += s;
+        strBuffer += s + "\n";
       }
     });
+
+    // Flush the buffer again
+    if (strBuffer.length > 0) {
+      chunks.push(strBuffer);
+      strBuffer = '';
+    }
 
     return chunks;
   }
