@@ -1,6 +1,5 @@
 const mangadex = require('../util/mangadex');
 
-const errGuild = process.env.DISCORD_ERRGUILD;
 const errStream = process.env.DISCORD_ERRSTREAM;
 const adminUser = process.env.DISCORD_ADMINUSER;
 
@@ -26,7 +25,7 @@ module.exports = (discord, db, imm, logger) => {
   function readyHandler() {
     logger.info("Discord connected", 1);
     
-    let guilds = discord.guilds.map(g => g.id);
+    let guilds = discord.guilds.cache.map(g => g.id);
     db.addGuilds(...guilds);
   }
 
@@ -79,7 +78,7 @@ module.exports = (discord, db, imm, logger) => {
 
     let guild = command.message.guild;
     let channel = command.message.channel;
-    let role = guild.roles.find(r => r.name == roleName);
+    let role = guild.roles.cache.find(r => r.name == roleName);
     
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -104,7 +103,7 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let role = guild.roles.find(r => r.name == roleName);
+    let role = guild.roles.cache.find(r => r.name == roleName);
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -135,7 +134,7 @@ module.exports = (discord, db, imm, logger) => {
     }
     
     let guild = command.message.guild;
-    let role = guild.roles.find(r => r.name == roleName);
+    let role = guild.roles.cache.find(r => r.name == roleName);
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -173,7 +172,7 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     let guild = command.message.guild;
-    let role = guild.roles.find(r => r.name == roleName);
+    let role = guild.roles.cache.find(r => r.name == roleName);
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -199,7 +198,7 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let role = guild.roles.find(r => r.name == roleName);
+    let role = guild.roles.cache.find(r => r.name == roleName);
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -223,7 +222,7 @@ module.exports = (discord, db, imm, logger) => {
   // Message bus event handlers
 
   async function newChapterHandler(topic, chapter) {
-    const guild = discord.guilds.get(chapter.guild);
+    const guild = discord.guilds.cache.get(chapter.guild);
     if (guild == null) {
       logger.error(`Error: notifying for a guild no longer available: ${chapter.guild}`);
       return;
@@ -243,7 +242,7 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     for (let [channelId, roles] of Object.entries(channels)) {
-      let channel = guild.channels.get(channelId);
+      let channel = guild.channels.cache.get(channelId);
       let pingStr = roles.map(tr => `<@&${tr}>`).join(' ');
 
       var msg = 
@@ -258,10 +257,11 @@ module.exports = (discord, db, imm, logger) => {
     }
   }
 
-  function errorLogHandler(topic, log) {
+  async function errorLogHandler(topic, log) {
     if (!errLogDisabled) {
       try {
-        var targetChannel = discord.guilds.get(errGuild).channels.get(errStream);
+        // Should ensure that it works for DM channels too
+        var targetChannel = await discord.channels.fetch(errStream);
         sendMessage(targetChannel, log);
       } catch (e) {
         console.error('Discord error log exception, disabling error log');
@@ -331,6 +331,7 @@ module.exports = (discord, db, imm, logger) => {
 
   discord.once('ready', readyHandler);
   discord.on('message', messageHandler);
+  discord.on('error', err => logger.error(`Discord error: ${err}`));
   discord.on('guildCreate', joinServerHandler);
   discord.on('guildDelete', leaveServerHandler);
 
