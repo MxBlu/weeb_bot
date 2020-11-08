@@ -12,6 +12,7 @@ module.exports = (discord, db, imm, logger) => {
   var errLogDisabled = false;
 
   const commandHandlers = {
+    "help": helpHandler,
     'notifchannel': notifchannelHandler,
     'unnotif': unnotifHandler,
     'sub': subscribeHandler,
@@ -67,6 +68,27 @@ module.exports = (discord, db, imm, logger) => {
       link: 'https://mangadex.org/chapter/1044641',
       mangaLink: 'https://mangadex.org/title/44394'
     });
+  }
+
+  function helpHandler(command) {
+    if (command.arguments == null ||
+          command.arguments[0] !== "weebbot") {
+      // Only send help for !help weebbot
+      return;
+    }
+
+    let msg = 
+      "Weeb bot - Ping roles on new chapters in Mangadex\n" +
+      "\n" +
+      "!notifchannel <role> - Set current channel as the notification channel for given role\n" +
+      "!unnotif <role> - Remove notif channel from given role\n" +
+      "!sub <role> <manga url> - Subscribe given role to given manga\n" +
+      "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
+      "!listsubs <role> - List all subscriptions for given role\n" +
+      "\n" +
+      "!sub, !unsub amd !listsubs will only work after !notifchannel has been called for the channel"
+
+    sendMessage(command.message.channel, msg);
   }
 
   async function notifchannelHandler(command) {
