@@ -1,3 +1,4 @@
+const { sendMessage, sendCmdMessage, stringEquivalence } = require('../util/bot_utils');
 const mangadex = require('../util/mangadex');
 
 const errStream = process.env.DISCORD_ERRSTREAM;
@@ -106,7 +107,7 @@ module.exports = (discord, db, imm, logger) => {
     if (roleRx != null) {
       role = guild.roles.cache.get(roleRx[1]);
     } else {
-      role = guild.roles.cache.find(r => r.name == roleName);
+      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
     }
     
     if (role == null) {
@@ -138,7 +139,7 @@ module.exports = (discord, db, imm, logger) => {
     if (roleRx != null) {
       role = guild.roles.cache.get(roleRx[1]);
     } else {
-      role = guild.roles.cache.find(r => r.name == roleName);
+      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
     }
 
     if (role == null) {
@@ -176,7 +177,7 @@ module.exports = (discord, db, imm, logger) => {
     if (roleRx != null) {
       role = guild.roles.cache.get(roleRx[1]);
     } else {
-      role = guild.roles.cache.find(r => r.name == roleName);
+      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
     }
 
     if (role == null) {
@@ -221,7 +222,7 @@ module.exports = (discord, db, imm, logger) => {
     if (roleRx != null) {
       role = guild.roles.cache.get(roleRx[1]);
     } else {
-      role = guild.roles.cache.find(r => r.name == roleName);
+      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
     }
 
     if (role == null) {
@@ -254,7 +255,7 @@ module.exports = (discord, db, imm, logger) => {
     if (roleRx != null) {
       role = guild.roles.cache.get(roleRx[1]);
     } else {
-      role = guild.roles.cache.find(r => r.name == roleName);
+      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
     }
 
     if (role == null) {
@@ -319,7 +320,10 @@ module.exports = (discord, db, imm, logger) => {
       try {
         // Should ensure that it works for DM channels too
         var targetChannel = await discord.channels.fetch(errStream);
-        sendMessage(targetChannel, log);
+        // Only send if we can access the error channel
+        if (targetChannel != null) {
+          sendMessage(targetChannel, log);
+        }
       } catch (e) {
         console.error('Discord error log exception, disabling error log');
         console.error(e);
@@ -329,55 +333,6 @@ module.exports = (discord, db, imm, logger) => {
   }
 
   // Utility functions
-
-  function chunkString(str) {
-    let chunks = [];
-    let strBuffer = '';
-
-    // Split by newline and concat strings until ideal length
-    // Then add so chunks list
-    str.split("\n").forEach(s => {
-      // A single oversized string, chunk by length
-      if (s.length > DISCORD_MAX_LEN) {
-        // Flush buffer as a chunk if there's any
-        if (strBuffer.length > 0) {
-          chunks.push(strBuffer);
-          strBuffer = '';
-        }
-        for (let i = 0; i < s.length; i += DISCORD_MAX_LEN) {
-          chunks.push(s.substr(i, DISCORD_MAX_LEN));
-        }
-      // Adding the current string would cause it to go oversized
-      // Add the current buffer as a chunk, then set the buffer 
-      //   to the current str
-      } else if (strBuffer.length + s.length + 1 > DISCORD_MAX_LEN) {
-        chunks.push(strBuffer);
-        strBuffer = s + "\n";
-      // Otherwise, add the string the the buffer
-      } else {
-        strBuffer += s + "\n";
-      }
-    });
-
-    // Flush the buffer again
-    if (strBuffer.length > 0) {
-      chunks.push(strBuffer);
-      strBuffer = '';
-    }
-
-    return chunks;
-  }
-
-  function sendCmdMessage(message, msg, level) {
-    logger.info(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
-    sendMessage(message.channel, msg);
-  }
-
-  function sendMessage(targetChannel, msg) {
-    var msgChunks = chunkString(msg, DISCORD_MAX_LEN);
-    msgChunks.forEach(
-      (chunk) => targetChannel.send(chunk));
-  }
 
   function parseCommand(cmdMessage) {
     // Compare against command syntax
