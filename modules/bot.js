@@ -100,7 +100,14 @@ module.exports = (discord, db, imm, logger) => {
 
     let guild = command.message.guild;
     let channel = command.message.channel;
-    let role = guild.roles.cache.find(r => r.name == roleName);
+    let role = null;
+
+    let roleRx = roleName.match(/^<@&(\d+)>$/);
+    if (roleRx != null) {
+      role = guild.roles.cache.get(roleRx[1]);
+    } else {
+      role = guild.roles.cache.find(r => r.name == roleName);
+    }
     
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -125,7 +132,14 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let role = guild.roles.cache.find(r => r.name == roleName);
+    let role = null;
+
+    let roleRx = roleName.match(/^<@&(\d+)>$/);
+    if (roleRx != null) {
+      role = guild.roles.cache.get(roleRx[1]);
+    } else {
+      role = guild.roles.cache.find(r => r.name == roleName);
+    }
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -156,7 +170,14 @@ module.exports = (discord, db, imm, logger) => {
     }
     
     let guild = command.message.guild;
-    let role = guild.roles.cache.find(r => r.name == roleName);
+    let role = null;
+
+    let roleRx = roleName.match(/^<@&(\d+)>$/);
+    if (roleRx != null) {
+      role = guild.roles.cache.get(roleRx[1]);
+    } else {
+      role = guild.roles.cache.find(r => r.name == roleName);
+    }
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -194,7 +215,14 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     let guild = command.message.guild;
-    let role = guild.roles.cache.find(r => r.name == roleName);
+    let role = null;
+
+    let roleRx = roleName.match(/^<@&(\d+)>$/);
+    if (roleRx != null) {
+      role = guild.roles.cache.get(roleRx[1]);
+    } else {
+      role = guild.roles.cache.find(r => r.name == roleName);
+    }
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
@@ -220,7 +248,14 @@ module.exports = (discord, db, imm, logger) => {
     const roleName = command.arguments[0];
 
     let guild = command.message.guild;
-    let role = guild.roles.cache.find(r => r.name == roleName);
+    let role = null;
+
+    let roleRx = roleName.match(/^<@&(\d+)>$/);
+    if (roleRx != null) {
+      role = guild.roles.cache.get(roleRx[1]);
+    } else {
+      role = guild.roles.cache.find(r => r.name == roleName);
+    }
 
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', 3);
