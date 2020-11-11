@@ -94,7 +94,7 @@ module.exports = (discord, db, imm, logger) => {
 
   async function notifchannelHandler(command) {
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', 3);
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', 3, logger);
       return;
     }
     const roleName = command.arguments[0];
@@ -111,13 +111,13 @@ module.exports = (discord, db, imm, logger) => {
     }
     
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      sendCmdMessage(command.message, 'Error: role does not exist', 3, logger);
       return;
     }
 
     await db.addRole(guild.id, role.id);
     await db.setNotifChannel(guild.id, role.id, channel.id);
-    sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, 2);
+    sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, 2, logger);
   }
 
   async function unnotifHandler(command) {
@@ -127,7 +127,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide role to unregister', 3);
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to unregister', 3, logger);
       return;
     }
     const roleName = command.arguments[0];
@@ -143,13 +143,13 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      sendCmdMessage(command.message, 'Error: role does not exist', 3, logger);
       return;
     }
 
     await db.delRole(guild.id, role.id);
     await db.delNotifChannel(guild.id, role.id);
-    sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2);
+    sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2, logger);
   }
 
   async function subscribeHandler(command) {
@@ -159,14 +159,14 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     if (command.arguments.length < 2) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3, logger);
       return;
     }
     const roleName = command.arguments[0];
     const titleId = mangadex.parseTitleUrl(command.arguments[1]);
 
     if (titleId == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3);
+      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
       return;
     }
     
@@ -181,7 +181,7 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      sendCmdMessage(command.message, 'Error: role does not exist', 3, logger);
       return;
     }
 
@@ -189,12 +189,12 @@ module.exports = (discord, db, imm, logger) => {
     try {
       titleName = await mangadex.getMangaTitle(titleId);
     } catch (e) {
-      sendCmdMessage(command.message, 'Error: Invalid url or Mangadex connection issues, try again', 2);
+      sendCmdMessage(command.message, 'Error: Invalid url or Mangadex connection issues, try again', 2, logger);
       return;
     }
     await db.setTitleName(titleId, titleName);
     await db.addTitle(guild.id, role.id, titleId);
-    sendCmdMessage(command.message, `Added title '${titleName}' to role @${role.name}`, 2);
+    sendCmdMessage(command.message, `Added title '${titleName}' to role @${role.name}`, 2, logger);
   }
 
   async function unsubscribeHandler(command) {
@@ -204,14 +204,14 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3, logger);
       return;
     }
     const roleName = command.arguments[0];
     const titleId = mangadex.parseTitleUrl(command.arguments[1]);
 
     if (titleId == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3);
+      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
       return;
     }
 
@@ -226,14 +226,14 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      sendCmdMessage(command.message, 'Error: role does not exist', 3, logger);
       return;
     }
 
     let titleName = await db.getTitleName(titleId);
     await db.delTitle(guild.id, role.id, titleId);
     // TODO: Use Mangadex api to display title from db
-    sendCmdMessage(command.message, `Removed title '${titleName}' from role @${role.name}`, 2);
+    sendCmdMessage(command.message, `Removed title '${titleName}' from role @${role.name}`, 2, logger);
   }
 
   async function listsubsHandler(command) {
@@ -243,7 +243,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role', 3);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role', 3, logger);
       return;
     }
     const roleName = command.arguments[0];
@@ -259,13 +259,13 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3);
+      sendCmdMessage(command.message, 'Error: role does not exist', 3, logger);
       return;
     }
 
     const titles = await db.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
-      sendCmdMessage(command.message, 'No subscriptions', 3);
+      sendCmdMessage(command.message, 'No subscriptions', 3, logger);
     }
     
     let titleNames = {};
@@ -274,7 +274,7 @@ module.exports = (discord, db, imm, logger) => {
     }
 
     let str = Array.from(titles.values()).map(t => `${titleNames[t]} - <${mangadex.toTitleUrl(t)}>`).join('\n');
-    sendCmdMessage(command.message, str, 3);
+    sendCmdMessage(command.message, str, 3, logger);
   }
 
   // Message bus event handlers
