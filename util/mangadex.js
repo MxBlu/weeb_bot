@@ -1,4 +1,7 @@
-const Mangadex 		= require('mangadex-api');
+const { Mangadex } = require('mangadex-api')
+
+// Mangedex client
+const mangadex = new Mangadex();
 
 // Regex for matching Mangadex urls
 const mangadexTitleSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/(?:title|manga)\/(\d+).*/;
@@ -16,7 +19,7 @@ exports.parseTitleUrl = (url) => {
 
 // Extract id out of a Mangadex chapter url
 // Returns null if invalid
-exports.parseChaptereUrl = (url) => {
+exports.parseChapterUrl = (url) => {
 	const matchObj = url.match(mangadexChapterSyntax);
 	if (matchObj == null || matchObj[1].length == 0) {
 		return null;
@@ -28,15 +31,15 @@ exports.parseChaptereUrl = (url) => {
 // Use API to get title of a manga, given id
 // Will throw an exception if API returns an invalid response
 exports.getMangaTitle = async (titleId) => {
-	const details = await Mangadex.getManga(parseInt(titleId));
-	return details.manga.title;
+	const manga = await mangadex.manga.getManga(parseInt(titleId));
+	return manga.title;
 }
 
 // Use API to get page count of a chapter, given id
 // Will throw an exception if API returns an invalid response
 exports.getChapterPageCount = async (chapterId) => {
-	const details = await Mangadex.getChapter(parseInt(chapterId));
-	return details.page_array.length;
+	const chapter = await mangadex.chapter.getChapter(parseInt(chapterId));
+	return chapter.pages.length;
 }
 
 // Returns a manga url given an id 

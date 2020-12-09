@@ -5,7 +5,7 @@ module.exports = (db, imm, logger) => {
   async function itemHandler(topic, item) {
     // Extract title ID from RSS item
     const titleId = mangadex.parseTitleUrl(item.mangaLink);
-    const chapterId = mangadex.parseChaptereUrl(item.link);
+    const chapterId = mangadex.parseChapterUrl(item.link);
     if (titleId == null) {
       logger.error(`Item has invalid mangaLink: ${item.title}`);
       return;
