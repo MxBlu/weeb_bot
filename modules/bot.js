@@ -266,6 +266,7 @@ module.exports = (discord, db, imm, logger) => {
     const titles = await db.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
       sendCmdMessage(command.message, 'No subscriptions', 3, logger);
+      return;
     }
     
     let titleNames = {};
