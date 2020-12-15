@@ -20,7 +20,7 @@ module.exports = (imm, logger) => {
   });
 
   async function timerTask() {
-    logger.info('Running RSS feed parser', 3);
+    logger.info('Running RSS feed parser', 4);
     try {
       const feed = await rssParser.parseURL(feedUrl);
 
@@ -31,7 +31,6 @@ module.exports = (imm, logger) => {
             guidSet.has(item.guid)) {
           return;
         }
-        logger.info(`Item: ${item.title}`, 4);
         guidSet.add(item.guid);
 
         logger.info(`New item: ${item.title}`, 3);
