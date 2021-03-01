@@ -195,7 +195,7 @@ module.exports = (discord, db, imm, logger) => {
 
     await db.setTitleName(titleObj.id, titleObj.title);
     await db.addTitle(guild.id, role.id, titleObj.id);
-    sendCmdMessage(command.message, `Added title '${titleName}' to role @${role.name}`, 2, logger);
+    sendCmdMessage(command.message, `Added title '${titleObj.title}' to role @${role.name}`, 2, logger);
   }
 
   async function unsubscribeHandler(command) {
