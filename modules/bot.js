@@ -303,9 +303,10 @@ module.exports = (discord, db, imm, logger) => {
     for (let [channelId, roles] of Object.entries(channels)) {
       let channel = guild.channels.cache.get(channelId);
       let pingStr = roles.map(tr => `<@&${tr}>`).join(' ');
+      let pagesStr = chapter.pageCount > 0 ? `- ${chapter.pageCount} pages ` : '';
 
       var msg = 
-        `${chapter.title} - ${chapter.pageCount} pages ${pingStr}\n` +
+        `${chapter.title} ${pagesStr}${pingStr}\n` +
         `${chapter.link}`
       
       try {
