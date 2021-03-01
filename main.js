@@ -23,7 +23,7 @@ var discord = new Discord.Client();
 
 // Setup RSS feed listener
 messenger.newTopic('newFeedItem');
-require('./modules/rss')(messenger, logger);
+require('./modules/mangadex_rss')(messenger, logger);
 
 // Setup parser services
 messenger.newTopic('newChapter');
