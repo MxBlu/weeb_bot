@@ -181,7 +181,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
 
-    const titleObj = null;
+    let titleObj = null;
     try {
       titleObj = parseUrl(url);
     } catch (e) {
