@@ -1,5 +1,6 @@
 const { sendMessage, sendCmdMessage, stringEquivalence } = require('../util/bot_utils');
 const mangadex = require('../util/mangadex');
+const steamworks = require('../util/steamworks');
 
 const errStream = process.env.DISCORD_ERRSTREAM;
 const adminUser = process.env.DISCORD_ADMINUSER;
@@ -163,12 +164,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     const roleName = command.arguments[0];
-    const titleId = mangadex.parseTitleUrl(command.arguments[1]);
-
-    if (titleId == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
-      return;
-    }
+    const url = command.arguments[1];
     
     let guild = command.message.guild;
     let role = null;
@@ -185,15 +181,20 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
 
-    let titleName = "";
+    const titleObj = null;
     try {
-      titleName = await mangadex.getMangaTitle(titleId);
+      titleObj = parseUrl(url);
     } catch (e) {
-      sendCmdMessage(command.message, 'Error: Invalid url or Mangadex connection issues, try again', 2, logger);
+      logger.info(`Error parsing URL: ${e}`);
+    }
+
+    if (titleObj == null) {
+      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
       return;
     }
-    await db.setTitleName(titleId, titleName);
-    await db.addTitle(guild.id, role.id, titleId);
+
+    await db.setTitleName(titleObj.id, titleObj.title);
+    await db.addTitle(guild.id, role.id, titleObj.id);
     sendCmdMessage(command.message, `Added title '${titleName}' to role @${role.name}`, 2, logger);
   }
 
@@ -335,6 +336,34 @@ module.exports = (discord, db, imm, logger) => {
   }
 
   // Utility functions
+
+  // Try parsing the url using all known formats
+  // Returns { id, title }
+  async function parseUrl(url) {
+
+    // Try Mangadex
+    let mangadex_id = mangadex.parseTitleUrl(url);
+    if (mangadex_id != null) {
+      let title = await mangadex.getMangaTitle(mangadex_id);
+      return {
+        id: mangadex_id,
+        title: title
+      };
+    }
+
+    // Try Steam
+    let steam_id = steamworks.parseSteamUrl(url);
+    if (steam_id != null) {
+      let title = await steamworks.getAppTitle(steam_id);
+      return {
+        id: steam_id,
+        title: title
+      };
+    }
+
+    // If we can't parse it, return null
+    return null;
+  }
 
   function parseCommand(cmdMessage) {
     // Compare against command syntax
