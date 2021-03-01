@@ -183,7 +183,7 @@ module.exports = (discord, db, imm, logger) => {
 
     let titleObj = null;
     try {
-      titleObj = parseUrl(url);
+      titleObj = await parseUrl(url);
     } catch (e) {
       logger.info(`Error parsing URL: ${e}`);
     }
@@ -209,12 +209,7 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
     const roleName = command.arguments[0];
-    const titleId = mangadex.parseTitleUrl(command.arguments[1]);
-
-    if (titleId == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
-      return;
-    }
+    const url = command.arguments[1];
 
     let guild = command.message.guild;
     let role = null;
@@ -231,10 +226,20 @@ module.exports = (discord, db, imm, logger) => {
       return;
     }
 
-    let titleName = await db.getTitleName(titleId);
-    await db.delTitle(guild.id, role.id, titleId);
-    // TODO: Use Mangadex api to display title from db
-    sendCmdMessage(command.message, `Removed title '${titleName}' from role @${role.name}`, 2, logger);
+    let titleObj = null;
+    try {
+      titleObj = await parseUrl(url);
+    } catch (e) {
+      logger.info(`Error parsing URL: ${e}`);
+    }
+
+    if (titleObj == null) {
+      sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
+      return;
+    }
+
+    await db.delTitle(guild.id, role.id, titleObj.id);
+    sendCmdMessage(command.message, `Removed title '${titleObj.title}' from role @${role.name}`, 2, logger);
   }
 
   async function listsubsHandler(command) {
