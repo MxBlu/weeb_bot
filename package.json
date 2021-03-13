@@ -13,7 +13,7 @@
     "dotenv": "8.0.0",
     "erlpack": "discord/erlpack",
     "ioredis": "^4.17.3",
-    "mangadex-api": "^4.3.0",
+    "mangadex-api": "^4.6.4",
     "node-fetch": "^2.6.1",
     "rss-parser": "^3.9.0",
     "utf-8-validate": "5.0.3",
