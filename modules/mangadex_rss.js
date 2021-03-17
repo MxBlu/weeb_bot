@@ -36,7 +36,9 @@ module.exports = (imm, logger) => {
         logger.info(`New item: ${item.title}`, 3);
         imm.notify('newFeedItem', item);
       });
+      imm.notify('mangadexPulse', true);
     } catch (e) {
+      imm.notify('mangadexPulse', false);
       logger.error(e);
     }
   }
