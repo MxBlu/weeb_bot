@@ -36,9 +36,17 @@ module.exports = (imm, logger) => {
         logger.info(`New item: ${item.title}`, 3);
         imm.notify('newFeedItem', item);
       });
-      imm.notify('mangadexPulse', true);
+      imm.notify('mangadexPulse', {
+        status: true,
+        lastUp: new Date(),
+        lastDown: imm.getLastMessage('mangadexPulse')?.lastDown
+      });
     } catch (e) {
-      imm.notify('mangadexPulse', false);
+      imm.notify('mangadexPulse', {
+        status: false,
+        lastUp: imm.getLastMessage('mangadexPulse')?.lastUp,
+        lastDown: new Date()
+      });
       logger.error(e);
     }
   }
