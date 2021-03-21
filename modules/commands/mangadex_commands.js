@@ -16,7 +16,7 @@ module.exports = (imm, logger) => {
         if (dexStatus.lastUp != null) {
           message += ` since ${dexStatus.lastUp.toUTCString()}`;
         }
-        sendCmdMessage(command.message, 'Mangadex was unreachable in the last 5 mins', 2, logger);
+        sendCmdMessage(command.message, message, 2, logger);
       } else {
         sendCmdMessage(command.message, 'Mangadex status unknown', 2, logger);
       }
