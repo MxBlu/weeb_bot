@@ -1,8 +1,11 @@
 const Parser = require('rss-parser');
+const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 // Feed requesting settings
 const feedUrl = process.env.MANGEDEX_FEED_URL;
 const refreshInterval = process.env.MANGEDEX_FEED_REFRESH_INTERVAL;
+const dexDownHash = process.env.MANGADEX_DOWN_HASH;
 
 module.exports = (imm, logger) => {
 
@@ -22,7 +25,25 @@ module.exports = (imm, logger) => {
   async function timerTask() {
     logger.info('Running RSS feed parser', 4);
     try {
-      const feed = await rssParser.parseURL(feedUrl);
+      // Get content as HTML
+      const response = await fetch(feedUrl);
+      if (!response.ok) {
+        throw `HTTPException: ${response.status} ${response.statusText}`;
+      }
+      const data = await response.text();
+
+      // Compare against the hash of the known "down" page
+      // 2021-03-21 incident patch
+      let hash = crypto.createHash('sha512');
+      hash.update(data);
+      let dataHash = hash.digest('hex');
+      logger.info(`Mangadex RSS hash: ${dataHash}`, 4);
+
+      if (dexDownHash == dataHash) {
+        throw `MangadexException: Dex is down`;
+      }
+
+      const feed = await rssParser.parseString(data);
 
       feed.items.forEach((item) => {
         // No processing items we've seen or before we started

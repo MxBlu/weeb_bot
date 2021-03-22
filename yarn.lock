@@ -990,7 +990,7 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-mangadex-api@^4.3.0:
+mangadex-api@^4.6.4:
   version "4.6.4"
   resolved "https://registry.yarnpkg.com/mangadex-api/-/mangadex-api-4.6.4.tgz#4b12ffd43cd8251a2f3b4061aca6c9948b728df7"
   integrity sha512-tvzYJyNfrqG7VSj5U4s3p7QLV4PbLhxlc3qhnMd1Gro9iAifhBIQ9ihjPh14PAYzP0FgZRhURx20DZaPOcaFrw==
