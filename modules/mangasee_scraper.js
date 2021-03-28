@@ -7,7 +7,7 @@ const explicitlyDisabled = process.env.MANGASEE_DISABLED;
 module.exports = (imm, db, logger) => {
 
   // Last fetch time, used for filtering
-  const lastFetch = new Date();
+  let lastFetch = new Date();
 
   async function timerTask() {
     // Ensure the parser is enabled before continuing
@@ -37,7 +37,7 @@ module.exports = (imm, db, logger) => {
           // If any guild has any roles that have subscribed to this manga
           // Notify for a new chapter with a list of roles subbed
           const roles = await db.getRoles(guildId);
-          var rolesToAlert = new Set();
+          const rolesToAlert = new Set();
           for (let roleId of roles) {
             const titles = await db.getTitles(guildId, roleId);
             if (titles.has(titleId)) {
@@ -57,6 +57,9 @@ module.exports = (imm, db, logger) => {
           }
         }
       });
+
+      // Update last fetch time to now
+      lastFetch = new Date();
     } catch (e) {
       logger.error(e);
     }
