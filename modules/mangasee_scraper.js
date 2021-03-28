@@ -6,9 +6,6 @@ const explicitlyDisabled = process.env.MANGASEE_DISABLED;
 
 module.exports = (db, imm, logger) => {
 
-  // Last fetch time, used for filtering
-  let lastFetch = new Date();
-
   async function timerTask() {
     // Ensure the parser is enabled before continuing
     if (! await db.isMangaseeEnabled()) {
@@ -17,7 +14,10 @@ module.exports = (db, imm, logger) => {
 
     logger.info('Running Mangasee scraper', 4);
     try {
+      // Fetch chapters from now back until the last refresh interval
+      const fetchToDate = new Date() - refreshInterval;
       const latestChapters = await Mangasee.getLatestChapters(lastFetch);
+
       latestChapters.forEach(async c => {
         // The logic we use in 'parser' is pulled here instead
 
@@ -57,9 +57,6 @@ module.exports = (db, imm, logger) => {
           }
         }
       });
-
-      // Update last fetch time to now
-      lastFetch = new Date();
     } catch (e) {
       logger.error(e);
     }
