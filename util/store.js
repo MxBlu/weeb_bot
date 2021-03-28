@@ -103,6 +103,42 @@ module.exports = (redisHost, redisPort, logger) => {
     // Set title name for a given title id
     setTitleName: async (titleId, titleName) => {
       return rclient.set(`title_${titleId}`, titleName);
+    },
+
+    // Mangasee hackjobs
+
+    // Check is Mangasee parsing is enabled
+    isMangaseeEnabled: async () => {
+      return await rclient.get('mangasee_enabled') == 'true';
+    },
+
+    // Set Mangasee parsing status
+    setMangaseeEnabled: async (enabled) => {
+      return rclient.set('mangasee_enabled', enabled == true ? 'true' : 'false');
+    },
+
+    // Get alternative titles (for Mangasee parsing) for a given titleId
+    getAltTitles: async (titleId) => {
+      return new Set(await rclient.smembers(`title_${titleId}_altTitles`));
+    },
+
+    // Add an alternative title for a given titleId
+    addAltTitle: async (titleId, altTitle) => {
+      await rclient.sadd(`title_${titleId}_altTitles`, altTitle);
+      await rclient.set(`mangasee_altTitles_${altTitle}`, titleId);
+      return;
+    },
+
+    // Delete an alternative title for a given titleId
+    delTitle: async (titleId, altTitle) => {
+      await rclient.srem(`title_${titleId}_altTitles`, altTitle);
+      await rclient.del(`mangasee_altTitles_${altTitle}`, titleId);
+      return;
+    },
+
+    // Get titleId for a given altTitle
+    getTitleIdForAlt: async (altTitle) => {
+      return await rclient.get(`mangasee_altTitles_${altTitle}`);
     }
 
   }
