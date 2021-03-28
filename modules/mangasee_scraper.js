@@ -23,7 +23,7 @@ module.exports = (db, imm, logger) => {
 
         // Get the titleId for the series
         // If none exists, we don't have anything to go off to send notifications
-        const titleId = db.getTitleIdForAlt(c.SeriesName);
+        const titleId = await db.getTitleIdForAlt(c.SeriesName);
         if (titleId == null) {
           return;
         }
