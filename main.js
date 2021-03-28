@@ -26,6 +26,9 @@ messenger.newTopic('newFeedItem');
 messenger.newTopic('mangadexPulse');
 require('./modules/mangadex_rss')(messenger, logger);
 
+// Setup Mangasee scraper
+require('./modules/mangasee_scraper')(db, messenger, logger);
+
 // Setup parser services
 messenger.newTopic('newChapter');
 require('./modules/parser')(db, messenger, logger);

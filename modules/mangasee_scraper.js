@@ -4,7 +4,7 @@ const Mangasee = require('../util/mangasee');
 const refreshInterval = process.env.MANGASEE_REFRESH_INTERVAL;
 const explicitlyDisabled = process.env.MANGASEE_DISABLED;
 
-module.exports = (imm, db, logger) => {
+module.exports = (db, imm, logger) => {
 
   // Last fetch time, used for filtering
   let lastFetch = new Date();
