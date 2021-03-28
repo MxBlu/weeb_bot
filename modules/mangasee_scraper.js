@@ -17,8 +17,8 @@ module.exports = (db, imm, logger) => {
 
     logger.info('Running Mangasee scraper', 4);
     try {
-      const latestChapters = Mangasee.getLatestChapters(lastFetch);
-      latestChapters.forEach(c => {
+      const latestChapters = await Mangasee.getLatestChapters(lastFetch);
+      latestChapters.forEach(async c => {
         // The logic we use in 'parser' is pulled here instead
 
         // Get the titleId for the series
