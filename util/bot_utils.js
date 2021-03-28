@@ -76,7 +76,14 @@ function stringSearch(str1, str2) {
   return str1.toLowerCase().includes(str2.toLowerCase());
 }
 
+// Test if the author of a given message is admin
+async function isAdmin(message) {
+  const author = await message.guild.members.fetch(message.author.id);
+  return author.permissions.has("ADMINISTRATOR");
+}
+
 exports.sendCmdMessage = sendCmdMessage;
 exports.sendMessage = sendMessage;
 exports.stringEquivalence = stringEquivalence;
 exports.stringSearch = stringSearch;
+exports.isAdmin = isAdmin;

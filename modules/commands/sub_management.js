@@ -1,7 +1,7 @@
 const mangadex = require('../../util/mangadex');
-const steamworks = require('../../util/steamworks');
 
 const { sendCmdMessage, stringEquivalence } = require("../../util/bot_utils");
+const { parseUrl } = require('../../util/urlparser');
 
 module.exports = (db, logger) => {
 
@@ -18,34 +18,6 @@ module.exports = (db, logger) => {
     }
     
     return false;
-  }
-
-  // Try parsing the url using all known formats
-  // Returns { id, title }
-  async function parseUrl(url) {
-
-    // Try Mangadex
-    let mangadex_id = mangadex.parseTitleUrl(url);
-    if (mangadex_id != null) {
-      let title = await mangadex.getMangaTitle(mangadex_id);
-      return {
-        id: mangadex_id,
-        title: title
-      };
-    }
-
-    // Try Steam
-    // let steam_id = steamworks.parseSteamUrl(url);
-    // if (steam_id != null) {
-    //   let title = await steamworks.getAppTitle(steam_id);
-    //   return {
-    //     id: steam_id,
-    //     title: title
-    //   };
-    // }
-
-    // If we can't parse it, return null
-    return null;
   }
 
   return {

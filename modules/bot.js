@@ -14,6 +14,7 @@ module.exports = (discord, db, imm, logger) => {
   const channelManagement = require('./commands/channel_management')(db, logger);
   const subManagement = require('./commands/sub_management')(db, logger);
   const mangadexCommands = require('./commands/mangadex_commands')(imm, logger);
+  const mangaseeCommands = require('./commands/mangasee_commands')(db, imm, logger);
   const newChapterEvent = require('./commands/new_chapter_event')(discord, db, logger);
 
   const commandHandlers = {
@@ -24,6 +25,11 @@ module.exports = (discord, db, imm, logger) => {
     'unsub': subManagement.unsubscribeHandler,
     'listsubs': subManagement.listsubsHandler,
     'dexstatus': mangadexCommands.dexstatusHandler,
+    'mangaseestatus': mangaseeCommands.mangaseestatusHandler,
+    'setmangaseestatus': mangaseeCommands.setmangaseestatusHandler,
+    'getalttitles': mangaseeCommands.getalttitlesHandler,
+    'addalttitle': mangaseeCommands.addalttitleHandler,
+    'delalttitle': mangaseeCommands.delalttitleHandler,
     'test': testHandler
   };
 
