@@ -41,7 +41,7 @@ module.exports = (db, imm, logger) => {
       switch (command.arguments.length) {
       case 1:
         try {
-          titleObj = await parseUrl(command.arguments[0]);
+          titleObj = await parseUrl(db, command.arguments[0]);
         } catch (e) {
           logger.info(`Error parsing URL: ${e}`);
         }
@@ -73,7 +73,7 @@ module.exports = (db, imm, logger) => {
         return;
       default:
         try {
-          titleObj = await parseUrl(command.arguments[0]);
+          titleObj = await parseUrl(db, command.arguments[0]);
         } catch (e) {
           logger.info(`Error parsing URL: ${e}`);
         }
@@ -102,7 +102,7 @@ module.exports = (db, imm, logger) => {
         return;
       default:
         try {
-          titleObj = await parseUrl(command.arguments[0]);
+          titleObj = await parseUrl(db, command.arguments[0]);
         } catch (e) {
           logger.info(`Error parsing URL: ${e}`);
         }

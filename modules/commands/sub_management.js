@@ -52,7 +52,7 @@ module.exports = (db, logger) => {
   
       let titleObj = null;
       try {
-        titleObj = await parseUrl(url);
+        titleObj = await parseUrl(db, url);
       } catch (e) {
         logger.info(`Error parsing URL: ${e}`);
       }
@@ -97,7 +97,7 @@ module.exports = (db, logger) => {
   
       let titleObj = null;
       try {
-        titleObj = await parseUrl(url);
+        titleObj = await parseUrl(db, url);
       } catch (e) {
         logger.info(`Error parsing URL: ${e}`);
       }
