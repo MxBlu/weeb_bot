@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs/promises');
 
-const MANGASEE_URL = "https://mangasee123.com~";
+const MANGASEE_URL = "https://mangasee123.com";
 
 exports.getLatestChapters = async function (fromDate) {
   // Get title page
@@ -31,7 +31,7 @@ exports.getLatestChapters = async function (fromDate) {
 
     // Change the date strings to Date objects as we go
     // Might as well set the Link url and chapter number here too
-    const firstIndexPastDate = latestChapters.find(c => {
+    const firstIndexPastDate = latestChapters.findIndex(c => {
       c.Date = new Date(c.Date);
       c.ChapterNumber = getChapterNumber(c.Chapter);
       c.Link = createMangaseeLink(c);
