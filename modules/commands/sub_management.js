@@ -35,14 +35,14 @@ module.exports = (db, logger) => {
     }
 
     // Try Steam
-    let steam_id = steamworks.parseSteamUrl(url);
-    if (steam_id != null) {
-      let title = await steamworks.getAppTitle(steam_id);
-      return {
-        id: steam_id,
-        title: title
-      };
-    }
+    // let steam_id = steamworks.parseSteamUrl(url);
+    // if (steam_id != null) {
+    //   let title = await steamworks.getAppTitle(steam_id);
+    //   return {
+    //     id: steam_id,
+    //     title: title
+    //   };
+    // }
 
     // If we can't parse it, return null
     return null;
