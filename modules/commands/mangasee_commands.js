@@ -5,35 +5,34 @@ module.exports = (db, imm, logger) => {
   return {
 
     mangaseestatusHandler: async (command) => {
-      const status = await db.isMangaseeEnabled();
-      const explicitlyDisabled = process.env.MANGASEE_DISABLED == 'true';
-      if (explicitlyDisabled == true) {
-        sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', 2, logger);
-      } else if (status == true) {
-        sendCmdMessage(command.message, 'Mangasee parser is enabled', 2, logger);
-      } else {
-        sendCmdMessage(command.message, 'Mangasee parser is disabled', 2, logger);
-      }
-    },
-
-    setmangaseestatusHandler: async (command) => {
-      if (! await isAdmin(command.message)) {
-        sendCmdMessage(command.message, 'Error: not admin', 2, logger);
-        return;
-      }
-
-      status = null;
       switch (command.arguments.length) {
+      case 0:
+        // Handle as "get current parsing status"
+        let status = await db.isMangaseeEnabled();
+        const explicitlyDisabled = process.env.MANGASEE_DISABLED == 'true';
+        if (explicitlyDisabled == true) {
+          sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', 2, logger);
+        } else if (status == true) {
+          sendCmdMessage(command.message, 'Mangasee parser is enabled', 2, logger);
+        } else {
+          sendCmdMessage(command.message, 'Mangasee parser is disabled', 2, logger);
+        }
+        return;
       case 1:
-        status = command.arguments[0] == 'true';
-        break;
+        // Handle as "set parsing status"
+        if (! await isAdmin(command.message)) {
+          sendCmdMessage(command.message, 'Error: not admin', 2, logger);
+          return;
+        }
+
+        let status = command.arguments[0] == 'true';
+        await db.setMangaseeEnabled(status);
+        sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, 2, logger);
+        return;
       default:
         sendCmdMessage(command.message, 'Error: incorrect argument count', 3, logger);
         return;
       }
-
-      await db.setMangaseeEnabled(status);
-      sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, 2, logger);
     },
 
     getalttitlesHandler: async (command) => {

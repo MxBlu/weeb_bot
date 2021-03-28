@@ -16,7 +16,7 @@ module.exports = (db, imm, logger) => {
     try {
       // Fetch chapters from now back until the last refresh interval
       const fetchToDate = new Date() - refreshInterval;
-      const latestChapters = await Mangasee.getLatestChapters(lastFetch);
+      const latestChapters = await Mangasee.getLatestChapters(fetchToDate);
 
       latestChapters.forEach(async c => {
         // The logic we use in 'parser' is pulled here instead
