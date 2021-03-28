@@ -130,7 +130,7 @@ module.exports = (redisHost, redisPort, logger) => {
     },
 
     // Delete an alternative title for a given titleId
-    delTitle: async (titleId, altTitle) => {
+    delAltTitle: async (titleId, altTitle) => {
       await rclient.srem(`title_${titleId}_altTitles`, altTitle);
       await rclient.del(`mangasee_altTitles_${altTitle}`, titleId);
       return;
