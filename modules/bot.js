@@ -26,7 +26,6 @@ module.exports = (discord, db, imm, logger) => {
     'listsubs': subManagement.listsubsHandler,
     'dexstatus': mangadexCommands.dexstatusHandler,
     'mangaseestatus': mangaseeCommands.mangaseestatusHandler,
-    'setmangaseestatus': mangaseeCommands.setmangaseestatusHandler,
     'getalttitles': mangaseeCommands.getalttitlesHandler,
     'addalttitle': mangaseeCommands.addalttitleHandler,
     'delalttitle': mangaseeCommands.delalttitleHandler,
