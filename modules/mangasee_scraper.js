@@ -6,6 +6,9 @@ const explicitlyDisabled = process.env.MANGASEE_DISABLED;
 
 module.exports = (db, imm, logger) => {
 
+  // Set of seen links, used for filtering
+  const seenUrls = new Set();
+
   async function timerTask() {
     // Ensure the parser is enabled before continuing
     if (! await db.isMangaseeEnabled()) {
@@ -19,7 +22,13 @@ module.exports = (db, imm, logger) => {
       const latestChapters = await Mangasee.getLatestChapters(fetchToDate);
 
       latestChapters.forEach(async c => {
-        // The logic we use in 'parser' is pulled here instead
+        // Avoid double notifications
+        if (seenUrls.has(C.Link)) {
+          return;
+        }
+        seenUrls.add(C.Link);
+
+        // The logic we use in 'parser.js' is pulled here instead for Mangasee
 
         // Get the titleId for the series
         // If none exists, we don't have anything to go off to send notifications
