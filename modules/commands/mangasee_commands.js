@@ -5,10 +5,11 @@ module.exports = (db, imm, logger) => {
   return {
 
     mangaseestatusHandler: async (command) => {
+      let status = null;
       switch (command.arguments.length) {
       case 0:
         // Handle as "get current parsing status"
-        let status = await db.isMangaseeEnabled();
+        status = await db.isMangaseeEnabled();
         const explicitlyDisabled = process.env.MANGASEE_DISABLED == 'true';
         if (explicitlyDisabled == true) {
           sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', 2, logger);
@@ -25,7 +26,7 @@ module.exports = (db, imm, logger) => {
           return;
         }
 
-        let status = command.arguments[0] == 'true';
+        status = command.arguments[0] == 'true';
         await db.setMangaseeEnabled(status);
         sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, 2, logger);
         return;
