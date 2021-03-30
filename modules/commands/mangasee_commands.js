@@ -96,7 +96,7 @@ module.exports = (db, imm, logger) => {
       sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${titleObj.title}'`, 2, logger);
     },
 
-    delalttitleHandler: async (command) => {
+    delaliasHandler: async (command) => {
       let titleObj = null;
       let altTitle = null;
       switch (command.arguments.length) {
