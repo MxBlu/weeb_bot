@@ -23,10 +23,10 @@ module.exports = (db, imm, logger) => {
 
       latestChapters.forEach(async c => {
         // Avoid double notifications
-        if (seenUrls.has(C.Link)) {
+        if (seenUrls.has(c.Link)) {
           return;
         }
-        seenUrls.add(C.Link);
+        seenUrls.add(c.Link);
         
         const title = `${c.SeriesName} - Chapter ${c.ChapterNumber}`;
         logger.info(`New Mangasee item: ${title}`, 3);
