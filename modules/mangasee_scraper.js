@@ -27,6 +27,9 @@ module.exports = (db, imm, logger) => {
           return;
         }
         seenUrls.add(C.Link);
+        
+        const title = `${c.SeriesName} - Chapter ${c.ChapterNumber}`;
+        logger.info(`New Mangasee item: ${title}`, 3);
 
         // The logic we use in 'parser.js' is pulled here instead for Mangasee
 
@@ -36,8 +39,6 @@ module.exports = (db, imm, logger) => {
         if (titleId == null) {
           return;
         }
-
-        const title = `${c.SeriesName} - Chapter ${c.ChapterNumber}`;
         
         // Check whether the manga has a existing subscription
         // HINT: Someone should if we have a titleId....
