@@ -99,6 +99,7 @@ module.exports = (discord, db, imm, logger) => {
       "\n" +
       "!dexstatus - Get last known status of Mangadex\n" +
       "\n" +
+      "!mangaseestatus [<status>] - Get (or with paramater, update) scraping status of Mangasee\n" +
       "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
       "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
       "!delalias <manga url> <alias> - Delete an alias from a given manga\n" +
