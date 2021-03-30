@@ -26,9 +26,9 @@ module.exports = (discord, db, imm, logger) => {
     'listsubs': subManagement.listsubsHandler,
     'dexstatus': mangadexCommands.dexstatusHandler,
     'mangaseestatus': mangaseeCommands.mangaseestatusHandler,
-    'getalttitles': mangaseeCommands.getalttitlesHandler,
-    'addalttitle': mangaseeCommands.addalttitleHandler,
-    'delalttitle': mangaseeCommands.delalttitleHandler,
+    'getaliases': mangaseeCommands.getaliasesHandler,
+    'addalias': mangaseeCommands.addaliasHandler,
+    'delalias': mangaseeCommands.delaliasHandler,
     'test': testHandler
   };
 
@@ -97,7 +97,10 @@ module.exports = (discord, db, imm, logger) => {
       "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
       "!listsubs <role> - List all subscriptions for given role\n" +
       "\n" +
-      "!sub, !unsub amd !listsubs will only work after !notifchannel has been called for the channel"
+      "!dexstatus - Get last known status of Mangadex"
+      "\n" +
+      ""
+      "Subscription commands will only work after !notifchannel has been called for the channel"
 
     sendMessage(command.message.channel, msg);
   }
