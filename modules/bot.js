@@ -97,7 +97,7 @@ module.exports = (discord, db, imm, logger) => {
       "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
       "!listsubs <role> - List all subscriptions for given role\n" +
       "\n" +
-      "!dexstatus - Get last known status of Mangadex"
+      "!dexstatus - Get last known status of Mangadex\n"
       "\n" +
       "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
       "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
