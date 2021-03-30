@@ -21,6 +21,7 @@ module.exports = (db, imm, logger) => {
         return;
       case 1:
         // Handle as "set parsing status"
+        // Admin only
         if (! await isAdmin(command.message)) {
           sendCmdMessage(command.message, 'Error: not admin', 2, logger);
           return;
@@ -36,7 +37,7 @@ module.exports = (db, imm, logger) => {
       }
     },
 
-    getalttitlesHandler: async (command) => {
+    getaliasesHandler: async (command) => {
       let titleObj = null;
       switch (command.arguments.length) {
       case 1:
@@ -52,6 +53,7 @@ module.exports = (db, imm, logger) => {
         return;
       }
 
+      // Ensure we got a valid manga url
       if (titleObj == null) {
         sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
         return;
@@ -63,7 +65,7 @@ module.exports = (db, imm, logger) => {
       sendCmdMessage(command.message, str, 3, logger);
     },
 
-    addalttitleHandler: async (command) => {
+    addaliasHandler: async (command) => {
       let titleObj = null;
       let altTitle = null;
       switch (command.arguments.length) {
@@ -78,11 +80,13 @@ module.exports = (db, imm, logger) => {
           logger.info(`Error parsing URL: ${e}`);
         }
 
+        // Recombine all arguments after the first into one
         altTitle = command.arguments.slice(1).join(' ');
 
         break;
       }
 
+      // Ensure we got a valid manga url
       if (titleObj == null) {
         sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
         return;
@@ -107,11 +111,13 @@ module.exports = (db, imm, logger) => {
           logger.info(`Error parsing URL: ${e}`);
         }
 
+        // Recombine all arguments after the first into one
         altTitle = command.arguments.slice(1).join(' ');
 
         break;
       }
 
+      // Ensure we got a valid manga url
       if (titleObj == null) {
         sendCmdMessage(command.message, 'Error: bad title URL', 3, logger);
         return;
