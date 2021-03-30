@@ -99,7 +99,10 @@ module.exports = (discord, db, imm, logger) => {
       "\n" +
       "!dexstatus - Get last known status of Mangadex"
       "\n" +
-      ""
+      "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
+      "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
+      "!delalias <manga url> <alias> - Delete an alias from a given manga\n" +
+      "\n" +
       "Subscription commands will only work after !notifchannel has been called for the channel"
 
     sendMessage(command.message.channel, msg);
