@@ -1535,10 +1535,9 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-mangadex-full-api@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/mangadex-full-api/-/mangadex-full-api-5.2.0.tgz#52f7d809a5b6754644d4d6082f0488a0c1e40edf"
-  integrity sha512-QBOUgfSzk1ck3bnbccd+znkLHAGUWoxTrJnnS8ZbOyEJfYxmES/UhG8c8AY8KfJWZeAHhE+o7gbpxkpjTGXnZg==
+mangadex-full-api@Mxblu/mangadex-full-api#chapter-search-types-fix:
+  version "5.1.0"
+  resolved "https://codeload.github.com/Mxblu/mangadex-full-api/tar.gz/460b3047fb3c953ce64041410f714d9fe4a124d6"
 
 map-cache@^0.2.2:
   version "0.2.2"
