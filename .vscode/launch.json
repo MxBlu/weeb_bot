@@ -7,14 +7,18 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Sandbox",
-            "program": "${workspaceFolder}\\sandbox.js"
+            "name": "Run Bot",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "program": "${workspaceFolder}\\src\\main.ts",
+            "outFiles": ["${workspaceFolder}\\built\\**\\*.js"]
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}\\main.js"
+            "name": "Run Sandbox",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "program": "${workspaceFolder}\\src\\sandbox.ts",
+            "outFiles": ["${workspaceFolder}\\built\\**\\*.js"]
         }
     ]
 }

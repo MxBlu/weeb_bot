@@ -1,9 +1,13 @@
+import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
+import { Logger } from "./logger.js";
+import { Store } from "./store.js";
+
 const DISCORD_MAX_LEN = 1900;
 
 // Split up a string into ideally endline terminated strings
 // at most length DISCORD_MAX_LEN
-function chunkString(str) {
-  let chunks = [];
+export const chunkString = function (str: string): string[] {
+  const chunks: string[] = [];
   let strBuffer = '';
 
   // Split by newline and concat strings until ideal length
@@ -41,14 +45,16 @@ function chunkString(str) {
 }
 
 // Send reply to a user command, logging if appropriate
-function sendCmdMessage(message, msg, level, logger) {
+export const sendCmdMessage = function (message: Message, msg: string, 
+    level: number, logger: Logger): void {
   logger.info(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
   sendMessage(message.channel, msg);
 }
 
 // Send message to a given channel, chunking if necessary
-function sendMessage(targetChannel, msg) {
-  var msgChunks = chunkString(msg);
+export const sendMessage = function (targetChannel: TextChannel | DMChannel | NewsChannel, 
+    msg: string): void {
+  const msgChunks = chunkString(msg);
   msgChunks.forEach(
     (chunk) => targetChannel.send(chunk));
 }
@@ -57,7 +63,7 @@ function sendMessage(targetChannel, msg) {
 // Return true if they're equivalent
 // Returns true if both strings are null, otherwise 
 // return false if either are null
-function stringEquivalence(str1, str2) {
+export const stringEquivalence = function (str1: string, str2: string): boolean {
   if (str1 === null || str2 == null) {
     return str1 == str2;
   }
@@ -68,7 +74,7 @@ function stringEquivalence(str1, str2) {
 // Search for str2 in str1 ignoring case
 // Returns true if both strings are null, otherwise 
 // return false if either are null
-function stringSearch(str1, str2) {
+export const stringSearch = function(str1: string, str2: string): boolean {
   if (str1 === null || str2 == null) {
     return str1 == str2;
   }
@@ -77,13 +83,22 @@ function stringSearch(str1, str2) {
 }
 
 // Test if the author of a given message is admin
-async function isAdmin(message) {
+export const isAdmin = async function(message: Message): Promise<boolean> {
   const author = await message.guild.members.fetch(message.author.id);
   return author.permissions.has("ADMINISTRATOR");
 }
 
-exports.sendCmdMessage = sendCmdMessage;
-exports.sendMessage = sendMessage;
-exports.stringEquivalence = stringEquivalence;
-exports.stringSearch = stringSearch;
-exports.isAdmin = isAdmin;
+export const checkIfSubscribed = async function (message: Message): Promise<boolean> {
+  const guild = message.guild;
+  const channel = message.channel;
+  const roles = await Store.getRoles(guild.id);
+
+  for (const r of roles) {
+    const nc = await Store.getNotifChannel(guild.id, r);
+    if (nc == channel.id) {
+      return true;
+    }
+  }
+  
+  return false;
+}

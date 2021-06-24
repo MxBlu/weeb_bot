@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "module": "ES6",
+        "moduleResolution": "node",
+        "target": "es6",
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true
+    },
+    "include": ["./src/**/*"]
+}

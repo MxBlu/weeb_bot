@@ -1,3 +1,4 @@
 /.env
+built
 node_modules
 memes.db*
