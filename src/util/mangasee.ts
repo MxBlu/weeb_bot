@@ -26,12 +26,7 @@ export class MangaseeChapter {
 export class Mangasee {
   public static async getLatestChapters(fromDate: Date): Promise<MangaseeChapter[]> {
     // Get title page
-    const response = await fetch(MANGASEE_URL, {
-      headers: [
-        [ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36" ],
-        [ "accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9" ]
-      ]
-    });
+    const response = await fetch(MANGASEE_URL);
     if (!response.ok) {
       console.log(await response.text());
       throw `HTTPException: ${response.status} ${response.statusText}`;
