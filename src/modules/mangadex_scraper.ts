@@ -10,6 +10,8 @@ export class MangadexScraperImpl {
   logger: Logger;
   // Sets of seen chapters
   guidSet: Set<string>;
+  // Date when scraping began
+  startDate: Date;
 
   constructor() {
     this.guidSet = new Set();
@@ -22,21 +24,22 @@ export class MangadexScraperImpl {
       return;
     }
     
-    // Run timerTask at regular intervals 
+    // Run timerTask at regular intervals
+    this.startDate = new Date();
     setInterval(this.timerTask, MANGADEX_FEED_REFRESH_INTERVAL);
   }
 
   private timerTask = async (): Promise<void> => {
     try {
-      // Calculate the time of refresh 2 cycles ago
-      // Gives leeway for request issues
-      const lastIntervalTime = new Date(Date.now() - MANGADEX_FEED_REFRESH_INTERVAL * 2);
-      const lastIntervalStr = lastIntervalTime.toISOString();
+      // Only get chapters since we started scraping
+      let startDateStr = this.startDate.toISOString();
+      // Since it wants ISO but without the milliseconds or Z
+      startDateStr = startDateStr.substring(0, startDateStr.length - 5)
 
       // Get chapters since last refresh
       let results = await Chapter.search({
         limit: 100,
-        publishAtSince: lastIntervalStr.substring(0, lastIntervalStr.length - 5), // Since it wants ISO but without the milliseconds or Z
+        publishAtSince: startDateStr, 
         order: {updatedAt: 'desc'},
         translatedLanguage: [ 'en' ]
       });
