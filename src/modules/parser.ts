@@ -16,6 +16,7 @@ export class MangaParserImpl {
 
   public init(): void {
     NewMangadexItemTopic.subscribe("itemHandler", this.itemHandler);
+    NewMangaseeItemTopic.subscribe("itemHandler", this.itemHandler);
   }
 
   private itemHandler = async (item: MangaChapter): Promise<void> => {

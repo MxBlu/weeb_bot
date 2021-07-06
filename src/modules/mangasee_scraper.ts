@@ -91,7 +91,7 @@ export class MangaseeScraperImpl {
         mChapter.chapterNumber = c.chapterNumber;
         mChapter.pageCount = null;
 
-        this.logger.info(`New Mangasee item: ${mChapter.titleId} | ${mChapter.chapterNumber}`, 3);
+        this.logger.info(`New Mangasee alert: ${mChapter.titleId} | ${mChapter.chapterNumber}`, 3);
         NewMangaseeItemTopic.notify(mChapter);
       });
     } catch (e) {
