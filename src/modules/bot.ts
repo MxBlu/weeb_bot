@@ -155,8 +155,8 @@ export class BotImpl {
 
   private helpHandler = async (command: BotCommand): Promise<void> => {
     if (command.arguments == null ||
-          command.arguments[0] !== "quotebot") {
-      // Only send help for !help quotebot
+          command.arguments[0] !== "weebbot") {
+      // Only send help for !help weebbot
       return;
     }
 
