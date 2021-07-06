@@ -3,7 +3,8 @@ import { MangaChapter } from "../model/MangaChapter.js";
 import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { Store } from "../util/store.js";
-import { NewMangadexItemTopic } from "./mangadex_rss.js";
+import { NewMangadexItemTopic } from "./mangadex_scraper.js";
+import { NewMangaseeItemTopic } from "./mangasee_scraper.js";
 
 export class MangaParserImpl {
 

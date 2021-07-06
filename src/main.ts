@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import { Bot } from './modules/bot.js';
-import { MangadexScraper } from './modules/mangadex_rss.js';
+import { MangadexScraper } from './modules/mangadex_scraper.js';
 import { MangaseeScraper } from './modules/mangasee_scraper.js';
 import { MangaParser } from './modules/parser.js';
 import { Logger } from './util/logger.js';

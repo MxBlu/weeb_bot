@@ -1,7 +1,7 @@
 import { sendCmdMessage } from "../../util/bot_utils.js";
 import { Logger } from "../../util/logger.js"
 import { BotCommand } from "../bot.js";
-import { MangadexPulseTopic } from "../mangadex_rss.js";
+import { MangadexPulseTopic } from "../mangadex_scraper.js";
 
 export class MangadexCommandHandler {
   
