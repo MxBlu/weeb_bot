@@ -5,6 +5,7 @@ import { Logger } from "../../util/logger.js";
 import { MangadexHelper, MangaLite } from "../../util/mangadex.js";
 import { Store } from "../../util/store.js";
 import { BotCommand } from "../bot.js";
+import { MangaseeScraper } from "../mangasee_scraper.js";
 
 export class MangaseeCommandHandler {
 
@@ -37,7 +38,13 @@ export class MangaseeCommandHandler {
       }
 
       status = command.arguments[0] == 'true';
-      await Store.setMangaseeEnabled(status);
+      
+      if (status == true) {
+        await MangaseeScraper.enable();
+      } else {
+        await MangaseeScraper.disable();
+      }
+
       sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, 2, this.logger);
       return;
     default:

@@ -1,5 +1,6 @@
 import { MANGASEE_DISABLED, MANGASEE_REFRESH_INTERVAL } from "../constants/constants.js";
 import { MangaChapter } from "../model/MangaChapter.js";
+import { CloudflareBypass } from "../util/cloudflare_bypass.js";
 import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { Mangasee } from "../util/mangasee.js";
@@ -10,13 +11,16 @@ export class MangaseeScraperImpl {
   logger: Logger;
   // Sets of seen chapters
   seenUrls: Set<string>;
+  // Inverval handle for timer task
+  handle: NodeJS.Timeout;
 
   constructor() {
     this.seenUrls = new Set();
+    this.handle = null;
     this.logger = new Logger("MangaseeScraper");
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
     // If disabled in env, don't start timerTask
     if (MANGASEE_DISABLED) {
       this.logger.error("Mangasee parsing explicitly disabled");
@@ -28,8 +32,33 @@ export class MangaseeScraperImpl {
       return;
     }
 
+    if (await Store.isMangaseeEnabled()) {
     // Run timerTask at regular intervals 
-    setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
+      this.logger.info("Mangasee parser enabled", 3);
+      this.handle = setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
+    }
+  }
+
+  public async enable(): Promise<void> {
+    if (this.handle == null) {
+      // Run timerTask at regular intervals 
+      this.handle = setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
+      // Store setting in DB
+      await Store.setMangaseeEnabled(true);
+      this.logger.info("Mangasee parser enabled", 3);
+    }
+  }
+  
+  public async disable(): Promise<void> {
+    if (this.handle != null) {
+      // Stop timerRask runs
+      clearInterval(this.handle);
+      // Store setting in DB
+      await Store.setMangaseeEnabled(false);
+      // Stop any Puppeteer instances to save a bit of RAM
+      await CloudflareBypass.ensureUnloaded();
+      this.logger.info("Mangasee parser disabled", 3);
+    }
   }
 
   private timerTask = async (): Promise<void> => {
