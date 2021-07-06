@@ -1,4 +1,5 @@
 import * as Mangadex from 'mangadex-full-api';
+import { MANGADEX_CACHE_LOCATION } from '../constants/constants.js';
 import { Logger } from './logger.js';
 import { Store } from './store.js';
 
@@ -19,7 +20,7 @@ class MangadexHelperImpl {
   }
 
   public async init(username: string, password: string): Promise<void> {
-    await Mangadex.login(username, password);
+    await Mangadex.login(username, password, MANGADEX_CACHE_LOCATION);
     this.logger.info("Mangadex API logged in");
   }
 

@@ -11,6 +11,7 @@ export const DEFAULT_MODAL_DURATION = 120000; // 2 minutes
 
 // Mangadex feed requesting settings
 export const MANGADEX_FEED_REFRESH_INTERVAL = Number(process.env.MANGADEX_FEED_REFRESH_INTERVAL);
+export const MANGADEX_CACHE_LOCATION = process.env.MANGADEX_CACHE_LOCATION;
 
 // Mangasee scraping settings
 export const MANGASEE_REFRESH_INTERVAL = Number(process.env.MANGASEE_REFRESH_INTERVAL);
