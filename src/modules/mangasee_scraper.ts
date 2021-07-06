@@ -53,6 +53,7 @@ export class MangaseeScraperImpl {
     if (this.handle != null) {
       // Stop timerRask runs
       clearInterval(this.handle);
+      handle = null;
       // Store setting in DB
       await Store.setMangaseeEnabled(false);
       // Stop any Puppeteer instances to save a bit of RAM
