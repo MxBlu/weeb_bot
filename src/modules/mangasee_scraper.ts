@@ -38,7 +38,7 @@ export class MangaseeScraperImpl {
     try {
       // Fetch chapters from now back until the last refresh interval
       const fetchToDate = new Date(Date.now() - MANGASEE_REFRESH_INTERVAL * 2);
-      const latestChapters = await Mangasee.getLatestChapters(null);
+      const latestChapters = await Mangasee.getLatestChapters(fetchToDate);
 
       latestChapters.forEach(async c => {
         // Avoid double notifications

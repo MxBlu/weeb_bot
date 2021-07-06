@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import { CloudflareBypass } from "./cloudflare_bypass.js";
 
 const MANGASEE_URL = "https://mangasee123.com";
 
@@ -26,14 +26,14 @@ export class MangaseeChapter {
 export class Mangasee {
   public static async getLatestChapters(fromDate: Date): Promise<MangaseeChapter[]> {
     // Get title page
-    const response = await fetch(MANGASEE_URL);
-    if (!response.ok) {
-      console.log(await response.text());
-      throw `HTTPException: ${response.status} ${response.statusText}`;
+    let data = null;
+    try {
+      data = await CloudflareBypass.fetch(MANGASEE_URL);
+    } catch(e) {
+      throw `HTTPException: ${e}`;
     }
 
     // Extract LatestJSON variable, containing new chapters
-    const data = await response.text();
     const json_match = data.match(/vm\.LatestJSON = (\[.+?\]);/);
     const latestChaptersRaw: MangaseeChapterRaw[] = JSON.parse(json_match[1]);
 
