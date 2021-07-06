@@ -13,6 +13,8 @@ export class MangaseeScraperImpl {
   seenUrls: Set<string>;
   // Inverval handle for timer task
   handle: NodeJS.Timeout;
+  // Date when scraping began
+  startDate: Date;
 
   constructor() {
     this.seenUrls = new Set();
@@ -33,15 +35,15 @@ export class MangaseeScraperImpl {
     }
 
     if (await Store.isMangaseeEnabled()) {
-    // Run timerTask at regular intervals 
-      this.logger.info("Mangasee parser enabled", 3);
-      this.handle = setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
+      // Enable the scraper
+      this.enable();
     }
   }
 
   public async enable(): Promise<void> {
     if (this.handle == null) {
       // Run timerTask at regular intervals 
+      this.startDate = new Date();
       this.handle = setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
       // Store setting in DB
       await Store.setMangaseeEnabled(true);
@@ -66,9 +68,8 @@ export class MangaseeScraperImpl {
     this.logger.info('Running Mangasee scraper', 4);
 
     try {
-      // Fetch chapters from now back until the last refresh interval
-      const fetchToDate = new Date(Date.now() - MANGASEE_REFRESH_INTERVAL * 2);
-      const latestChapters = await Mangasee.getLatestChapters(fetchToDate);
+      // Fetch chapters from now back until the date we started
+      const latestChapters = await Mangasee.getLatestChapters(this.startDate);
 
       latestChapters.forEach(async c => {
         // Avoid double notifications
