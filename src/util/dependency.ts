@@ -5,7 +5,7 @@ type ResolveFunction = (value: void | PromiseLike<void>) => void;
 export class Dependency {
 
   public static async awaitMultiple(...dependencies: Dependency[]): Promise<void> {
-    await Promise.all(dependencies.map(d => d.await));
+    await Promise.all(dependencies.map(d => d.await()));
   }
 
   // Name of the dependency
