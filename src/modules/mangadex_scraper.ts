@@ -3,7 +3,7 @@ import { MANGADEX_FEED_REFRESH_INTERVAL } from "../constants/constants.js";
 import { MangaChapter } from "../model/MangaChapter.js";
 import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
-import { MangadexHelper } from "../util/mangadex.js";
+import { MangadexHelper, MangadexHelperDependency } from "../util/mangadex.js";
 
 export class MangadexScraperImpl {
 
@@ -18,7 +18,9 @@ export class MangadexScraperImpl {
     this.logger = new Logger("MangadexScraper");
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
+    await MangadexHelperDependency.await();
+
     if (isNaN(MANGADEX_FEED_REFRESH_INTERVAL)) {
       this.logger.error("Invalid refresh interval for Mangadex");
       return;

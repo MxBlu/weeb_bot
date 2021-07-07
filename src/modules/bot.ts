@@ -1,8 +1,9 @@
 import { Message, Client as DiscordClient, TextChannel, Guild } from "discord.js";
 import { sendMessage } from "../util/bot_utils.js";
+import { Dependency } from "../util/dependency.js";
 import { Logger, NewErrorLogTopic } from "../util/logger.js";
 import { ScrollableModalManager } from "../util/scrollable.js";
-import { Store } from "../util/store.js";
+import { Store, StoreDependency } from "../util/store.js";
 import { ChannelManagementHandler } from "./commands/channel_management.js";
 import { MangadexCommandHandler } from "./commands/mangadex_commands.js";
 import { MangaseeCommandHandler } from "./commands/mangasee_commands.js";
@@ -121,12 +122,17 @@ export class BotImpl {
 
   // Discord event handlers
 
-  private readyHandler = (): void => {
+  private readyHandler = async (): Promise<void> => {
     this.logger.info("Discord connected", 1);
+
+    // Wait on Store to be ready
+    await StoreDependency.await();
 
     // Call fetch on every guild to make sure we have all the members cached
     const guilds = this.discord.guilds.cache.map(g => g.id);
     Store.addGuilds(...guilds);
+
+    BotDependency.ready();
   }
 
   private joinServerHandler = async (guild: Guild) => {
@@ -203,3 +209,5 @@ export class BotImpl {
 }
 
 export const Bot = new BotImpl();
+
+export const BotDependency = new Dependency("Bot");

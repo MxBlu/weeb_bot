@@ -1,5 +1,6 @@
 import * as Mangadex from 'mangadex-full-api';
 import { MANGADEX_CACHE_LOCATION } from '../constants/constants.js';
+import { Dependency } from './dependency.js';
 import { Logger } from './logger.js';
 import { Store } from './store.js';
 
@@ -22,6 +23,7 @@ class MangadexHelperImpl {
   public async init(username: string, password: string): Promise<void> {
     await Mangadex.login(username, password, MANGADEX_CACHE_LOCATION);
     this.logger.info("Mangadex API logged in");
+    MangadexHelperDependency.ready();
   }
 
   // Extract id out of a Mangadex title url
@@ -120,3 +122,5 @@ class MangadexHelperImpl {
 }
 
 export const MangadexHelper = new MangadexHelperImpl();
+
+export const MangadexHelperDependency = new Dependency("MangadexHelper");

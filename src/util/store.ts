@@ -1,4 +1,5 @@
 import IORedis, { Redis } from 'ioredis';
+import { Dependency } from './dependency.js';
 import { Logger } from './logger.js';
 
 /*
@@ -29,6 +30,7 @@ class StoreImpl {
 
     this.rclient.once('connect', () => {
       this.logger.info('Redis connected', 1);
+      StoreDependency.ready();
     });
   }
 
@@ -158,3 +160,5 @@ class StoreImpl {
 }
 
 export const Store = new StoreImpl();
+
+export const StoreDependency = new Dependency("Store");
