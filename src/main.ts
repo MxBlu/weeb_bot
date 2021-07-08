@@ -9,7 +9,6 @@ import { Logger } from './util/logger.js';
 import { MangadexHelper } from './util/mangadex.js';
 import { Store } from './util/store.js';
 
-
 // Main level logger
 const logger = new Logger("Server");
 
