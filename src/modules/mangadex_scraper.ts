@@ -31,7 +31,7 @@ export class MangadexScraperImpl {
     setInterval(this.timerTask, MANGADEX_FEED_REFRESH_INTERVAL);
   }
 
-  private timerTask = async (): Promise<void> => {
+  public timerTask = async (): Promise<void> => {
     try {
       // Only get chapters since we started scraping
       let startDateStr = this.startDate.toISOString();
@@ -47,7 +47,7 @@ export class MangadexScraperImpl {
       });
 
       // Filter out any chapters we've seen already
-      results = results.filter(c => this.guidSet.has(c.id));
+      results = results.filter(c => !this.guidSet.has(c.id));
       // For every result, notify 
       for (const chapter of results) {
         this.guidSet.add(chapter.id);
