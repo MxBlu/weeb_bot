@@ -55,7 +55,7 @@ export class MessengerTopic<T> {
   // Call all subscribed functions for a topic with provided data asynchronously
   // Assumes topic does exist
   public notify(data: T): void {
-    this.logger.info(`Notifying topic ${this.name}`, 3);
+    this.logger.info('Notifying topic', 3);
     this.lastData = data;
     this.subscribers.forEach( async (f) => {
       f(data, this);
