@@ -30,17 +30,17 @@ export class Logger {
   // Name to append on to logs
   name: string;
   // Min verbosity for a log message to be processed
-  loggerVebosity: number;
+  loggerVerbosity: number;
 
-  constructor(name: string, loggerVebosity = DEFAULT_LOG_LEVEL) {
+  constructor(name: string, loggerVerbosity = DEFAULT_LOG_LEVEL) {
     this.name = name;
-    this.loggerVebosity = loggerVebosity;
+    this.loggerVerbosity = loggerVerbosity;
   }
 
   // Generic log event, lower verbosity is higher priority
   // Default to verbosity = 1
   public info(message: string, verbosity = LogLevels.INFO1): void {
-    if (this.loggerVebosity >= verbosity) {
+    if (this.loggerVerbosity >= verbosity) {
       console.log(`${getTimeString()} - [INFO${verbosity}] ${this.name} - ${message}`);
     }
   }
@@ -48,7 +48,7 @@ export class Logger {
   // Log event as error, where verbosity = 0
   // Logs to Discord if available
   public error (message: string): void {
-    if (this.loggerVebosity >= LogLevels.ERROR) {
+    if (this.loggerVerbosity >= LogLevels.ERROR) {
       const logStr = `${getTimeString()} - [ERROR] ${this.name} - ${message}`;
       console.error(logStr);
       // Log to Discord if it happens to be listening
