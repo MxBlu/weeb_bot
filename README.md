@@ -6,6 +6,9 @@ You can follow the example found in `dotenv-example`, or read the template in `d
 
 The application **will not start** without a .dotenv.
 
+### Node.js
+The minimum version of Node.js this package will wil run under is v12. ts-node and other platforms have not been tested.
+
 ### Yarn
 For this package, `yarn` is utilized. If you do not have yarn install, please install it here:
 - https://yarnpkg.com/
