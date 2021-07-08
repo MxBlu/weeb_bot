@@ -42,10 +42,10 @@ export class NewChapterEventHandler {
     for (const [channelId, roles] of rolesToNotifyPerChannel.entries()) {
       const channel = guild.channels.cache.get(channelId) as TextChannel;
       const pingStr = roles.map(role => `<@&${role}>`).join(' ');
-      const pagesStr = alert.mangaChapter.pageCount != null ? `- ${alert.mangaChapter.pageCount} pages` : '';
+      const pagesStr = alert.mangaChapter.pageCount != null ? `${alert.mangaChapter.pageCount} pages - ` : '';
 
       const msg = 
-        `${alert.mangaTitle} - Chapter ${alert.mangaChapter.chapterNumber} -  ${pagesStr}${pingStr}\n` +
+        `${alert.mangaTitle} - Chapter ${alert.mangaChapter.chapterNumber} - ${pagesStr}${pingStr}\n` +
         `${alert.mangaChapter.link}`
       
       try {
