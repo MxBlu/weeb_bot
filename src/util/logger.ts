@@ -1,5 +1,5 @@
 import { DEFAULT_LOG_LEVEL } from "../constants/constants.js";
-import { MessengerTopic } from "./imm.js";
+import { NewErrorLogTopic } from "../constants/topics.js";
 
 export const enum LogLevels {
   IGNORE = -1,
@@ -57,6 +57,3 @@ export class Logger {
   }
 
 }
-
-// Message topic for Discord error logging
-export const NewErrorLogTopic = new MessengerTopic<string>("newErrorLog");

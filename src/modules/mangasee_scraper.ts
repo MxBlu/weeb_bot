@@ -1,7 +1,7 @@
 import { MANGASEE_DISABLED, MANGASEE_REFRESH_INTERVAL } from "../constants/constants.js";
+import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../model/MangaChapter.js";
 import { CloudflareBypass } from "../util/cloudflare_bypass.js";
-import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { Mangasee } from "../util/mangasee.js";
 import { Store } from "../util/store.js";
@@ -103,5 +103,3 @@ export class MangaseeScraperImpl {
 }
 
 export const MangaseeScraper = new MangaseeScraperImpl();
-
-export const NewMangaseeItemTopic = new MessengerTopic<MangaChapter>("NewMangaseeItemTopic");

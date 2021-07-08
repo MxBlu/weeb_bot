@@ -1,7 +1,7 @@
 import { Chapter } from "mangadex-full-api";
 import { MANGADEX_FEED_REFRESH_INTERVAL } from "../constants/constants.js";
+import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../model/MangaChapter.js";
-import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { MangadexHelper, MangadexHelperDependency } from "../util/mangadex.js";
 import { Store } from "../util/store.js";
@@ -111,12 +111,8 @@ export class MangadexScraperImpl {
 
 export const MangadexScraper = new MangadexScraperImpl();
 
-class MangadexPulse {
+export class MangadexPulse {
   status: boolean;
   lastUp: Date;
   lastDown: Date;
 }
-
-export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulseTopic");
-
-export const NewMangadexItemTopic = new MessengerTopic<MangaChapter>("NewMangadexItemTopic");

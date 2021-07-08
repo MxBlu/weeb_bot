@@ -1,10 +1,8 @@
+import { NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaAlert } from "../model/MangaAlert.js";
 import { MangaChapter } from "../model/MangaChapter.js";
-import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { Store } from "../util/store.js";
-import { NewMangadexItemTopic } from "./mangadex_scraper.js";
-import { NewMangaseeItemTopic } from "./mangasee_scraper.js";
 
 export class MangaParserImpl {
 
@@ -53,5 +51,3 @@ export class MangaParserImpl {
 }
 
 export const MangaParser = new MangaParserImpl();
-
-export const NewMangaAlertTopic = new MessengerTopic<MangaAlert>("NewMangaAlertTopic");
