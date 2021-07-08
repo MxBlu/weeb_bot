@@ -114,6 +114,15 @@ class StoreImpl {
     await this.rclient.del(`title_${titleId}`);
   }
 
+  public async isMangadexEnabled(): Promise<boolean> {
+    return await this.rclient.get('mangadex_enabled') == 'true';
+  }
+
+  // Set Mangasee parsing status
+  public async setMangadexEnabled(enabled: boolean): Promise<void> {
+    await this.rclient.set('mangadex_enabled', enabled == true ? 'true' : 'false');
+  }
+
   // Mangasee hackjobs
 
   // Check is Mangasee parsing is enabled

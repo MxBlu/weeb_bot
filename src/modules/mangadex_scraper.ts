@@ -4,17 +4,21 @@ import { MangaChapter } from "../model/MangaChapter.js";
 import { MessengerTopic } from "../util/imm.js";
 import { Logger } from "../util/logger.js";
 import { MangadexHelper, MangadexHelperDependency } from "../util/mangadex.js";
+import { Store } from "../util/store.js";
 
 export class MangadexScraperImpl {
 
   logger: Logger;
   // Sets of seen chapters
   guidSet: Set<string>;
+  // Inverval handle for timer task
+  handle: NodeJS.Timeout;
   // Date when scraping began
   startDate: Date;
 
   constructor() {
     this.guidSet = new Set();
+    this.handle = null;
     this.logger = new Logger("MangadexScraper");
   }
 
@@ -26,9 +30,33 @@ export class MangadexScraperImpl {
       return;
     }
     
-    // Run timerTask at regular intervals
-    this.startDate = new Date();
-    setInterval(this.timerTask, MANGADEX_FEED_REFRESH_INTERVAL);
+    if (await Store.isMangadexEnabled()) {
+      // Enable the scraper
+      this.enable();
+    }
+    
+  }
+
+  public async enable(): Promise<void> {
+    if (this.handle == null) {
+      // Run timerTask at regular intervals 
+      this.startDate = new Date();
+      this.handle = setInterval(this.timerTask, MANGADEX_FEED_REFRESH_INTERVAL);
+      // Store setting in DB
+      await Store.setMangadexEnabled(true);
+      this.logger.info("Mangadex parser enabled", 3);
+    }
+  }
+  
+  public async disable(): Promise<void> {
+    if (this.handle != null) {
+      // Stop timerRask runs
+      clearInterval(this.handle);
+      this.handle = null;
+      // Store setting in DB
+      await Store.setMangadexEnabled(false);
+      this.logger.info("Mangadex parser disabled", 3);
+    }
   }
 
   public timerTask = async (): Promise<void> => {
