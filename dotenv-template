@@ -1,0 +1,26 @@
+# Logging verbosity
+LOG_LEVEL = # Integer from -1 to 5 (see logger.ts)
+
+# Discord credentials
+DISCORD_TOKEN = # Discord token, obtained from a bot
+# Admin user
+DISCORD_ADMINUSER = # Administrator for the bot, use your own User ID.
+
+# Redis DB
+REDIS_HOST = # IP Address
+REDIS_PORT = # Port number
+
+# Usage configuration
+
+# Mangadex config
+MANGADEX_USERNAME = # String
+MANGADEX_PASSWORD = # String
+MANGADEX_FEED_REFRESH_INTERVAL = # Integer, in milliseconds
+MANGADEX_CACHE_LOCATION = # Directory
+
+# Mangasee config
+MANGASEE_REFRESH_INTERVAL = # Integer, in milliseconds
+MANGASEE_DISABLED = # Boolean
+
+# Channel to post error messages
+DISCORD_ERRSTREAM = # Discord channel, obtained from Discord.

@@ -1,0 +1,26 @@
+# Logging verbosity
+LOG_LEVEL = 5
+
+# Discord credentials
+DISCORD_TOKEN = 123456789FAKETOKEN
+# Admin user
+DISCORD_ADMINUSER = 123456789
+
+# Redis DB
+REDIS_HOST = 10.0.4.1
+REDIS_PORT = 6379
+
+# Usage configuration
+
+# Mangadex config
+MANGADEX_USERNAME = mockuser
+MANGADEX_PASSWORD = hahanopasswordforyou
+MANGADEX_FEED_REFRESH_INTERVAL = 3600000
+MANGADEX_CACHE_LOCATION = C:\Users\Pacito\AppData\Local\Temp
+
+# Mangasee config
+MANGASEE_REFRESH_INTERVAL = 60000
+MANGASEE_DISABLED = false
+
+# Channel to post error messages
+DISCORD_ERRSTREAM = 123456789
