@@ -5,10 +5,8 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon built/main.js",
+    "start": "nodemon --watch src/** --ext ts,json --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/main.ts",
     "fstart": "pm2 start --name weebbot built/main.js",
-    "build": "tsc --build tsconfig.json",
-    "clean": "tsc --build --clean",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
@@ -21,6 +19,7 @@
     "puppeteer": "5",
     "puppeteer-extra": "3.1.18",
     "puppeteer-extra-plugin-stealth": "2.7.8",
+    "ts-node": "^10.0.0",
     "utf-8-validate": "5.0.3",
     "zlib-sync": "0.1.7"
   },
@@ -30,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "4.26.1",
     "@typescript-eslint/parser": "4.26.1",
     "eslint": "7.28.0",
+    "nodemon": "^2.0.9",
     "typescript": "4.3.2"
   }
 }

@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
         "outDir": "./built",
-        "module": "ES6",
+        "module": "ESNext",
         "moduleResolution": "node",
-        "target": "es6",
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "downlevelIteration": true
     },
     "include": ["./src/**/*"]
 }
