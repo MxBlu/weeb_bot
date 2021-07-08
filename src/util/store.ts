@@ -4,7 +4,7 @@ import { Logger } from './logger.js';
 
 /*
   API class to interact with underlying storage implementation
-  In this case, MongoDB / Mongoose
+  In this case, Redis
 */
 class StoreImpl {
 
