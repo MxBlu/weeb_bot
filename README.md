@@ -2,9 +2,9 @@
 
 ## Prerequisites
 ### Generating a .dotenv
-You can follow the example found in `dotenv-example`, or read the template in `dotenv-template` for more information.
+You can follow the example found in `.env.example`, or read the template in `.env.template` for more information.
 
-The application **will not start** without a .dotenv.
+The application **will not start** without a .env.
 
 ### Node.js
 The minimum version of Node.js this package will wil run under is v12. ts-node and other platforms have not been tested.
