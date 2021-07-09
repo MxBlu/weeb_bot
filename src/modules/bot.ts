@@ -5,11 +5,11 @@ import { Dependency } from "../framework/dependency.js";
 import { Logger } from "../framework/logger.js";
 import { ScrollableModalManager } from "../framework/scrollable.js";
 import { Store, StoreDependency } from "../support/store.js";
-import { ChannelManagementHandler } from "./commands/channel_management.js";
-import { MangadexCommandHandler } from "./commands/mangadex_commands.js";
-import { MangaseeCommandHandler } from "./commands/mangasee_commands.js";
-import { NewChapterEventHandler } from "./commands/new_chapter_event.js";
-import { SubManagementHandler } from "./commands/sub_management.js";
+import { ChannelManagementHandler } from "../commands/channel_management.js";
+import { MangadexCommandHandler } from "../commands/mangadex_commands.js";
+import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
+import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
+import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
 
 const errStream: string = process.env.DISCORD_ERRSTREAM;
