@@ -26,9 +26,7 @@ MangadexHelper.init(mangadexUsername, mangadexPassword);
 // Bot.init(discordToken);
 
 async function main(): Promise<void> {
-  await MangadexHelperDependency.await();
-  MangadexScraper.startDate = new Date(Date.now() - 6 * 60 * 60 * 1000);
-  await MangadexScraper.timerTask();
+  // noop
 }
 
 main().then(() => {
