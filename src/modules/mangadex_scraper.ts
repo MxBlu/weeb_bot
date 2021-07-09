@@ -110,9 +110,3 @@ export class MangadexScraperImpl {
 }
 
 export const MangadexScraper = new MangadexScraperImpl();
-
-export class MangadexPulse {
-  status: boolean;
-  lastUp: Date;
-  lastDown: Date;
-}

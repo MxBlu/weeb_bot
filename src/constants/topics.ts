@@ -1,6 +1,6 @@
 import { MangaAlert } from "../model/MangaAlert.js";
 import { MangaChapter } from "../model/MangaChapter.js";
-import { MangadexPulse } from "../modules/mangadex_scraper.js";
+import { MangadexPulse } from "../model/MangadexPulse.js";
 import { MessengerTopic } from "../util/imm.js";
 
 // Keep error topic separate 
