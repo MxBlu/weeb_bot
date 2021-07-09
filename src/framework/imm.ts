@@ -32,24 +32,24 @@ export class MessengerTopic<T> {
   // Assumes topic does exist
   public subscribe(funcName: string, func: EventCallbackFunction<T>): void {
     if (this.subscribers.has(funcName)) {
-      this.logger.error(`Function ${funcName} is already subscribed to Topic ${this.name}`);
+      this.logger.error(`Function ${funcName} is already subscribed`);
       return;
     }
 
     this.subscribers.set(funcName, func);
-    this.logger.info(`Function ${funcName} subscribed to Topic ${this.name}`, 3);
+    this.logger.info(`Function ${funcName} subscribed`, 3);
   }
 
   // Remove function from listeners
   // Assumes topic does exist
   public unsubscribe(funcName: string): void {
     if (!this.subscribers.has(funcName)) {
-      this.logger.error(`Function ${funcName} was not subscribed to Topic ${this.name}`);
+      this.logger.error(`Function ${funcName} was not subscribed`);
       return;
     }
 
     this.subscribers.delete(funcName);
-    this.logger.info(`Function ${funcName} unsubscribed from Topic ${this.name}`, 3);
+    this.logger.info(`Function ${funcName} unsubscribed`, 3);
   }
 
   // Call all subscribed functions for a topic with provided data asynchronously
