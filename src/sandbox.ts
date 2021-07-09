@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
-import { Bot } from './modules/bot.js';
-import { MangadexHelper } from './util/mangadex.js';
+import { MangadexScraper } from './modules/mangadex_scraper.js';
+import { Logger } from './framework/logger.js';
+import { MangadexHelper, MangadexHelperDependency } from './util/mangadex.js';
 import { Mangasee } from './util/mangasee.js';
 import { Store } from './util/store.js';
 
@@ -16,26 +17,24 @@ const redisPort = Number(process.env.REDIS_PORT);
 Store.init(redisHost, redisPort);
 
 // Initialise the Mangadex API helper
-// const mangadexUsername = process.env.MANGADEX_USERNAME;
-// const mangadexPassword = process.env.MANGADEX_PASSWORD;
-// MangadexHelper.init(mangadexUsername, mangadexPassword);
+const mangadexUsername = process.env.MANGADEX_USERNAME;
+const mangadexPassword = process.env.MANGADEX_PASSWORD;
+MangadexHelper.init(mangadexUsername, mangadexPassword);
 
 // Bot services
 // const discordToken = process.env.DISCORD_TOKEN;
 // Bot.init(discordToken);
 
 async function main(): Promise<void> {
-  try {
-    console.log(await Mangasee.getLatestChapters(null));
-  } catch (e) {
-    console.error(e);
-  }
+  await MangadexHelperDependency.await();
+  MangadexScraper.startDate = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  await MangadexScraper.timerTask();
 }
 
-setTimeout(() => main().then(() => {
+main().then(() => {
   console.error("hit then?");
   process.exit(0);
 }).catch(e => {
   console.error(e);
   process.exit(1);
-}), 5000);
+});

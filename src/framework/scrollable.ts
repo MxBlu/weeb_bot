@@ -1,5 +1,5 @@
 import { Client as DiscordClient, GuildMember, Message, MessageReaction } from "discord.js";
-import { DEFAULT_MODAL_DURATION } from "../constants/constants.js";
+import { DEFAULT_MODAL_DURATION } from "./constants/constants.js";
 import { Logger } from "./logger.js";
 
 export class ScrollableModal<T> {

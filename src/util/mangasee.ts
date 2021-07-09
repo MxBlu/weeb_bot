@@ -1,4 +1,4 @@
-import { CloudflareBypass } from "./cloudflare_bypass.js";
+import { CloudflareBypass } from "../framework/cloudflare_bypass.js";
 
 const MANGASEE_URL = "https://mangasee123.com";
 

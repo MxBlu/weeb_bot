@@ -1,6 +1,6 @@
 import { Role, TextChannel } from "discord.js";
-import { checkIfSubscribed, sendCmdMessage, stringEquivalence } from "../../util/bot_utils.js";
-import { Logger } from "../../util/logger.js";
+import { checkIfSubscribed, sendCmdMessage, stringEquivalence } from "../../framework/bot_utils.js";
+import { Logger } from "../../framework/logger.js";
 import { MangadexHelper } from "../../util/mangadex.js";
 import { Store } from "../../util/store.js";
 import { BotCommand } from "../bot.js";

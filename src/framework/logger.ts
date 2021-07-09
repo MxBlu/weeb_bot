@@ -1,5 +1,5 @@
-import { DEFAULT_LOG_LEVEL } from "../constants/constants.js";
-import { NewErrorLogTopic } from "../constants/topics.js";
+import { DEFAULT_LOG_LEVEL } from "./constants/constants.js";
+import { NewErrorLogTopic } from "./constants/topics.js";
 
 export const enum LogLevels {
   IGNORE = -1,
