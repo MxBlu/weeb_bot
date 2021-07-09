@@ -54,9 +54,12 @@ export class BotImpl {
     this.commandHandlers = new Map<string, BotCommandHandlerFunction>();
   }
 
-  public init(discordToken: string): void {
+  public async init(discordToken: string): Promise<void> {
     this.discord  = new DiscordClient();
     this.scrollableManager = new ScrollableModalManager(this.discord);
+
+    // Wait on Store to be ready
+    await StoreDependency.await();
 
     this.initCommandHandlers();
     this.initEventHandlers();
@@ -123,11 +126,8 @@ export class BotImpl {
 
   // Discord event handlers
 
-  private readyHandler = async (): Promise<void> => {
+  private readyHandler = (): void => {
     this.logger.info("Discord connected", 1);
-
-    // Wait on Store to be ready
-    await StoreDependency.await();
 
     // Call fetch on every guild to make sure we have all the members cached
     const guilds = this.discord.guilds.cache.map(g => g.id);
