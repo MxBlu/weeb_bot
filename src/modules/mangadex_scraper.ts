@@ -2,9 +2,9 @@ import { Chapter } from "mangadex-full-api";
 import { MANGADEX_FEED_REFRESH_INTERVAL } from "../constants/constants.js";
 import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../model/MangaChapter.js";
-import { Logger } from "../util/logger.js";
-import { MangadexHelper, MangadexHelperDependency } from "../util/mangadex.js";
-import { Store } from "../util/store.js";
+import { Logger } from "../framework/logger.js";
+import { MangadexHelper, MangadexHelperDependency } from "../support/mangadex.js";
+import { Store } from "../support/store.js";
 
 export class MangadexScraperImpl {
 

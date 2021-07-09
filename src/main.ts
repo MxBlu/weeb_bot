@@ -6,8 +6,8 @@ import { MangadexScraper } from './modules/mangadex_scraper.js';
 import { MangaseeScraper } from './modules/mangasee_scraper.js';
 import { MangaParser } from './modules/parser.js';
 import { Logger } from './framework/logger.js';
-import { MangadexHelper } from './util/mangadex.js';
-import { Store } from './util/store.js';
+import { MangadexHelper } from './support/mangadex.js';
+import { Store } from './support/store.js';
 
 // Main level logger
 const logger = new Logger("Server");

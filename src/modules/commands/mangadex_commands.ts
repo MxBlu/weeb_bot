@@ -1,7 +1,7 @@
 import { MangadexPulseTopic } from "../../constants/topics.js";
-import { isAdmin, sendCmdMessage } from "../../util/bot_utils.js";
-import { Logger } from "../../util/logger.js"
-import { Store } from "../../util/store.js";
+import { isAdmin, sendCmdMessage } from "../../framework/bot_utils.js";
+import { Logger } from "../../framework/logger.js"
+import { Store } from "../../support/store.js";
 import { BotCommand } from "../bot.js";
 import { MangadexScraper } from "../mangadex_scraper.js";
 

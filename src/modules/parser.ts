@@ -2,7 +2,7 @@ import { NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeItemTopic } from "
 import { MangaAlert } from "../model/MangaAlert.js";
 import { MangaChapter } from "../model/MangaChapter.js";
 import { Logger } from "../framework/logger.js";
-import { Store } from "../util/store.js";
+import { Store } from "../support/store.js";
 
 export class MangaParserImpl {
 

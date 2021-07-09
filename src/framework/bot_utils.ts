@@ -1,6 +1,5 @@
 import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
 import { Logger } from "./logger.js";
-import { Store } from "../util/store.js";
 
 const DISCORD_MAX_LEN = 1900;
 
@@ -86,19 +85,4 @@ export const stringSearch = function(str1: string, str2: string): boolean {
 export const isAdmin = async function(message: Message): Promise<boolean> {
   const author = await message.guild.members.fetch(message.author.id);
   return author.permissions.has("ADMINISTRATOR");
-}
-
-export const checkIfSubscribed = async function (message: Message): Promise<boolean> {
-  const guild = message.guild;
-  const channel = message.channel;
-  const roles = await Store.getRoles(guild.id);
-
-  for (const r of roles) {
-    const nc = await Store.getNotifChannel(guild.id, r);
-    if (nc == channel.id) {
-      return true;
-    }
-  }
-  
-  return false;
 }

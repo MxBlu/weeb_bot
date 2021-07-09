@@ -1,10 +1,10 @@
 import { MANGASEE_DISABLED, MANGASEE_REFRESH_INTERVAL } from "../constants/constants.js";
 import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../model/MangaChapter.js";
-import { CloudflareBypass } from "../util/cloudflare_bypass.js";
-import { Logger } from "../util/logger.js";
-import { Mangasee } from "../util/mangasee.js";
-import { Store } from "../util/store.js";
+import { CloudflareBypass } from "../framework/cloudflare_bypass.js";
+import { Logger } from "../framework/logger.js";
+import { Mangasee } from "../support/mangasee.js";
+import { Store } from "../support/store.js";
 
 export class MangaseeScraperImpl {
 

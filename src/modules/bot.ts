@@ -4,7 +4,7 @@ import { sendMessage } from "../framework/bot_utils.js";
 import { Dependency } from "../framework/dependency.js";
 import { Logger } from "../framework/logger.js";
 import { ScrollableModalManager } from "../framework/scrollable.js";
-import { Store, StoreDependency } from "../util/store.js";
+import { Store, StoreDependency } from "../support/store.js";
 import { ChannelManagementHandler } from "./commands/channel_management.js";
 import { MangadexCommandHandler } from "./commands/mangadex_commands.js";
 import { MangaseeCommandHandler } from "./commands/mangasee_commands.js";
