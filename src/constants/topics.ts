@@ -1,6 +1,6 @@
-import { MangaAlert } from "../model/MangaAlert.js";
-import { MangaChapter } from "../model/MangaChapter.js";
-import { MangadexPulse } from "../model/MangadexPulse.js";
+import { MangaAlert } from "../models/MangaAlert.js";
+import { MangaChapter } from "../models/MangaChapter.js";
+import { MangadexPulse } from "../models/MangadexPulse.js";
 import { MessengerTopic } from "../framework/imm.js";
 
 // Message topic for a new alert for a chapter

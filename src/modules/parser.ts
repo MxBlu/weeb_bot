@@ -1,6 +1,6 @@
 import { NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";
-import { MangaAlert } from "../model/MangaAlert.js";
-import { MangaChapter } from "../model/MangaChapter.js";
+import { MangaAlert } from "../models/MangaAlert.js";
+import { MangaChapter } from "../models/MangaChapter.js";
 import { Logger } from "../framework/logger.js";
 import { Store } from "../support/store.js";
 
