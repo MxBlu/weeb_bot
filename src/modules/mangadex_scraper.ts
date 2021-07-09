@@ -59,7 +59,7 @@ export class MangadexScraperImpl {
     }
   }
 
-  public timerTask = async (): Promise<void> => {
+  private timerTask = async (): Promise<void> => {
     try {
       // Only get chapters since we started scraping
       let startDateStr = this.startDate.toISOString();
