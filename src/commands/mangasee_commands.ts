@@ -1,7 +1,6 @@
 import { isAdmin, Logger, LogLevel, sendCmdMessage } from "bot-framework";
 import { Manga } from "mangadex-full-api";
 
-import { MANGASEE_DISABLED } from "../constants/constants.js";
 import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 import { BotCommand } from "../modules/bot.js";
@@ -20,8 +19,8 @@ export class MangaseeCommandHandler {
     switch (command.arguments.length) {
     case 0:
       // Handle as "get current parsing status"
-      status = await Store.isMangaseeEnabled();
-      if (MANGASEE_DISABLED == true) {
+      status = await MangaseeScraper.isEnabled();
+      if (MangaseeScraper.isExplicitlyDisabled()) {
         sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', this.logger, LogLevel.INFO);
       } else if (status == true) {
         sendCmdMessage(command.message, 'Mangasee parser is enabled', this.logger, LogLevel.INFO);

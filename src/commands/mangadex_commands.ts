@@ -1,7 +1,6 @@
 import { isAdmin, sendCmdMessage, Logger, LogLevel } from "bot-framework";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
-import { Store } from "../support/store.js";
 import { BotCommand } from "../modules/bot.js";
 import { MangadexScraper } from "../modules/mangadex_scraper.js";
 
@@ -36,8 +35,10 @@ export class MangadexCommandHandler {
       }
 
       // Also notify about parsing status
-      status = await Store.isMangadexEnabled();
-      if (status == true) {
+      status = await MangadexScraper.isEnabled();
+      if (MangadexScraper.isExplicitlyDisabled()) {
+        sendCmdMessage(command.message, 'Mangadex parser is explicitly disabled', this.logger, LogLevel.INFO);
+      } else if (status == true) {
         sendCmdMessage(command.message, 'Mangadex parser is enabled', this.logger, LogLevel.INFO);
       } else {
         sendCmdMessage(command.message, 'Mangadex parser is disabled', this.logger, LogLevel.INFO);

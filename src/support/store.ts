@@ -10,8 +10,7 @@ import IORedis, { Redis } from 'ioredis';
     <guildId>_<roleId>_notifChannel: String   # Channel ID to notify for alerts
     <guildId>_<roleId>_titles: Set<String>    # Title IDs to generate alerts for
     title_<titleId>: String                   # Friendly title name for a given title ID
-    mangadex_enabled: Boolean                 # State of Mangadex parser
-    mangasee_enabled: Boolean                 # State of Mangasee parser
+    <parserName>_enabled: Boolean             # State for a given parser
     title_<titleId>_altTitles                 # Alternative title(s) (or ID(s)) for a given title Id
     mangasee_altTitles_<altTitleId>           # Inverted lookup for title IDs from alternative title IDs
 */
@@ -123,26 +122,17 @@ class StoreImpl {
     await this.rclient.del(`title_${titleId}`);
   }
 
-  public async isMangadexEnabled(): Promise<boolean> {
-    return await this.rclient.get('mangadex_enabled') == 'true';
+  // Check if a given scraper is enabled
+  public async isScraperEnabled(scraper: string): Promise<boolean> {
+    return await this.rclient.get(`${scraper}_enabled`) == 'true';
   }
 
-  // Set Mangasee parsing status
-  public async setMangadexEnabled(enabled: boolean): Promise<void> {
-    await this.rclient.set('mangadex_enabled', enabled == true ? 'true' : 'false');
+  // Set parsing status of a given parser
+  public async setScraperEnabled(scraper: string, enabled: boolean): Promise<void> {
+    await this.rclient.set(`${scraper}_enabled`, enabled == true ? 'true' : 'false');
   }
 
   // Mangasee hackjobs
-
-  // Check is Mangasee parsing is enabled
-  public async isMangaseeEnabled(): Promise<boolean> {
-    return await this.rclient.get('mangasee_enabled') == 'true';
-  }
-
-  // Set Mangasee parsing status
-  public async setMangaseeEnabled(enabled: boolean): Promise<void> {
-    await this.rclient.set('mangasee_enabled', enabled == true ? 'true' : 'false');
-  }
 
   // Get alternative titles (for Mangasee parsing) for a given titleId
   public async getAltTitles(titleId: string): Promise<Set<string>> {
