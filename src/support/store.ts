@@ -5,6 +5,16 @@ import { Logger } from '../framework/logger.js';
 /*
   API class to interact with underlying storage implementation
   In this case, Redis
+
+  Schema:
+    <guildId>_roles: String                   # Roles with subscriptions for a given guild ID
+    <guildId>_<roleId>_notifChannel: String   # Channel ID to notify for alerts
+    <guildId>_<roleId>_titles: Set<String>    # Title IDs to generate alerts for
+    title_<titleId>: String                   # Friendly title name for a given title ID
+    mangadex_enabled: Boolean                 # State of Mangadex parser
+    mangasee_enabled: Boolean                 # State of Mangasee parser
+    title_<titleId>_altTitles                 # Alternative title(s) (or ID(s)) for a given title Id
+    mangasee_altTitles_<altTitleId>           # Inverted lookup for title IDs from alternative title IDs
 */
 class StoreImpl {
 
