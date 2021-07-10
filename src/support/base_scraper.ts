@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Logger } from "bot-framework";
 
-import { Store } from './store.js';
+import { Store, StoreDependency } from './store.js';
 import { ScraperType } from '../constants/scraper_enums.js';
 
 // Simple Scraper interface for lookup use
@@ -55,6 +55,9 @@ export class BaseScraper implements IScraper {
     if (isNaN(this.interval)) {
       throw `Invalid refresh interval for ${this.name} scraper`;
     }
+
+    // Ensure the Store is intialised
+    await StoreDependency.await();
 
     // Check the status of the scraper in the DB, enable if was last enabled
     if (await this.isEnabled()) {
