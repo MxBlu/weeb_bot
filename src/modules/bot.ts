@@ -9,7 +9,7 @@ import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
 
-const errStream: string = process.env.DISCORD_ERRSTREAM;
+const errorChannel: string = process.env.DISCORD_ERROR_CHANNEL;
 
 const commandSyntax = /^\s*!([A-Za-z]+)((?: +[^ ]+)+)?\s*$/;
 
@@ -191,7 +191,7 @@ export class BotImpl {
     if (!this.errLogDisabled) {
       try {
         // Should ensure that it works for DM channels too
-        const targetChannel = await this.discord.channels.fetch(errStream);
+        const targetChannel = await this.discord.channels.fetch(errorChannel);
         // Only send if we can access the error channel
         if (targetChannel != null && targetChannel instanceof TextChannel) {
           sendMessage(targetChannel, log);
