@@ -1,7 +1,7 @@
 import * as Mangadex from 'mangadex-full-api';
 import { MANGADEX_CACHE_LOCATION } from '../constants/constants.js';
-import { Dependency } from '../framework/dependency.js';
-import { Logger } from '../framework/logger.js';
+import { Dependency } from 'bot-framework';
+import { Logger } from 'bot-framework';
 import { Store } from './store.js';
 
 // Regex for matching Mangadex urls

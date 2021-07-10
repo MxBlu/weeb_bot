@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { MangadexScraper } from './modules/mangadex_scraper.js';
-import { Logger } from './framework/logger.js';
+import { Logger } from 'bot-framework';
 import { MangadexHelper, MangadexHelperDependency } from './support/mangadex.js';
 import { Mangasee } from './support/mangasee.js';
 import { Store } from './support/store.js';

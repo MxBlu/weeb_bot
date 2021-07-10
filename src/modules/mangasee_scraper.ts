@@ -1,8 +1,8 @@
 import { MANGASEE_DISABLED, MANGASEE_REFRESH_INTERVAL } from "../constants/constants.js";
 import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
-import { CloudflareBypass } from "../framework/cloudflare_bypass.js";
-import { Logger } from "../framework/logger.js";
+import { CloudflareBypass } from "bot-framework";
+import { Logger } from "bot-framework";
 import { Mangasee } from "../support/mangasee.js";
 import { Store } from "../support/store.js";
 

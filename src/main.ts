@@ -5,7 +5,7 @@ import { Bot } from './modules/bot.js';
 import { MangadexScraper } from './modules/mangadex_scraper.js';
 import { MangaseeScraper } from './modules/mangasee_scraper.js';
 import { MangaParser } from './modules/parser.js';
-import { Logger } from './framework/logger.js';
+import { Logger } from 'bot-framework';
 import { MangadexHelper } from './support/mangadex.js';
 import { Store } from './support/store.js';
 

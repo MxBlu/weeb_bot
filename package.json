@@ -10,15 +10,13 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
+    "bot-framework": "Mxblu/bot-framework#main",
     "bufferutil": "4.0.2",
     "discord.js": "12.4.1",
     "dotenv": "8.0.0",
     "erlpack": "discord/erlpack",
     "ioredis": "4.17.3",
     "mangadex-full-api": "Mxblu/mangadex-full-api#order-optional",
-    "puppeteer": "5",
-    "puppeteer-extra": "3.1.18",
-    "puppeteer-extra-plugin-stealth": "2.7.8",
     "ts-node": "^10.0.0",
     "utf-8-validate": "5.0.3",
     "zlib-sync": "0.1.7"
