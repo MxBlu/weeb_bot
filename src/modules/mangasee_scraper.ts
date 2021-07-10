@@ -1,4 +1,5 @@
-import { CloudflareBypass, Logger } from "bot-framework";
+import { CloudflareBypass } from "bot-framework";
+import { ScraperType } from "../constants/scraper_enums.js";
 
 import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
@@ -14,10 +15,9 @@ export class MangaseeScraperImpl extends BaseScraper {
   startDate: Date;
 
   constructor() {
-    super("MangaseeScraper");
+    super(ScraperType.Mangasee);
     this.seenUrls = new Set();
     this.startDate = null;
-    this.logger = new Logger("MangaseeScraper");
   }
 
   public async init(): Promise<void> {

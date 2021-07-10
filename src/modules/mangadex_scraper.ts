@@ -1,5 +1,5 @@
-import { Logger } from "bot-framework";
 import { Chapter } from "mangadex-full-api";
+import { ScraperType } from "../constants/scraper_enums.js";
 
 import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
@@ -14,10 +14,9 @@ export class MangadexScraperImpl extends BaseScraper {
   startDate: Date;
 
   constructor() {
-    super("MangadexScraper");
+    super(ScraperType.Mangadex);
     this.guidSet = new Set();
     this.startDate = null;
-    this.logger = new Logger("MangadexScraper");
   }
 
   public async init(): Promise<void> {

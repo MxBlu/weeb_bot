@@ -4,10 +4,24 @@ dotenv.config();
 import { Logger } from "bot-framework";
 
 import { Store } from './store.js';
+import { ScraperType } from '../constants/scraper_enums.js';
 
-export class BaseScraper {
-  // Name of parser
+// Simple Scraper interface for lookup use
+export interface IScraper {
+  enable(): Promise<boolean>;
+
+  disable(): Promise<boolean>;
+
+  isEnabled(): Promise<boolean>;
+
+  isExplicitlyDisabled(): boolean;
+}
+
+export class BaseScraper implements IScraper {
+  // Name of parser - just a convenience since it comes from `type`
   name: string;
+  // Scraper type enum
+  type: ScraperType;
   // Refresh interval
   interval: number;
   // Logger instance for scraper - must be initialised by superclass
@@ -17,32 +31,29 @@ export class BaseScraper {
   // Task to call on timer interval
   timerTask: () => Promise<void>;
 
-  constructor(name: string) {
-    this.name = name;
+  constructor(type: ScraperType) {
+    this.name = ScraperType[type];
+    this.type = type;
+    this.logger = new Logger(`Scraper.${this.name}`);
     this.handle = null;
   }
 
   public async init(): Promise<void> {
-    // Ensure logger is initialised
-    if (this.logger == null) {
-      throw `Scraper '${this.name}' has not initialised logger`;
-    }
-
     // Ensure a timerTask is defined
     if (this.timerTask == null) {
-      throw `Scraper '${this.name}' does not have a timerTask defined`;
+      throw `${this.name} scraper does not have a timerTask defined`;
     }
 
     // If disabled in env, don't start timerTask
     if (this.isExplicitlyDisabled()) {
-      this.logger.warn(`${this.name} parsing explicitly disabled`);
+      this.logger.warn(`${this.name} scraping explicitly disabled`);
       return;
     }
 
     // Get interval from env
-    this.interval = Number(process.env[`${this.name}.INTERVAL`]);
+    this.interval = Number(process.env[`Scraper.${this.name}.INTERVAL`]);
     if (isNaN(this.interval)) {
-      throw `Invalid refresh interval for ${this.name}`;
+      throw `Invalid refresh interval for ${this.name} scraper`;
     }
 
     // Check the status of the scraper in the DB, enable if was last enabled
@@ -58,7 +69,7 @@ export class BaseScraper {
       await Store.setScraperEnabled(this.name, true);
       // Run timerTask at regular intervals
       this.handle = setInterval(this.timerTask, this.interval);
-      this.logger.info(`${this.name} parser enabled`);
+      this.logger.info(`${this.name} scraper enabled`);
       return true;
     }
     return false;
@@ -72,7 +83,7 @@ export class BaseScraper {
       this.handle = null;
       // Store setting in DB
       await Store.setScraperEnabled(this.name, false);
-      this.logger.info(`${this.name} parser disabled`);
+      this.logger.info(`${this.name} scraper disabled`);
       return true;
     }
     return false;
@@ -85,6 +96,6 @@ export class BaseScraper {
 
   // Returns whether parser has been explicitly disabled in env
   public isExplicitlyDisabled(): boolean {
-    return process.env[`${this.name}.DISABLED`] === 'true';
+    return process.env[`Scraper.${this.name}.DISABLED`] === 'true';
   }
 }
