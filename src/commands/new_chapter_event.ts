@@ -1,7 +1,7 @@
 import { Client as DiscordClient, TextChannel } from "discord.js";
 import { MangaAlert } from "../models/MangaAlert.js";
-import { sendMessage } from "../framework/bot_utils.js";
-import { Logger } from "../framework/logger.js";
+import { sendMessage } from "bot-framework";
+import { Logger } from "bot-framework";
 import { Store } from "../support/store.js";
 
 export class NewChapterEventHandler {

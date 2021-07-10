@@ -1,8 +1,8 @@
 import { Message, Client as DiscordClient, TextChannel, Guild } from "discord.js";
-import { sendMessage } from "../framework/bot_utils.js";
-import { Dependency } from "../framework/dependency.js";
-import { Logger, NewLogEmitter } from "../framework/logger.js";
-import { ScrollableModalManager } from "../framework/scrollable.js";
+import { sendMessage } from "bot-framework";
+import { Dependency } from "bot-framework";
+import { Logger, NewLogEmitter } from "bot-framework";
+import { ScrollableModalManager } from "bot-framework";
 import { Store, StoreDependency } from "../support/store.js";
 import { ChannelManagementHandler } from "../commands/channel_management.js";
 import { MangadexCommandHandler } from "../commands/mangadex_commands.js";
@@ -10,7 +10,7 @@ import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
 import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
-import { LogLevel } from "../framework/constants/log_levels.js";
+import { LogLevel } from "bot-framework";
 
 const errStream: string = process.env.DISCORD_ERRSTREAM;
 

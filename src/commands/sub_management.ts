@@ -1,11 +1,11 @@
 import { Role, TextChannel } from "discord.js";
-import { sendCmdMessage, stringEquivalence } from "../framework/bot_utils.js";
-import { Logger } from "../framework/logger.js";
+import { sendCmdMessage, stringEquivalence } from "bot-framework";
+import { Logger } from "bot-framework";
 import { MangadexHelper } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 import { BotCommand } from "../modules/bot.js";
-import { LogLevel } from "../framework/constants/log_levels.js";
+import { LogLevel } from "bot-framework";
 
 export class SubManagementHandler {
 

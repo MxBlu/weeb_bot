@@ -1,7 +1,7 @@
 import { MangaAlert } from "../models/MangaAlert.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { MangadexPulse } from "../models/MangadexPulse.js";
-import { MessengerTopic } from "../framework/imm.js";
+import { MessengerTopic } from "bot-framework";
 
 // Message topic for a new alert for a chapter
 export const NewMangaAlertTopic = new MessengerTopic<MangaAlert>("NewMangaAlertTopic");

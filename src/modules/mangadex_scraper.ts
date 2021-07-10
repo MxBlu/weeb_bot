@@ -2,7 +2,7 @@ import { Chapter } from "mangadex-full-api";
 import { MANGADEX_FEED_REFRESH_INTERVAL } from "../constants/constants.js";
 import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
-import { Logger } from "../framework/logger.js";
+import { Logger } from "bot-framework";
 import { MangadexHelper, MangadexHelperDependency } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 

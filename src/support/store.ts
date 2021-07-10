@@ -1,6 +1,6 @@
 import IORedis, { Redis } from 'ioredis';
-import { Dependency } from '../framework/dependency.js';
-import { Logger } from '../framework/logger.js';
+import { Dependency } from 'bot-framework';
+import { Logger } from 'bot-framework';
 
 /*
   API class to interact with underlying storage implementation
