@@ -1,5 +1,12 @@
-/.env
+# Node/compile artifacts
 built
 node_modules
-memes.db*
+
+# Yarn artifacts
 yarn-error.log
+
+# Sandbox environment
+./src/sandbox.ts
+
+# Environments file
+.env

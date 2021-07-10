@@ -1,0 +1,18 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+/*
+  Generic alternative main file for testing whatever needs to be tested
+*/
+
+async function main(): Promise<void> {
+  // noop
+}
+
+main().then(() => {
+  console.error("hit then?");
+  process.exit(0);
+}).catch(e => {
+  console.error(e);
+  process.exit(1);
+});
