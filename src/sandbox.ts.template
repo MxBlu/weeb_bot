@@ -5,6 +5,8 @@ dotenv.config();
   Generic alternative main file for testing whatever needs to be tested
 */
 
+// COPY THIS FILE TO sandbox.ts TO USE FOR TESTING
+
 async function main(): Promise<void> {
   // noop
 }
