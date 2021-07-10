@@ -6,7 +6,7 @@ node_modules
 yarn-error.log
 
 # Sandbox environment
-./src/sandbox.ts
+src/sandbox.ts
 
 # Environments file
 .env
