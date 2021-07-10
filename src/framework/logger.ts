@@ -13,6 +13,9 @@ function getTimeString() {
   return `${hrs}:${min}:${sec}`;
 }
 
+// Size to pad the name field in log lines
+let namePaddingSize = 0;
+
 /*
   Simple logging assistant
   Mostly for the job of appending timestamps
@@ -27,6 +30,11 @@ export class Logger {
   constructor(name: string, loggerVerbosity = DEFAULT_LOG_LEVEL) {
     this.name = name;
     this.loggerVerbosity = loggerVerbosity;
+
+    // If this name is largest so far, update global name padding size
+    if (name.length > namePaddingSize) {
+      namePaddingSize = name.length;
+    }
   }
 
   // Log to console, and publish to NewLog emitter
@@ -34,7 +42,7 @@ export class Logger {
     // Only log events above our specified verbosity
     if (this.loggerVerbosity >= verbosity) {
       const verbosityStr = LogLevel[verbosity];
-      const logStr = `${getTimeString()} ${`[${this.name}]`.padStart(40)} ${`[${verbosityStr}]`.padStart(7)} ${message}`;
+      const logStr = `${getTimeString()} ${`[${this.name}]`.padStart(namePaddingSize + 2)} ${`[${verbosityStr}]`.padStart(7)} ${message}`;
       // Log ERROR to stderr, rest to stdout
       if (verbosity == LogLevel.ERROR) {
         console.error(logStr);
