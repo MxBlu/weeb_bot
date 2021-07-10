@@ -12,7 +12,7 @@
   "dependencies": {
     "bot-framework": "Mxblu/bot-framework#main",
     "bufferutil": "4.0.2",
-    "discord.js": "12.4.1",
+    "discord.js": "12.5.3",
     "dotenv": "8.0.0",
     "erlpack": "discord/erlpack",
     "ioredis": "4.17.3",

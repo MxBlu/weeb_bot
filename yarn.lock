@@ -375,16 +375,15 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bot-framework@Mxblu/bot-framework#main:
+bot-framework@mxblu/bot-framework#main:
   version "1.0.0"
-  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/832e1f38311c2b7575b45b46281217fd063aaba7"
+  resolved "https://codeload.github.com/mxblu/bot-framework/tar.gz/d20c09a048f133c0366159bd821c847a4288306c"
   dependencies:
-    discord.js "^12.5.3"
-    dotenv "^10.0.0"
-    events "^3.3.0"
+    discord.js "12.5.3"
+    dotenv "10.0.0"
     puppeteer "5"
-    puppeteer-extra "^3.1.18"
-    puppeteer-extra-plugin-stealth "^2.7.8"
+    puppeteer-extra "3.1.18"
+    puppeteer-extra-plugin-stealth "2.7.8"
 
 boxen@^4.2.0:
   version "4.2.0"
@@ -683,21 +682,7 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-discord.js@12.4.1:
-  version "12.4.1"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-12.4.1.tgz#be88bb32caa9e41eae67749a4e2387585745ac3b"
-  integrity sha512-KxOB8LOAN3GmrvkD6a6Fr1nlfArIFZ+q7Uqg4T/5duB90GZy9a0/Py2E+Y+eHKP6ZUCR2mbNMLCcHGjahiaNqA==
-  dependencies:
-    "@discordjs/collection" "^0.1.6"
-    "@discordjs/form-data" "^3.0.1"
-    abort-controller "^3.0.0"
-    node-fetch "^2.6.1"
-    prism-media "^1.2.2"
-    setimmediate "^1.0.5"
-    tweetnacl "^1.0.3"
-    ws "^7.3.1"
-
-discord.js@^12.5.3:
+discord.js@12.5.3:
   version "12.5.3"
   resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-12.5.3.tgz#56820d473c24320871df9ea0bbc6b462f21cf85c"
   integrity sha512-D3nkOa/pCkNyn6jLZnAiJApw2N9XrIsXUAdThf01i7yrEuqUmDGc7/CexVWwEcgbQR97XQ+mcnqJpmJ/92B4Aw==
@@ -725,15 +710,15 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
+dotenv@10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
+  integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
+
 dotenv@8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
   integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
-
-dotenv@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
-  integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -910,11 +895,6 @@ event-target-shim@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
-
-events@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
-  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 extract-zip@^2.0.0:
   version "2.0.1"
@@ -1737,7 +1717,7 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prism-media@^1.2.2, prism-media@^1.2.9:
+prism-media@^1.2.9:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/prism-media/-/prism-media-1.3.1.tgz#418acd2b122bedea2e834056d678f9a5ad2943ae"
   integrity sha512-nyYAa3KB4qteJIqdguKmwxTJgy55xxUtkJ3uRnOvO5jO+frci+9zpRXw6QZVcfDeva3S654fU9+26P2OSTzjHw==
@@ -1777,7 +1757,7 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-puppeteer-extra-plugin-stealth@^2.7.8:
+puppeteer-extra-plugin-stealth@2.7.8:
   version "2.7.8"
   resolved "https://registry.yarnpkg.com/puppeteer-extra-plugin-stealth/-/puppeteer-extra-plugin-stealth-2.7.8.tgz#7424c955e25351a55024734477059c988647047c"
   integrity sha512-Zhm/WY/BAk9VGdZR5OVpiwfGn2NoAzEb0hdu3/PGRryfenn8Dtoai8aUa8GzFPExWL+yGPsztswupH+3TV3M2A==
@@ -1814,7 +1794,7 @@ puppeteer-extra-plugin@^3.1.9:
     debug "^4.1.1"
     merge-deep "^3.0.1"
 
-puppeteer-extra@^3.1.18:
+puppeteer-extra@3.1.18:
   version "3.1.18"
   resolved "https://registry.yarnpkg.com/puppeteer-extra/-/puppeteer-extra-3.1.18.tgz#4269018e55f7ee62788d13e3eb3d89e842a3d48e"
   integrity sha512-mGQyAnxaGcZomx7NVC4wgAkZl0MLTdE/GIfwRSbLJ9L4yIxPg9uEA3yiLBe+x09tjhTGEtv8KDef8Bl53RXgiA==
@@ -2346,7 +2326,7 @@ write-file-atomic@^3.0.0:
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
 
-ws@^7.2.3, ws@^7.3.1, ws@^7.4.4:
+ws@^7.2.3, ws@^7.4.4:
   version "7.5.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
   integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
