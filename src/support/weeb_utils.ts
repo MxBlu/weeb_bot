@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+
 import { Store } from "../support/store.js";
 
 export const checkIfSubscribed = async function (message: Message): Promise<boolean> {

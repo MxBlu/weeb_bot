@@ -1,10 +1,9 @@
+import { isAdmin, sendCmdMessage, Logger, LogLevel } from "bot-framework";
+
 import { MangadexPulseTopic } from "../constants/topics.js";
-import { isAdmin, sendCmdMessage } from "bot-framework";
-import { Logger } from "bot-framework"
 import { Store } from "../support/store.js";
 import { BotCommand } from "../modules/bot.js";
 import { MangadexScraper } from "../modules/mangadex_scraper.js";
-import { LogLevel } from "bot-framework";
 
 export class MangadexCommandHandler {
   
