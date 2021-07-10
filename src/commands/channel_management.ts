@@ -4,6 +4,7 @@ import { Logger } from "../framework/logger.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 import { BotCommand } from "../modules/bot.js";
+import { LogLevel } from "../framework/constants/log_levels.js";
 
 export class ChannelManagementHandler {
 
@@ -15,7 +16,7 @@ export class ChannelManagementHandler {
 
   public notifchannelHandler = async (command: BotCommand): Promise<void> => {
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', this.logger, LogLevel.DEBUG);
       return;
     }
     const roleName = command.arguments[0];
@@ -32,23 +33,23 @@ export class ChannelManagementHandler {
     }
     
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.DEBUG);
       return;
     }
 
     await Store.addRole(guild.id, role.id);
     await Store.setNotifChannel(guild.id, role.id, channel.id);
-    sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, 2, this.logger);
+    sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
   public unnotifHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
-      this.logger.info(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
+      this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing arugment, provide role to unregister', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: missing arugment, provide role to unregister', this.logger, LogLevel.DEBUG);
       return;
     }
     const roleName = command.arguments[0];
@@ -64,12 +65,12 @@ export class ChannelManagementHandler {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.DEBUG);
       return;
     }
 
     await Store.delRole(guild.id, role.id);
     await Store.delNotifChannel(guild.id, role.id);
-    sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, 2, this.logger);
+    sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, this.logger, LogLevel.INFO);
   }
 }

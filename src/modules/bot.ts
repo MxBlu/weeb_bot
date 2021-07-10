@@ -1,8 +1,7 @@
 import { Message, Client as DiscordClient, TextChannel, Guild } from "discord.js";
-import { NewErrorLogTopic } from "../framework/constants/topics.js";
 import { sendMessage } from "../framework/bot_utils.js";
 import { Dependency } from "../framework/dependency.js";
-import { Logger } from "../framework/logger.js";
+import { Logger, NewLogEmitter } from "../framework/logger.js";
 import { ScrollableModalManager } from "../framework/scrollable.js";
 import { Store, StoreDependency } from "../support/store.js";
 import { ChannelManagementHandler } from "../commands/channel_management.js";
@@ -11,6 +10,7 @@ import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
 import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
+import { LogLevel } from "../framework/constants/log_levels.js";
 
 const errStream: string = process.env.DISCORD_ERRSTREAM;
 
@@ -96,9 +96,9 @@ export class BotImpl {
 
     // Subscribe new chapter handler
     this.newChapterEventHandler = new NewChapterEventHandler(this.discord);
-    NewMangaAlertTopic.subscribe("newChapterHandler", this.newChapterEventHandler.newChapterHandler);
-    // Subscribe to error handler topic to post them to discord
-    NewErrorLogTopic.subscribe("errorLogHandler", this.errorLogHandler);
+    NewMangaAlertTopic.subscribe("NewChapterEventHandler.newChapterHandler", this.newChapterEventHandler.newChapterHandler);
+    // Subscribe to ERROR logs being published
+    NewLogEmitter.on(LogLevel[LogLevel.ERROR], this.errorLogHandler);
   }
 
   // Utility functions
@@ -127,7 +127,7 @@ export class BotImpl {
   // Discord event handlers
 
   private readyHandler = (): void => {
-    this.logger.info("Discord connected", 1);
+    this.logger.info("Discord connected");
 
     // Call fetch on every guild to make sure we have all the members cached
     const guilds = this.discord.guilds.cache.map(g => g.id);
@@ -137,12 +137,12 @@ export class BotImpl {
   }
 
   private joinServerHandler = async (guild: Guild) => {
-    this.logger.info(`Joined guild: ${guild.name}`, 2);
+    this.logger.debug(`Joined guild: ${guild.name}`);
     Store.addGuilds(guild.id);
   }
 
   private leaveServerHandler = async (guild: Guild) => {
-    this.logger.info(`Left guild: ${guild.name}`, 2);
+    this.logger.debug(`Left guild: ${guild.name}`);
     Store.removeGuild(guild.id);
   }
 
@@ -154,8 +154,8 @@ export class BotImpl {
 
     const command = this.parseCommand(message);
     if (command != null) {
-      this.logger.info(`Command received from '${message.author.username}' in '${message.guild.name}': ` +
-          `!${command.command} - '${command.arguments.join(' ')}'`, 2);
+      this.logger.debug(`Command received from '${message.author.username}' in '${message.guild.name}': ` +
+          `!${command.command} - '${command.arguments.join(' ')}'`);
       this.commandHandlers.get(command.command)(command);
     }
   }
@@ -190,7 +190,7 @@ export class BotImpl {
 
   // Error handler
 
-  private errorLogHandler = async (log: string): Promise<void> => {
+  private errorLogHandler = async (level: string, log: string): Promise<void> => {
     if (!this.errLogDisabled) {
       try {
         // Should ensure that it works for DM channels too

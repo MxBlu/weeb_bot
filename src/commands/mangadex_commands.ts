@@ -4,6 +4,7 @@ import { Logger } from "../framework/logger.js"
 import { Store } from "../support/store.js";
 import { BotCommand } from "../modules/bot.js";
 import { MangadexScraper } from "../modules/mangadex_scraper.js";
+import { LogLevel } from "../framework/constants/log_levels.js";
 
 export class MangadexCommandHandler {
   
@@ -24,30 +25,30 @@ export class MangadexCommandHandler {
         if (dexStatus.lastDown != null) {
           message += ` since ${dexStatus.lastDown.toUTCString()}`;
         }
-        sendCmdMessage(command.message, message, 2, this.logger);
+        sendCmdMessage(command.message, message, this.logger, LogLevel.INFO);
       } else if (dexStatus?.status === false) {
         let message = `Mangadex unreachable`;
         if (dexStatus.lastUp != null) {
           message += ` since ${dexStatus.lastUp.toUTCString()}`;
         }
-        sendCmdMessage(command.message, message, 2, this.logger);
+        sendCmdMessage(command.message, message, this.logger, LogLevel.INFO);
       } else {
-        sendCmdMessage(command.message, 'Mangadex status unknown', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangadex status unknown', this.logger, LogLevel.INFO);
       }
 
       // Also notify about parsing status
       status = await Store.isMangadexEnabled();
       if (status == true) {
-        sendCmdMessage(command.message, 'Mangadex parser is enabled', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangadex parser is enabled', this.logger, LogLevel.INFO);
       } else {
-        sendCmdMessage(command.message, 'Mangadex parser is disabled', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangadex parser is disabled', this.logger, LogLevel.INFO);
       }
       return;
     case 1:
       // Handle as "set parsing status"
       // Admin only
       if (! await isAdmin(command.message)) {
-        sendCmdMessage(command.message, 'Error: not admin', 2, this.logger);
+        sendCmdMessage(command.message, 'Error: not admin', this.logger, LogLevel.INFO);
         return;
       }
 
@@ -59,10 +60,10 @@ export class MangadexCommandHandler {
         await MangadexScraper.disable();
       }
 
-      sendCmdMessage(command.message, `Mangadex parsing status updated to ${status}`, 2, this.logger);
+      sendCmdMessage(command.message, `Mangadex parsing status updated to ${status}`, this.logger, LogLevel.INFO);
       return;
     default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     }
   }

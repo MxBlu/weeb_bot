@@ -25,7 +25,7 @@ export class MangaseeScraperImpl {
   public async init(): Promise<void> {
     // If disabled in env, don't start timerTask
     if (MANGASEE_DISABLED) {
-      this.logger.error("Mangasee parsing explicitly disabled");
+      this.logger.warn("Mangasee parsing explicitly disabled");
       return;
     }
 
@@ -47,7 +47,7 @@ export class MangaseeScraperImpl {
       this.handle = setInterval(this.timerTask, MANGASEE_REFRESH_INTERVAL);
       // Store setting in DB
       await Store.setMangaseeEnabled(true);
-      this.logger.info("Mangasee parser enabled", 3);
+      this.logger.info("Mangasee parser enabled");
     }
   }
   
@@ -60,12 +60,12 @@ export class MangaseeScraperImpl {
       await Store.setMangaseeEnabled(false);
       // Stop any Puppeteer instances to save a bit of RAM
       await CloudflareBypass.ensureUnloaded();
-      this.logger.info("Mangasee parser disabled", 3);
+      this.logger.info("Mangasee parser disabled");
     }
   }
 
   private timerTask = async (): Promise<void> => {
-    this.logger.info('Running Mangasee scraper', 4);
+    this.logger.debug('Running Mangasee scraper');
 
     try {
       // Fetch chapters from now back until the date we started
@@ -78,7 +78,7 @@ export class MangaseeScraperImpl {
         }
         this.seenUrls.add(c.link);
         
-        this.logger.info(`New Mangasee item: ${c.seriesName} | ${c.chapterNumber}`, 3);
+        this.logger.debug(`New Mangasee item: ${c.seriesName} | ${c.chapterNumber}`);
 
         // Get the titleId for the series
         // If none exists, we don't have anything to go off to send notifications
@@ -93,7 +93,7 @@ export class MangaseeScraperImpl {
         mChapter.chapterNumber = c.chapterNumber;
         mChapter.pageCount = null;
 
-        this.logger.info(`New Mangasee alert: ${mChapter.titleId} | ${mChapter.chapterNumber}`, 3);
+        this.logger.debug(`New Mangasee alertable: ${mChapter.titleId} | ${mChapter.chapterNumber}`);
         NewMangaseeItemTopic.notify(mChapter);
       });
     } catch (e) {

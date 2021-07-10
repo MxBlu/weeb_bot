@@ -12,13 +12,13 @@ export class NewChapterEventHandler {
 
   constructor(discord: DiscordClient) {
     this.discord = discord;
-    this.logger = new Logger("MangaseeCommandHandler");
+    this.logger = new Logger("NewChapterEventHandler");
   }
 
   public newChapterHandler = async (alert: MangaAlert): Promise<void> => {
     const guild = this.discord.guilds.cache.get(alert.guildId);
     if (guild == null) {
-      this.logger.info(`Notifying for a guild no longer available: ${alert.guildId} => ${alert.mangaChapter.titleId}`);
+      this.logger.warn(`Notifying for a guild no longer available: ${alert.guildId} => ${alert.mangaChapter.titleId}`);
       return;
     }
 
@@ -49,6 +49,7 @@ export class NewChapterEventHandler {
         `${alert.mangaChapter.link}`
       
       try {
+        this.logger.debug(`Notifying '${alert.mangaTitle} ${alert.mangaChapter.chapterNumber}' to ${guild.id}@${channelId}`);
         sendMessage(channel, msg); 
       } catch (e) {
         this.logger.error(`Failed to send notification to ${guild.id}@${channelId}: ${e}`);

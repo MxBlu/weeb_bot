@@ -56,7 +56,7 @@ export class HighResolutionTimer {
 
   private timerTask = async (): Promise<void> => {
     const now = Date.now();
-    this.logger.info(`Run timer task, interval: ${this.lastRun == null ? 'never' : now - this.lastRun}`);
+    this.logger.trace(`Running timer task, interval: ${this.lastRun == null ? 'never' : now - this.lastRun}`);
     this.lastRun = now;
     // Iterate over all the tasks
     // Trigger what's ready, and figure out how long to sleep for

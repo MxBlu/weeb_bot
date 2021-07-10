@@ -44,7 +44,7 @@ export class MangadexScraperImpl {
       this.handle = setInterval(this.timerTask, MANGADEX_FEED_REFRESH_INTERVAL);
       // Store setting in DB
       await Store.setMangadexEnabled(true);
-      this.logger.info("Mangadex parser enabled", 3);
+      this.logger.info("Mangadex parser enabled");
     }
   }
   
@@ -55,7 +55,7 @@ export class MangadexScraperImpl {
       this.handle = null;
       // Store setting in DB
       await Store.setMangadexEnabled(false);
-      this.logger.info("Mangadex parser disabled", 3);
+      this.logger.info("Mangadex parser disabled");
     }
   }
 
@@ -86,7 +86,7 @@ export class MangadexScraperImpl {
         mChapter.chapterNumber = chapter.chapter;
         mChapter.pageCount = chapter.pageNames?.length;
 
-        this.logger.info(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapterNumber}`, 3);
+        this.logger.debug(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapterNumber}`);
         NewMangadexItemTopic.notify(mChapter);
       }
 

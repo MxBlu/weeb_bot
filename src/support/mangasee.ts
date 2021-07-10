@@ -30,12 +30,18 @@ export class Mangasee {
     try {
       data = await CloudflareBypass.fetch(MANGASEE_URL);
     } catch(e) {
-      throw `HTTPException: ${e}`;
+      throw `MangaseeException: CloudFlareBypass encountered an error: ${e}`;
     }
 
     // Extract LatestJSON variable, containing new chapters
-    const json_match = data.match(/vm\.LatestJSON = (\[.+?\]);/);
-    const latestChaptersRaw: MangaseeChapterRaw[] = JSON.parse(json_match[1]);
+    let json_match = null;
+    let latestChaptersRaw: MangaseeChapterRaw[] = null;
+    try {
+      json_match = data.match(/vm\.LatestJSON = (\[.+?\]);/);
+      latestChaptersRaw = JSON.parse(json_match[1]);
+    } catch(e) {
+      throw `MangaseeException: Unable to find JSON in body`;
+    }
 
     // Optionally filter it down to the be from a given date
     if (fromDate == null) {

@@ -1,4 +1,5 @@
 import { DMChannel, Message, NewsChannel, TextChannel } from "discord.js";
+import { LogLevel } from "./constants/log_levels.js";
 import { Logger } from "./logger.js";
 
 const DISCORD_MAX_LEN = 1900;
@@ -45,8 +46,8 @@ export const chunkString = function (str: string): string[] {
 
 // Send reply to a user command, logging if appropriate
 export const sendCmdMessage = function (message: Message, msg: string, 
-    level: number, logger: Logger): void {
-  logger.info(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
+    logger: Logger, level: LogLevel): void {
+  logger.log(`${message.author.username} - ${message.guild.name} - ${msg}`, level);
   sendMessage(message.channel, msg);
 }
 

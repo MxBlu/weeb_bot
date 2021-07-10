@@ -5,6 +5,7 @@ import { MangadexHelper } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 import { BotCommand } from "../modules/bot.js";
+import { LogLevel } from "../framework/constants/log_levels.js";
 
 export class SubManagementHandler {
 
@@ -17,11 +18,11 @@ export class SubManagementHandler {
   public subscribeHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
-      this.logger.info(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
+      this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
       return;
     }
     if (command.arguments.length < 2) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', this.logger, LogLevel.TRACE);
       return;
     }
     const roleName = command.arguments[0];
@@ -38,30 +39,30 @@ export class SubManagementHandler {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
     }
 
     const manga = await MangadexHelper.parseTitleUrlToMangaLite(url);
 
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.TRACE);
       return;
     }
 
     await Store.setTitleName(manga.id, manga.title);
     await Store.addTitle(guild.id, role.id, manga.id);
-    sendCmdMessage(command.message, `Added title '${manga.title}' to role @${role.name}`, 2, this.logger);
+    sendCmdMessage(command.message, `Added title '${manga.title}' to role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
   public unsubscribeHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
-      this.logger.info(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
+      this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and title URL', this.logger, LogLevel.TRACE);
       return;
     }
     const roleName = command.arguments[0];
@@ -78,19 +79,19 @@ export class SubManagementHandler {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
     }
 
     const manga = await MangadexHelper.parseTitleUrlToMangaLite(url);
 
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.TRACE);
       return;
     }
 
     await Store.delTitle(guild.id, role.id, manga.id);
-    sendCmdMessage(command.message, `Removed title '${manga.title}' from role @${role.name}`, 2, this.logger);
+    sendCmdMessage(command.message, `Removed title '${manga.title}' from role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
   public listsubsHandler = async (command: BotCommand): Promise<void> => {
@@ -100,7 +101,7 @@ export class SubManagementHandler {
       return;
     }
     if (command.arguments.length == 0) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: missing an arugment, provide role', this.logger, LogLevel.TRACE);
       return;
     }
     const roleName = command.arguments[0];
@@ -116,13 +117,13 @@ export class SubManagementHandler {
     }
 
     if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
     }
 
     const titles = await Store.getTitles(guild.id, role.id);
     if (titles == null || titles.size == 0) {
-      sendCmdMessage(command.message, 'No subscriptions', 3, this.logger);
+      sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
       return;
     }
     
@@ -132,6 +133,7 @@ export class SubManagementHandler {
     }
 
     const str = Array.from(titles.values()).map(t => `${titleNames.get(t)} - <${MangadexHelper.toTitleUrl(t)}>`).join('\n');
-    sendCmdMessage(command.message, str, 3, this.logger);
+    this.logger.info(`${role.name} - ${titles.size} subscriptions`);
+    sendCmdMessage(command.message, str, this.logger, LogLevel.TRACE);
   }
 }

@@ -24,7 +24,7 @@ export class Dependency {
   }
 
   public async ready(): Promise<void> {
-    this.logger.info(`Ready state triggered`, 4);
+    this.logger.trace(`Ready state triggered`);
     this.resolve();
   }
 

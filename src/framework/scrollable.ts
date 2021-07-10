@@ -75,7 +75,7 @@ export class ScrollableModalManager {
     // Set lifetime timer
     setTimeout((m: Message) => this.removeModal(m), duration, modal.message);
 
-    this.logger.info(`Modal created for message ${modal.message.id}`, 4);
+    this.logger.trace(`Modal created for message ${modal.message.id}`);
   }
 
   public async removeModal(message: Message): Promise<void> {
@@ -91,7 +91,7 @@ export class ScrollableModalManager {
     // Remove from active modal list
     this.activeModals.delete(message.id);
 
-    this.logger.info(`Modal removed for message ${message.id}`, 4);
+    this.logger.trace(`Modal removed for message ${message.id}`);
   }
 
   public messageReactionHandler = async (reaction: MessageReaction, user: GuildMember): Promise<void> => {

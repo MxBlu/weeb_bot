@@ -9,12 +9,12 @@ export class MangaParserImpl {
   logger: Logger;
 
   constructor() {
-    this.logger = new Logger("MangadexScraper");
+    this.logger = new Logger("MangaParser");
   }
 
   public init(): void {
-    NewMangadexItemTopic.subscribe("itemHandler", this.itemHandler);
-    NewMangaseeItemTopic.subscribe("itemHandler", this.itemHandler);
+    NewMangadexItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
+    NewMangaseeItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
   }
 
   private itemHandler = async (item: MangaChapter): Promise<void> => {
@@ -35,8 +35,8 @@ export class MangaParserImpl {
         const mangaTitle = await Store.getTitleName(item.titleId);
         const title = `${mangaTitle} - Chapter ${item.chapterNumber}`;
 
-        this.logger.info(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
-            `${title}`, 2);
+        this.logger.debug(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
+            `${title}`);
         
         const mangaAlert = new MangaAlert();
         mangaAlert.mangaChapter = item;

@@ -29,7 +29,7 @@ class StoreImpl {
     });
 
     this.rclient.once('connect', () => {
-      this.logger.info('Redis connected', 1);
+      this.logger.info('Redis connected');
       StoreDependency.ready();
     });
   }

@@ -6,6 +6,7 @@ import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 import { BotCommand } from "../modules/bot.js";
 import { MangaseeScraper } from "../modules/mangasee_scraper.js";
+import { LogLevel } from "../framework/constants/log_levels.js";
 
 export class MangaseeCommandHandler {
 
@@ -22,18 +23,18 @@ export class MangaseeCommandHandler {
       // Handle as "get current parsing status"
       status = await Store.isMangaseeEnabled();
       if (MANGASEE_DISABLED == true) {
-        sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', this.logger, LogLevel.INFO);
       } else if (status == true) {
-        sendCmdMessage(command.message, 'Mangasee parser is enabled', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangasee parser is enabled', this.logger, LogLevel.INFO);
       } else {
-        sendCmdMessage(command.message, 'Mangasee parser is disabled', 2, this.logger);
+        sendCmdMessage(command.message, 'Mangasee parser is disabled', this.logger, LogLevel.INFO);
       }
       return;
     case 1:
       // Handle as "set parsing status"
       // Admin only
       if (! await isAdmin(command.message)) {
-        sendCmdMessage(command.message, 'Error: not admin', 2, this.logger);
+        sendCmdMessage(command.message, 'Error: not admin', this.logger, LogLevel.INFO);
         return;
       }
 
@@ -45,10 +46,10 @@ export class MangaseeCommandHandler {
         await MangaseeScraper.disable();
       }
 
-      sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, 2, this.logger);
+      sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, this.logger, LogLevel.INFO);
       return;
     default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     }
   }
@@ -61,20 +62,21 @@ export class MangaseeCommandHandler {
 
       break;
     default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     }
 
     // Ensure we got a valid manga url
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.DEBUG);
       return;
     }
 
     const altTitles = await Store.getAltTitles(manga.id);
     const str = `**${manga.title}**:\n` +
                 Array.from(altTitles.values()).join('\n');
-    sendCmdMessage(command.message, str, 3, this.logger);
+    this.logger.info(`Manga ${manga.title} has ${altTitles.size} alt titles`);
+    sendCmdMessage(command.message, str, this.logger, LogLevel.TRACE);
   }
 
   public addaliasHandler = async (command: BotCommand): Promise<void> => {
@@ -83,7 +85,7 @@ export class MangaseeCommandHandler {
     switch (command.arguments.length) {
     case 0:
     case 1:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     default:
       manga = await MangadexHelper.parseTitleUrlToMangaLite(command.arguments[0]);
@@ -95,12 +97,12 @@ export class MangaseeCommandHandler {
 
     // Ensure we got a valid manga url
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.DEBUG);
       return;
     }
 
     await Store.addAltTitle(manga.id, altTitle);
-    sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${manga.title}'`, 2, this.logger);
+    sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${manga.title}'`, this.logger, LogLevel.INFO);
   }
 
   public delaliasHandler = async (command: BotCommand): Promise<void> => {
@@ -109,7 +111,7 @@ export class MangaseeCommandHandler {
     switch (command.arguments.length) {
     case 0:
     case 1:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     default:
       manga = await MangadexHelper.parseTitleUrlToMangaLite(command.arguments[0]);
@@ -121,11 +123,11 @@ export class MangaseeCommandHandler {
 
     // Ensure we got a valid manga url
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', 3, this.logger);
+      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.DEBUG);
       return;
     }
 
     await Store.delAltTitle(manga.id, altTitle);
-    sendCmdMessage(command.message, `Removed alt title '${altTitle}' to '${manga.title}'`, 2, this.logger);
+    sendCmdMessage(command.message, `Removed alt title '${altTitle}' to '${manga.title}'`, this.logger, LogLevel.INFO);
   }
 }
