@@ -377,7 +377,7 @@ bl@^4.0.3:
 
 bot-framework@mxblu/bot-framework#main:
   version "1.0.0"
-  resolved "https://codeload.github.com/mxblu/bot-framework/tar.gz/d20c09a048f133c0366159bd821c847a4288306c"
+  resolved "https://codeload.github.com/mxblu/bot-framework/tar.gz/b5ee67efbd46f7a89218ca2e065e106fc39817ad"
   dependencies:
     discord.js "12.5.3"
     dotenv "10.0.0"
