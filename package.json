@@ -7,6 +7,7 @@
   "scripts": {
     "start": "nodemon --watch src/** --ext ts,json --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/main.ts",
     "fstart": "pm2 start --name weebbot built/main.js",
+    "build": "tsc --build",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
