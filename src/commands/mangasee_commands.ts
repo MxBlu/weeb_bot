@@ -4,12 +4,24 @@ import { Manga } from "mangadex-full-api";
 import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class MangaseeCommandHandler {
+import { BotCommandHandlerFunction, CommandInterface } from "./command_interface.js";
+
+export class MangaseeCommandHandler implements CommandInterface {
 
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("MangaseeCommandHandler");
+  }
+
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("getaliases", this.getaliasesHandler);
+    commandMap.set("addalias", this.addaliasHandler);
+    commandMap.set("delalias", this.delaliasHandler);
+
+    return commandMap;
   }
 
   public getaliasesHandler = async (command: BotCommand): Promise<void> => {

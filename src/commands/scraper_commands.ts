@@ -3,7 +3,10 @@ import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 
 import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
-export class ScraperCommandsHandler {
+
+import { CommandInterface, BotCommandHandlerFunction } from "./command_interface.js";
+
+export class ScraperCommandsHandler implements CommandInterface {
   
   logger: Logger;
 
@@ -11,7 +14,15 @@ export class ScraperCommandsHandler {
     this.logger = new Logger("ScraperCommandsHandler");
   }
 
-  public scraperstatusHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("scraperstatus", this.scraperstatusHandler)
+
+    return commandMap;
+  }
+
+  private scraperstatusHandler = async (command: BotCommand): Promise<void> => {
     let type: ScraperType = null;
     let scraper: IScraper = null;
     let status = false;
