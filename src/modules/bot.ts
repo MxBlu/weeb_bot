@@ -82,7 +82,6 @@ export class BotImpl {
     this.commandHandlers.set("listsubs", this.subManagementHandler.listsubsHandler);
     this.commandHandlers.set("scraperstatus", this.scraperCommandsHandler.scraperstatusHandler);
     this.commandHandlers.set("dexstatus", this.mangadexCommandsHandler.dexstatusHandler);
-    this.commandHandlers.set("mangaseestatus", this.mangaseeCommandsHandler.mangaseestatusHandler);
     this.commandHandlers.set("getaliases", this.mangaseeCommandsHandler.getaliasesHandler);
     this.commandHandlers.set("addalias", this.mangaseeCommandsHandler.addaliasHandler);
     this.commandHandlers.set("delalias", this.mangaseeCommandsHandler.delaliasHandler);

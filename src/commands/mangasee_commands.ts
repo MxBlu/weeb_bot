@@ -14,44 +14,6 @@ export class MangaseeCommandHandler {
     this.logger = new Logger("MangaseeCommandHandler");
   }
 
-  public mangaseestatusHandler = async (command: BotCommand): Promise<void> => {
-    let status = false;
-    switch (command.arguments.length) {
-    case 0:
-      // Handle as "get current parsing status"
-      status = await MangaseeScraper.isEnabled();
-      if (MangaseeScraper.isExplicitlyDisabled()) {
-        sendCmdMessage(command.message, 'Mangasee parser is explicitly disabled', this.logger, LogLevel.INFO);
-      } else if (status == true) {
-        sendCmdMessage(command.message, 'Mangasee parser is enabled', this.logger, LogLevel.INFO);
-      } else {
-        sendCmdMessage(command.message, 'Mangasee parser is disabled', this.logger, LogLevel.INFO);
-      }
-      return;
-    case 1:
-      // Handle as "set parsing status"
-      // Admin only
-      if (! await isAdmin(command.message)) {
-        sendCmdMessage(command.message, 'Error: not admin', this.logger, LogLevel.INFO);
-        return;
-      }
-
-      status = command.arguments[0] == 'true';
-      
-      if (status == true) {
-        await MangaseeScraper.enable();
-      } else {
-        await MangaseeScraper.disable();
-      }
-
-      sendCmdMessage(command.message, `Mangasee parsing status updated to ${status}`, this.logger, LogLevel.INFO);
-      return;
-    default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
-      return;
-    }
-  }
-
   public getaliasesHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     switch (command.arguments.length) {
