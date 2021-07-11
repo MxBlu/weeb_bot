@@ -174,11 +174,12 @@ export class BotImpl {
       "!unnotif <role> - Remove notif channel from given role\n" +
       "!sub <role> <manga url> - Subscribe given role to given manga\n" +
       "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
-      "!listsubs <role> - List all subscriptions for given role\n" +
+      "!listsubs <role> <scraper type> - List all subscriptions for given role and scraper\n" +
+      "\n" +
+      "!scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper\n" +
       "\n" +
       "!dexstatus - Get last known status of Mangadex\n" +
       "\n" +
-      "!mangaseestatus [<status>] - Get (or with paramater, update) scraping status of Mangasee\n" +
       "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
       "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
       "!delalias <manga url> <alias> - Delete an alias from a given manga\n" +
