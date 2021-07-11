@@ -70,6 +70,7 @@ export class MangadexScraperImpl extends BaseScraper {
         this.guidSet.add(chapter.id);
 
         const mChapter = new MangaChapter();
+        mChapter.type = ScraperType.Mangadex;
         mChapter.link = MangadexHelper.toChapterUrl(chapter.id);
         mChapter.titleId = chapter.manga.id;
         mChapter.chapterNumber = chapter.chapter;
