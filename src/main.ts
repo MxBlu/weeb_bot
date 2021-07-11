@@ -3,12 +3,12 @@ dotenv.config();
 
 import { Logger } from 'bot-framework';
 
-import { Bot } from './modules/bot.js';
 import { MangadexScraper } from './modules/mangadex_scraper.js';
 import { MangaseeScraper } from './modules/mangasee_scraper.js';
 import { MangaParser } from './modules/parser.js';
 import { MangadexHelper } from './support/mangadex.js';
 import { Store } from './support/store.js';
+import { WeebBot } from './modules/weeb_bot.js';
 
 // Main level logger
 const logger = new Logger("Server");
@@ -34,6 +34,6 @@ MangaParser.init();
 
 // Bot services
 const discordToken = process.env.DISCORD_TOKEN;
-Bot.init(discordToken);
+WeebBot.init(discordToken);
 
 logger.info(`Server started`);

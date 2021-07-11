@@ -1,9 +1,8 @@
-import { sendCmdMessage, stringEquivalence, Logger, LogLevel } from "bot-framework";
+import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand } from "bot-framework";
 import { Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
-import { BotCommand } from "../modules/bot.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 

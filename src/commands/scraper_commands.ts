@@ -1,7 +1,6 @@
-import { isAdmin, sendCmdMessage, Logger, LogLevel } from "bot-framework";
+import { isAdmin, sendCmdMessage, Logger, LogLevel, BotCommand } from "bot-framework";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 
-import { BotCommand } from "../modules/bot.js";
 import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
 export class ScraperCommandsHandler {

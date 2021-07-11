@@ -1,9 +1,8 @@
-import { Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { BotCommand, Logger, LogLevel, sendCmdMessage } from "bot-framework";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
-import { BotCommand } from "../modules/bot.js";
 
 export class MangaseeCommandHandler {
 

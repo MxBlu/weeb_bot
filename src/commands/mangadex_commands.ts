@@ -1,7 +1,6 @@
-import { sendCmdMessage, Logger, LogLevel } from "bot-framework";
+import { sendCmdMessage, Logger, LogLevel, BotCommand } from "bot-framework";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
-import { BotCommand } from "../modules/bot.js";
 
 export class MangadexCommandHandler {
   

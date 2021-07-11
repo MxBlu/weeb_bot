@@ -1,9 +1,8 @@
-import { Logger, LogLevel, sendCmdMessage, stringEquivalence } from "bot-framework";
+import { BotCommand, Logger, LogLevel, sendCmdMessage, stringEquivalence } from "bot-framework";
 import { Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
-import { BotCommand } from "../modules/bot.js";
 
 export class ChannelManagementHandler {
 
