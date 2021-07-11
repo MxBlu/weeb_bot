@@ -1,6 +1,14 @@
+import { ScraperType } from "../constants/scraper_types.js";
+
 export class MangaChapter {
-  link: string;
+  // Unique identifier for the manga
   titleId: string;
+  // Type of scraper which scraped the manga
+  type: ScraperType
+  // URI to the chapter
+  link: string;
+  // Chapter number of the chapter
   chapterNumber: number;
+  // Page count of the chapter
   pageCount: number;
 }

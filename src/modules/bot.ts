@@ -8,6 +8,7 @@ import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
 import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
+import { ScraperCommandsHandler } from "../commands/scraper_commands.js";
 
 const errorChannel: string = process.env.DISCORD_ERROR_CHANNEL;
 
@@ -40,6 +41,7 @@ export class BotImpl {
   channelManagementHandler: ChannelManagementHandler;
   mangadexCommandsHandler: MangadexCommandHandler;
   mangaseeCommandsHandler: MangaseeCommandHandler;
+  scraperCommandsHandler: ScraperCommandsHandler;
   subManagementHandler: SubManagementHandler;
 
   // Event handlers
@@ -68,6 +70,7 @@ export class BotImpl {
     this.channelManagementHandler = new ChannelManagementHandler();
     this.mangadexCommandsHandler = new MangadexCommandHandler();
     this.mangaseeCommandsHandler = new MangaseeCommandHandler();
+    this.scraperCommandsHandler = new ScraperCommandsHandler();
     this.subManagementHandler = new SubManagementHandler();
 
     this.commandHandlers.set("help", this.helpHandler);
@@ -77,8 +80,8 @@ export class BotImpl {
     this.commandHandlers.set("sub", this.subManagementHandler.subscribeHandler);
     this.commandHandlers.set("unsub", this.subManagementHandler.unsubscribeHandler);
     this.commandHandlers.set("listsubs", this.subManagementHandler.listsubsHandler);
+    this.commandHandlers.set("scraperstatus", this.scraperCommandsHandler.scraperstatusHandler);
     this.commandHandlers.set("dexstatus", this.mangadexCommandsHandler.dexstatusHandler);
-    this.commandHandlers.set("mangaseestatus", this.mangaseeCommandsHandler.mangaseestatusHandler);
     this.commandHandlers.set("getaliases", this.mangaseeCommandsHandler.getaliasesHandler);
     this.commandHandlers.set("addalias", this.mangaseeCommandsHandler.addaliasHandler);
     this.commandHandlers.set("delalias", this.mangaseeCommandsHandler.delaliasHandler);
@@ -171,11 +174,12 @@ export class BotImpl {
       "!unnotif <role> - Remove notif channel from given role\n" +
       "!sub <role> <manga url> - Subscribe given role to given manga\n" +
       "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
-      "!listsubs <role> - List all subscriptions for given role\n" +
+      "!listsubs <role> <scraper type> - List all subscriptions for given role and scraper\n" +
+      "\n" +
+      "!scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper\n" +
       "\n" +
       "!dexstatus - Get last known status of Mangadex\n" +
       "\n" +
-      "!mangaseestatus [<status>] - Get (or with paramater, update) scraping status of Mangasee\n" +
       "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
       "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
       "!delalias <manga url> <alias> - Delete an alias from a given manga\n" +
