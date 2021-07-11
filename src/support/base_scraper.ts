@@ -6,6 +6,7 @@ import { Logger } from "bot-framework";
 import { Store, StoreDependency } from './store.js';
 import { ScraperType } from '../constants/scraper_types.js';
 import { Subscribable } from '../models/Subscribable.js';
+import { ScraperHelper } from './scrapers.js';
 
 // Simple Scraper interface for lookup use
 export interface IScraper {
@@ -20,7 +21,7 @@ export interface IScraper {
   parseItemFromUri(uri: string): Promise<Subscribable>;
 }
 
-export class BaseScraper {
+export class BaseScraper implements IScraper {
   // Name of parser - just a convenience since it comes from `type`
   name: string;
   // Scraper type enum
@@ -42,6 +43,8 @@ export class BaseScraper {
   }
 
   public async init(): Promise<void> {
+    ScraperHelper.registerScraper(this, this.type);
+
     // Ensure a timerTask is defined
     if (this.timerTask == null) {
       throw `${this.name} scraper does not have a timerTask defined`;
@@ -72,7 +75,7 @@ export class BaseScraper {
   public async enable(): Promise<boolean> {
     if (this.handle == null) {
       // Store setting in DB
-      await Store.setScraperEnabled(this.name, true);
+      await Store.setScraperEnabled(this.type, true);
       // Run timerTask at regular intervals
       this.handle = setInterval(this.timerTask, this.interval);
       this.logger.info(`${this.name} scraper enabled`);
@@ -88,7 +91,7 @@ export class BaseScraper {
       clearInterval(this.handle);
       this.handle = null;
       // Store setting in DB
-      await Store.setScraperEnabled(this.name, false);
+      await Store.setScraperEnabled(this.type, false);
       this.logger.info(`${this.name} scraper disabled`);
       return true;
     }
@@ -97,11 +100,16 @@ export class BaseScraper {
 
   // Returns whether parser is enabled
   public async isEnabled(): Promise<boolean> {
-    return !this.isExplicitlyDisabled() && await Store.isScraperEnabled(this.name);
+    return !this.isExplicitlyDisabled() && await Store.isScraperEnabled(this.type);
   }
 
   // Returns whether parser has been explicitly disabled in env
   public isExplicitlyDisabled(): boolean {
     return process.env[`Scraper.${this.name}.DISABLED`] === 'true';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public parseItemFromUri(uri: string): Promise<Subscribable> {
+    throw new Error('Method not implemented.');
   }
 }

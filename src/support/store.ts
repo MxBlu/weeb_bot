@@ -1,11 +1,14 @@
 import { Dependency, Logger } from 'bot-framework';
 import IORedis, { Redis } from 'ioredis';
 
+import { ScraperType } from '../constants/scraper_types.js';
+
 /*
   API class to interact with underlying storage implementation
   In this case, Redis
 
   Schema:
+    // OLD
     <guildId>_roles: String                   # Roles with subscriptions for a given guild ID
     <guildId>_<roleId>_notifChannel: String   # Channel ID to notify for alerts
     <guildId>_<roleId>_titles: Set<String>    # Title IDs to generate alerts for
@@ -13,6 +16,15 @@ import IORedis, { Redis } from 'ioredis';
     <parserName>_enabled: Boolean             # State for a given parser
     title_<titleId>_altTitles                 # Alternative title(s) (or ID(s)) for a given title Id
     mangasee_altTitles_<altTitleId>           # Inverted lookup for title IDs from alternative title IDs
+
+    // NEW
+    <guildId>_roles: String                                 # Roles with subscriptions for a given guild ID
+    <guildId>_<roleId>_notifChannel: String                 # Channel ID to notify for alerts
+    <guildId>_<roleId>_<scraperType>_titles: Set<String>    # Title IDs to generate alerts for
+    title_<scraperType>_<titleId>: String                   # Friendly title name for a given title ID
+    <scraperType>_enabled: Boolean                          # State for a given parser
+    title_<titleId>_altTitles                               # LEGACY - Alternative title(s) (or ID(s)) for a given title Id
+    mangasee_altTitles_<altTitleId>                         # LEGACY - Inverted lookup for title IDs from alternative title IDs
 */
 class StoreImpl {
 
@@ -123,13 +135,13 @@ class StoreImpl {
   }
 
   // Check if a given scraper is enabled
-  public async isScraperEnabled(scraper: string): Promise<boolean> {
-    return await this.rclient.get(`${scraper}_enabled`) == 'true';
+  public async isScraperEnabled(scraper: ScraperType): Promise<boolean> {
+    return await this.rclient.get(`${ScraperType[scraper]}_enabled`) == 'true';
   }
 
   // Set parsing status of a given parser
-  public async setScraperEnabled(scraper: string, enabled: boolean): Promise<void> {
-    await this.rclient.set(`${scraper}_enabled`, enabled == true ? 'true' : 'false');
+  public async setScraperEnabled(scraper: ScraperType, enabled: boolean): Promise<void> {
+    await this.rclient.set(`${ScraperType[scraper]}_enabled`, enabled == true ? 'true' : 'false');
   }
 
   // Mangasee hackjobs

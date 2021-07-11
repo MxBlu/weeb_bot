@@ -4,11 +4,10 @@ import { ScraperType } from "../constants/scraper_types.js";
 import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
-import { BaseScraper, IScraper } from "../support/base_scraper.js";
+import { BaseScraper } from "../support/base_scraper.js";
 import { MangadexHelper, MangadexHelperDependency } from "../support/mangadex.js";
 
-export class MangadexScraperImpl extends BaseScraper
-    implements IScraper {
+export class MangadexScraperImpl extends BaseScraper {
 
   // Sets of seen chapters
   guidSet: Set<string>;
