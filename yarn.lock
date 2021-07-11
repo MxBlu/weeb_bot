@@ -376,8 +376,8 @@ bl@^4.0.3:
     readable-stream "^3.4.0"
 
 bot-framework@Mxblu/bot-framework#main:
-  version "1.0.0"
-  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/b4dfa0c5b35839c68c63a22d790314a79c48df3e"
+  version "1.1.0"
+  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/e44f7235f9f31e154f6369ca41a272f5a7f46290"
   dependencies:
     discord.js "12.5.3"
     dotenv "10.0.0"
