@@ -17,8 +17,9 @@ export class SubManagementHandler implements CommandInterface {
   public commands() : Map<string, BotCommandHandlerFunction> {
     const commandMap = new Map<string, BotCommandHandlerFunction>();
 
-    commandMap.set("sub", this.subscribeHandler)
-    commandMap.set("unsub", this.unsubscribeHandler)
+    commandMap.set("sub", this.subscribeHandler);
+    commandMap.set("unsub", this.unsubscribeHandler);
+    commandMap.set("listsubs", this.listsubsHandler);
 
     return commandMap;
   }
