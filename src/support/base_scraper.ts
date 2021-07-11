@@ -4,7 +4,8 @@ dotenv.config();
 import { Logger } from "bot-framework";
 
 import { Store, StoreDependency } from './store.js';
-import { ScraperType } from '../constants/scraper_enums.js';
+import { ScraperType } from '../constants/scraper_types.js';
+import { Subscribable } from '../models/Subscribable.js';
 
 // Simple Scraper interface for lookup use
 export interface IScraper {
@@ -15,9 +16,11 @@ export interface IScraper {
   isEnabled(): Promise<boolean>;
 
   isExplicitlyDisabled(): boolean;
+
+  parseItemFromUri(uri: string): Promise<Subscribable>;
 }
 
-export class BaseScraper implements IScraper {
+export class BaseScraper {
   // Name of parser - just a convenience since it comes from `type`
   name: string;
   // Scraper type enum

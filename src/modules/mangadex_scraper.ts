@@ -1,12 +1,14 @@
 import { Chapter } from "mangadex-full-api";
-import { ScraperType } from "../constants/scraper_enums.js";
+import { ScraperType } from "../constants/scraper_types.js";
 
 import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
-import { BaseScraper } from "../support/base_scraper.js";
+import { Subscribable } from "../models/Subscribable.js";
+import { BaseScraper, IScraper } from "../support/base_scraper.js";
 import { MangadexHelper, MangadexHelperDependency } from "../support/mangadex.js";
 
-export class MangadexScraperImpl extends BaseScraper {
+export class MangadexScraperImpl extends BaseScraper
+    implements IScraper {
 
   // Sets of seen chapters
   guidSet: Set<string>;
@@ -37,6 +39,10 @@ export class MangadexScraperImpl extends BaseScraper {
   
   public async disable(): Promise<boolean> {
     return super.disable();
+  }
+  
+  public async parseItemFromUri(uri: string): Promise<Subscribable> {
+    return MangadexHelper.parseTitleUrlToMangaLite(uri);
   }
 
   timerTask = async (): Promise<void> => {

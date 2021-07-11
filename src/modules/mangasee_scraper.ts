@@ -1,13 +1,15 @@
 import { CloudflareBypass } from "bot-framework";
-import { ScraperType } from "../constants/scraper_enums.js";
+import { ScraperType } from "../constants/scraper_types.js";
 
 import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
-import { BaseScraper } from "../support/base_scraper.js";
+import { Subscribable } from "../models/Subscribable.js";
+import { BaseScraper, IScraper } from "../support/base_scraper.js";
 import { Mangasee } from "../support/mangasee.js";
 import { Store } from "../support/store.js";
 
-export class MangaseeScraperImpl extends BaseScraper {
+export class MangaseeScraperImpl extends BaseScraper
+    implements IScraper {
 
   // Sets of seen chapters
   seenUrls: Set<string>;
@@ -42,6 +44,12 @@ export class MangaseeScraperImpl extends BaseScraper {
       return true;
     }
     return false;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async parseItemFromUri(uri: string): Promise<Subscribable> {
+    // Not implemented here - We just use Mangadex subscriptions
+    return null;
   }
 
   timerTask = async (): Promise<void> => {

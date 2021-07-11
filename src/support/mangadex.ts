@@ -2,15 +2,18 @@ import { Dependency, Logger } from 'bot-framework';
 import * as Mangadex from 'mangadex-full-api';
 
 import { MANGADEX_CACHE_LOCATION } from '../constants/constants.js';
+import { ScraperType } from '../constants/scraper_types.js';
+import { Subscribable } from '../models/Subscribable.js';
 import { Store } from './store.js';
 
 // Regex for matching Mangadex urls
 const mangadexTitleSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/title\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/;
 const mangadexChapterSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/chapter\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/;
 
-export class MangaLite {
+export class MangaLite implements Subscribable {
   id: string;
   title: string;
+  type = ScraperType.Mangadex;
 }
 
 class MangadexHelperImpl {
@@ -38,11 +41,21 @@ class MangadexHelperImpl {
 
   // Extract id out of a Mangadex title url and return the best manga object we can
   // Returns null if invalid
-  public async parseTitleUrlToMangaLite(url: string): Promise<MangaLite | Mangadex.Manga> {
+  public async parseTitleUrlToMangaLite(url: string): Promise<MangaLite> {
     const id = this.parseTitleUrl(url);
 
+    // If the url was not a Mangadex URL, exit early
+    if (id == null) {
+      return null;
+    }
+
+    // Try requesting from the Mangadex API
     try {
-      return await Mangadex.Manga.get(id);
+      const manga = await Mangadex.Manga.get(id);
+      const mangalite = new MangaLite();
+      mangalite.id = id;
+      mangalite.title = manga.title;
+      return mangalite;
     } catch (e) {
       if (!(e instanceof APIRequestError)) {
         // If it's not an API error, might be something worth throwing
@@ -57,7 +70,7 @@ class MangadexHelperImpl {
 
     const mangalite = new MangaLite();
     mangalite.id = id;
-    mangalite.title = await Store.getTitleName(id);
+    mangalite.title = title;
     return mangalite;
   }
 
