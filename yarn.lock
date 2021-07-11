@@ -375,9 +375,9 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bot-framework@Mxblu/bot-framework#main:
+bot-framework@Mxblu/bot-framework#command-handler:
   version "1.1.0"
-  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/e44f7235f9f31e154f6369ca41a272f5a7f46290"
+  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/4c624a9649e30b57cd5d7413d961b77adc417263"
   dependencies:
     discord.js "12.5.3"
     dotenv "10.0.0"

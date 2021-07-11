@@ -1,10 +1,10 @@
-import { BotCommand, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { BotCommand, Logger, LogLevel, sendCmdMessage, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class MangaseeCommandHandler {
+export class MangaseeCommandHandler implements CommandInterface {
 
   logger: Logger;
 
@@ -12,7 +12,17 @@ export class MangaseeCommandHandler {
     this.logger = new Logger("MangaseeCommandHandler");
   }
 
-  public getaliasesHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("getaliases", this.getaliasesHandler);
+    commandMap.set("addalias", this.addaliasHandler);
+    commandMap.set("delalias", this.delaliasHandler);
+
+    return commandMap;
+  }
+
+  private getaliasesHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     switch (command.arguments.length) {
     case 1:
@@ -37,7 +47,7 @@ export class MangaseeCommandHandler {
     sendCmdMessage(command.message, str, this.logger, LogLevel.TRACE);
   }
 
-  public addaliasHandler = async (command: BotCommand): Promise<void> => {
+  private addaliasHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     let altTitle: string = null;
     switch (command.arguments.length) {
@@ -63,7 +73,7 @@ export class MangaseeCommandHandler {
     sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${manga.title}'`, this.logger, LogLevel.INFO);
   }
 
-  public delaliasHandler = async (command: BotCommand): Promise<void> => {
+  private delaliasHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     let altTitle: string = null;
     switch (command.arguments.length) {

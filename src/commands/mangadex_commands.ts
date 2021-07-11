@@ -1,8 +1,8 @@
-import { sendCmdMessage, Logger, LogLevel, BotCommand } from "bot-framework";
+import { sendCmdMessage, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
 
-export class MangadexCommandHandler {
+export class MangadexCommandHandler implements CommandInterface {
   
   logger: Logger;
 
@@ -10,7 +10,15 @@ export class MangadexCommandHandler {
     this.logger = new Logger("MangadexCommandHandler");
   }
 
-  public dexstatusHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("dexstatus", this.dexstatusHandler)
+
+    return commandMap;
+  }
+
+  private dexstatusHandler = async (command: BotCommand): Promise<void> => {
     switch (command.arguments.length) {
     case 0:
       // Get the last known status about Mangadex

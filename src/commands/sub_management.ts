@@ -1,4 +1,4 @@
-import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand } from "bot-framework";
+import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
@@ -6,7 +6,7 @@ import { checkIfSubscribed } from "../support/weeb_utils.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 
-export class SubManagementHandler {
+export class SubManagementHandler implements CommandInterface {
 
   logger: Logger;
 
@@ -14,7 +14,16 @@ export class SubManagementHandler {
     this.logger = new Logger("SubManagementHandler");
   }
 
-  public subscribeHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("sub", this.subscribeHandler)
+    commandMap.set("unsub", this.unsubscribeHandler)
+
+    return commandMap;
+  }
+
+  private subscribeHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
       this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
@@ -54,7 +63,7 @@ export class SubManagementHandler {
         `Added title '${subscribable.title}' from '${ScraperType[subscribable.type]}' to role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
-  public unsubscribeHandler = async (command: BotCommand): Promise<void> => {
+  private unsubscribeHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
       this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
@@ -92,7 +101,7 @@ export class SubManagementHandler {
     sendCmdMessage(command.message, `Removed title '${subscribable.title}' from role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
-  public listsubsHandler = async (command: BotCommand): Promise<void> => {
+  private listsubsHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
       this.logger.info(`Not listening to channel #${(command.message.channel as TextChannel).name}`);

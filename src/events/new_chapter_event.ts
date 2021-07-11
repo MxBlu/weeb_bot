@@ -15,6 +15,7 @@ export class NewChapterEventHandler {
     this.logger = new Logger("NewChapterEventHandler");
   }
 
+
   public newChapterHandler = async (alert: MangaAlert): Promise<void> => {
     const guild = this.discord.guilds.cache.get(alert.guildId);
     if (guild == null) {

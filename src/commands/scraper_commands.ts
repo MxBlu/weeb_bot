@@ -1,9 +1,10 @@
-import { isAdmin, sendCmdMessage, Logger, LogLevel, BotCommand } from "bot-framework";
+import { isAdmin, sendCmdMessage, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 
 import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
-export class ScraperCommandsHandler {
+
+export class ScraperCommandsHandler implements CommandInterface {
   
   logger: Logger;
 
@@ -11,7 +12,15 @@ export class ScraperCommandsHandler {
     this.logger = new Logger("ScraperCommandsHandler");
   }
 
-  public scraperstatusHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("scraperstatus", this.scraperstatusHandler)
+
+    return commandMap;
+  }
+
+  private scraperstatusHandler = async (command: BotCommand): Promise<void> => {
     let type: ScraperType = null;
     let scraper: IScraper = null;
     let status = false;

@@ -1,10 +1,10 @@
-import { BotCommand, Logger, LogLevel, sendCmdMessage, stringEquivalence } from "bot-framework";
+import { BotCommand, Logger, LogLevel, sendCmdMessage, stringEquivalence, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 
-export class ChannelManagementHandler {
+export class ChannelManagementHandler implements CommandInterface {
 
   logger: Logger;
 
@@ -12,7 +12,16 @@ export class ChannelManagementHandler {
     this.logger = new Logger("ChannelManagementHandler");
   }
 
-  public notifchannelHandler = async (command: BotCommand): Promise<void> => {
+  public commands() : Map<string, BotCommandHandlerFunction> {
+    const commandMap = new Map<string, BotCommandHandlerFunction>();
+
+    commandMap.set("notifchannel", this.notifchannelHandler)
+    commandMap.set("unnotif", this.unnotifHandler)
+
+    return commandMap;
+  }
+
+  private notifchannelHandler = async (command: BotCommand): Promise<void> => {
     if (command.arguments.length == 0) {
       sendCmdMessage(command.message, 'Error: missing arugment, provide role to register', this.logger, LogLevel.DEBUG);
       return;
@@ -40,7 +49,7 @@ export class ChannelManagementHandler {
     sendCmdMessage(command.message, `Notif channel set to #${channel.name} for role @${role.name}`, this.logger, LogLevel.INFO);
   }
 
-  public unnotifHandler = async (command: BotCommand): Promise<void> => {
+  private unnotifHandler = async (command: BotCommand): Promise<void> => {
     if (! await checkIfSubscribed(command.message)) {
       // Only handle if listening to this channel already
       this.logger.debug(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
@@ -71,4 +80,5 @@ export class ChannelManagementHandler {
     await Store.delNotifChannel(guild.id, role.id);
     sendCmdMessage(command.message, `No longer notifying for role @${role.name}`, this.logger, LogLevel.INFO);
   }
+
 }
