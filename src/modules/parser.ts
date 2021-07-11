@@ -1,4 +1,5 @@
 import { Logger } from "bot-framework";
+import { ScraperType } from "../constants/scraper_types.js";
 
 import { NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaAlert } from "../models/MangaAlert.js";
@@ -27,17 +28,17 @@ export class MangaParserImpl {
       const roles = await Store.getRoles(guildId);
       const rolesToAlert = new Set<string>();
       for (const roleId of roles) {
-        const titles = await Store.getTitles(guildId, roleId);
+        const titles = await Store.getTitles(guildId, roleId, item.type);
         if (titles.has(item.titleId)) {
           rolesToAlert.add(roleId);
         }
       }
       if (rolesToAlert.size > 0) {
-        const mangaTitle = await Store.getTitleName(item.titleId);
+        const mangaTitle = await Store.getTitleName(item.type, item.titleId);
         const title = `${mangaTitle} - Chapter ${item.chapterNumber}`;
 
         this.logger.debug(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
-            `${title}`);
+            `'${title}' of ${ScraperType[item.type]}`);
         
         const mangaAlert = new MangaAlert();
         mangaAlert.mangaChapter = item;

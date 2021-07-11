@@ -63,11 +63,14 @@ class MangadexHelperImpl {
       }
     }
     
-    const title = await Store.getTitleName(id);
+    // See if a Mangadex title was ever available for this id
+    const title = await Store.getTitleName(ScraperType.Mangadex, id);
+    // If not, this URI can't be determined to be a support Mangadex one
     if (title == null) {
       return null;
     }
 
+    // If we do have a title, it's been parsed in the past
     const mangalite = new MangaLite();
     mangalite.id = id;
     mangalite.title = title;

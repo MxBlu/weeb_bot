@@ -44,6 +44,10 @@ export class MangadexScraperImpl extends BaseScraper {
     return MangadexHelper.parseTitleUrlToMangaLite(uri);
   }
 
+  public uriForId(id: string): string {
+    return MangadexHelper.toTitleUrl(id);
+  }
+
   timerTask = async (): Promise<void> => {
     try {
       // Only get chapters since we started scraping

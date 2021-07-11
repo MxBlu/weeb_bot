@@ -19,6 +19,8 @@ export interface IScraper {
   isExplicitlyDisabled(): boolean;
 
   parseItemFromUri(uri: string): Promise<Subscribable>;
+
+  uriForId(id: string): string;
 }
 
 export class BaseScraper implements IScraper {
@@ -110,6 +112,11 @@ export class BaseScraper implements IScraper {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public parseItemFromUri(uri: string): Promise<Subscribable> {
+    throw new Error('Method not implemented.');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public uriForId(id: string): string {
     throw new Error('Method not implemented.');
   }
 }
