@@ -1,24 +1,16 @@
-import { BaseBot, Dependency } from "bot-framework";
+import { BaseBot, BotCommandHandlerFunction, Dependency } from "bot-framework";
 import { Guild } from "discord.js";
 
 import { Store, StoreDependency } from "../support/store.js";
 import { ChannelManagementHandler } from "../commands/channel_management.js";
 import { MangadexCommandHandler } from "../commands/mangadex_commands.js";
 import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
-import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
+import { NewChapterEventHandler } from "../events/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
 import { ScraperCommandsHandler } from "../commands/scraper_commands.js";
 
 export class WeebBotImpl extends BaseBot {
-
-  // Command handlers
-  channelManagementHandler: ChannelManagementHandler;
-  mangadexCommandsHandler: MangadexCommandHandler;
-  mangaseeCommandsHandler: MangaseeCommandHandler;
-  scraperCommandsHandler: ScraperCommandsHandler;
-  subManagementHandler: SubManagementHandler;
-
   // Event handlers
   newChapterEventHandler: NewChapterEventHandler;
 
@@ -26,32 +18,29 @@ export class WeebBotImpl extends BaseBot {
     super("WeebBot");
   }
 
+  private joinCommands(): Map<string, BotCommandHandlerFunction> {
+    const channelManagementCommands = new ChannelManagementHandler();
+    const mangadexCommands = new MangadexCommandHandler();
+    const mangaseeCommands = new MangaseeCommandHandler();
+    const subManagementCommands = new SubManagementHandler();
+    const scraperCommands = new ScraperCommandsHandler();
+
+    return new Map<string, BotCommandHandlerFunction>([
+      ...channelManagementCommands.commands(),
+      ...mangadexCommands.commands(),
+      ...subManagementCommands.commands(),
+      ...mangaseeCommands.commands(),
+      ...scraperCommands.commands()
+    ])
+  }
+
   public async init(discordToken: string): Promise<void> {
     // Wait on Store to be ready
     await StoreDependency.await();
 
+    super.addCommandHandlers(this.joinCommands())
+
     super.init(discordToken);
-  }
-
-  public initCommandHandlers(): void {
-    super.initCommandHandlers();
-    
-    this.channelManagementHandler = new ChannelManagementHandler();
-    this.mangadexCommandsHandler = new MangadexCommandHandler();
-    this.mangaseeCommandsHandler = new MangaseeCommandHandler();
-    this.scraperCommandsHandler = new ScraperCommandsHandler();
-    this.subManagementHandler = new SubManagementHandler();
-
-    this.commandHandlers.set("notifchannel", this.channelManagementHandler.notifchannelHandler);
-    this.commandHandlers.set("unnotif", this.channelManagementHandler.unnotifHandler);
-    this.commandHandlers.set("sub", this.subManagementHandler.subscribeHandler);
-    this.commandHandlers.set("unsub", this.subManagementHandler.unsubscribeHandler);
-    this.commandHandlers.set("listsubs", this.subManagementHandler.listsubsHandler);
-    this.commandHandlers.set("scraperstatus", this.scraperCommandsHandler.scraperstatusHandler);
-    this.commandHandlers.set("dexstatus", this.mangadexCommandsHandler.dexstatusHandler);
-    this.commandHandlers.set("getaliases", this.mangaseeCommandsHandler.getaliasesHandler);
-    this.commandHandlers.set("addalias", this.mangaseeCommandsHandler.addaliasHandler);
-    this.commandHandlers.set("delalias", this.mangaseeCommandsHandler.delaliasHandler);
   }
 
   public initEventHandlers(): void {
@@ -65,7 +54,6 @@ export class WeebBotImpl extends BaseBot {
   }
 
   // Discord event handlers
-
   public async onReady(): Promise<void> {
     // Call fetch on every guild to make sure we have all the members cached
     const guilds = this.discord.guilds.cache.map(g => g.id);

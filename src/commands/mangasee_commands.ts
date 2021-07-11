@@ -1,10 +1,8 @@
-import { BotCommand, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { BotCommand, Logger, LogLevel, sendCmdMessage, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangaLite } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
-
-import { BotCommandHandlerFunction, CommandInterface } from "./command_interface.js";
 
 export class MangaseeCommandHandler implements CommandInterface {
 
@@ -24,7 +22,7 @@ export class MangaseeCommandHandler implements CommandInterface {
     return commandMap;
   }
 
-  public getaliasesHandler = async (command: BotCommand): Promise<void> => {
+  private getaliasesHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     switch (command.arguments.length) {
     case 1:
@@ -49,7 +47,7 @@ export class MangaseeCommandHandler implements CommandInterface {
     sendCmdMessage(command.message, str, this.logger, LogLevel.TRACE);
   }
 
-  public addaliasHandler = async (command: BotCommand): Promise<void> => {
+  private addaliasHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     let altTitle: string = null;
     switch (command.arguments.length) {
@@ -75,7 +73,7 @@ export class MangaseeCommandHandler implements CommandInterface {
     sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${manga.title}'`, this.logger, LogLevel.INFO);
   }
 
-  public delaliasHandler = async (command: BotCommand): Promise<void> => {
+  private delaliasHandler = async (command: BotCommand): Promise<void> => {
     let manga: Manga | MangaLite = null;
     let altTitle: string = null;
     switch (command.arguments.length) {

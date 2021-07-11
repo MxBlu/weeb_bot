@@ -1,12 +1,10 @@
-import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand } from "bot-framework";
+import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
 import { Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
-
-import { CommandInterface, BotCommandHandlerFunction } from "./command_interface.js";
 
 export class SubManagementHandler implements CommandInterface {
 
