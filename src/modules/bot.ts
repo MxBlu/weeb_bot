@@ -8,6 +8,7 @@ import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
 import { NewChapterEventHandler } from "../commands/new_chapter_event.js";
 import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
+import { ScraperCommandsHandler } from "../commands/scraper_commands.js";
 
 const errorChannel: string = process.env.DISCORD_ERROR_CHANNEL;
 
@@ -40,6 +41,7 @@ export class BotImpl {
   channelManagementHandler: ChannelManagementHandler;
   mangadexCommandsHandler: MangadexCommandHandler;
   mangaseeCommandsHandler: MangaseeCommandHandler;
+  scraperCommandsHandler: ScraperCommandsHandler;
   subManagementHandler: SubManagementHandler;
 
   // Event handlers
@@ -68,6 +70,7 @@ export class BotImpl {
     this.channelManagementHandler = new ChannelManagementHandler();
     this.mangadexCommandsHandler = new MangadexCommandHandler();
     this.mangaseeCommandsHandler = new MangaseeCommandHandler();
+    this.scraperCommandsHandler = new ScraperCommandsHandler();
     this.subManagementHandler = new SubManagementHandler();
 
     this.commandHandlers.set("help", this.helpHandler);
@@ -77,6 +80,7 @@ export class BotImpl {
     this.commandHandlers.set("sub", this.subManagementHandler.subscribeHandler);
     this.commandHandlers.set("unsub", this.subManagementHandler.unsubscribeHandler);
     this.commandHandlers.set("listsubs", this.subManagementHandler.listsubsHandler);
+    this.commandHandlers.set("scraperstatus", this.scraperCommandsHandler.scraperstatusHandler);
     this.commandHandlers.set("dexstatus", this.mangadexCommandsHandler.dexstatusHandler);
     this.commandHandlers.set("mangaseestatus", this.mangaseeCommandsHandler.mangaseestatusHandler);
     this.commandHandlers.set("getaliases", this.mangaseeCommandsHandler.getaliasesHandler);

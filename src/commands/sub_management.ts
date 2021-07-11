@@ -121,13 +121,18 @@ export class SubManagementHandler {
       return;
     }
 
-    // Lookup type from 
+    // Lookup type from string
     const type = typeFromLowercase(typeName.toLowerCase());
     if (type == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
+      sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
       return;
     }
+
     const scraper = ScraperHelper.getScraperForType(type);
+    if (scraper == null) {
+      sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
+      return;
+    }
 
     const titles = await Store.getTitles(guild.id, role.id, type);
     if (titles == null || titles.size == 0) {
