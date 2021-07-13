@@ -18,39 +18,29 @@ export class WeebBotImpl extends BaseBot {
     super("WeebBot");
   }
 
-  private joinCommands(): Map<string, BotCommandHandlerFunction> {
-    const channelManagementCommands = new ChannelManagementHandler();
-    const mangadexCommands = new MangadexCommandHandler();
-    const mangaseeCommands = new MangaseeCommandHandler();
-    const subManagementCommands = new SubManagementHandler();
-    const scraperCommands = new ScraperCommandsHandler();
-
-    return new Map<string, BotCommandHandlerFunction>([
-      ...channelManagementCommands.commands(),
-      ...mangadexCommands.commands(),
-      ...subManagementCommands.commands(),
-      ...mangaseeCommands.commands(),
-      ...scraperCommands.commands()
-    ])
-  }
-
   public async init(discordToken: string): Promise<void> {
     // Wait on Store to be ready
     await StoreDependency.await();
 
-    super.addCommandHandlers(this.joinCommands())
-
     super.init(discordToken);
   }
 
-  public initEventHandlers(): void {
-    super.initEventHandlers();
+  public initCustomEventHandlers(): void {
+    // Subscribe to guild join/leave events, for ensuring guild set consistency
     this.discord.on('guildCreate', this.joinServerHandler);
     this.discord.on('guildDelete', this.leaveServerHandler);
 
     // Subscribe new chapter handler
     this.newChapterEventHandler = new NewChapterEventHandler(this.discord);
     NewMangaAlertTopic.subscribe("NewChapterEventHandler.newChapterHandler", this.newChapterEventHandler.newChapterHandler);
+  }
+
+  public loadInterfaces(): void {
+    this.interfaces.push(new ChannelManagementHandler());
+    this.interfaces.push(new MangadexCommandHandler());
+    this.interfaces.push(new MangaseeCommandHandler());
+    this.interfaces.push(new SubManagementHandler());
+    this.interfaces.push(new ScraperCommandsHandler());
   }
 
   // Discord event handlers
