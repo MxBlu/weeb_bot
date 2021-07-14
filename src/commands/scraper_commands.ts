@@ -70,7 +70,7 @@ export class ScraperCommandsHandler implements CommandInterface {
         return;
       }
 
-      status = command.arguments[0] == 'true';
+      status = command.arguments[1] == 'true';
       
       if (status == true) {
         await scraper.enable();
