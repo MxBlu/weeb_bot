@@ -75,7 +75,7 @@ export class MangaseeScraperImpl extends BaseScraper {
         }
 
         const mChapter = new MangaChapter();
-        mChapter.type = ScraperType.Mangadex;
+        mChapter.type = ScraperType.Mangadex; // This is masquerading as a Mangadex chapter for subscriptions
         mChapter.link = c.link;
         mChapter.titleId = titleId;
         mChapter.chapterNumber = c.chapterNumber;
