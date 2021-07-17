@@ -1,5 +1,5 @@
-import { sendCmdMessage, stringEquivalence, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
-import { Role, TextChannel } from "discord.js";
+import { sendCmdMessage, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction, findGuildRole } from "bot-framework";
+import { TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
@@ -38,15 +38,8 @@ export class SubManagementHandler implements CommandInterface {
     const url = command.arguments[1];
     
     const guild = command.message.guild;
-    let role: Role = null;
 
-    const roleRx = roleName.match(/^<@&(\d+)>$/);
-    if (roleRx != null) {
-      role = guild.roles.cache.get(roleRx[1]);
-    } else {
-      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
-    }
-
+    const role = await findGuildRole(roleName, guild);
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
@@ -78,15 +71,8 @@ export class SubManagementHandler implements CommandInterface {
     const url = command.arguments[1];
 
     const guild = command.message.guild;
-    let role: Role = null;
 
-    const roleRx = roleName.match(/^<@&(\d+)>$/);
-    if (roleRx != null) {
-      role = guild.roles.cache.get(roleRx[1]);
-    } else {
-      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
-    }
-
+    const role = await findGuildRole(roleName, guild);
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
@@ -116,15 +102,8 @@ export class SubManagementHandler implements CommandInterface {
     const typeName = command.arguments[1];
 
     const guild = command.message.guild;
-    let role: Role = null;
 
-    const roleRx = roleName.match(/^<@&(\d+)>$/);
-    if (roleRx != null) {
-      role = guild.roles.cache.get(roleRx[1]);
-    } else {
-      role = guild.roles.cache.find(r => stringEquivalence(r.name, roleName));
-    }
-
+    const role = await findGuildRole(roleName, guild);
     if (role == null) {
       sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
       return;
