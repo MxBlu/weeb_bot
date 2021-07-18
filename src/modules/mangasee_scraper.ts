@@ -5,6 +5,7 @@ import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
+import { MangadexHelper } from "../support/mangadex.js";
 import { Mangasee } from "../support/mangasee.js";
 import { Store } from "../support/store.js";
 
@@ -45,10 +46,9 @@ export class MangaseeScraperImpl extends BaseScraper {
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async parseItemFromUri(uri: string): Promise<Subscribable> {
-    // Not implemented here - We just use Mangadex subscriptions
-    return null;
+    // Use Mangadex uri parsing since we really just want to use this as fallback
+    return MangadexHelper.parseTitleUrlToMangaLite(uri);
   }
 
   timerTask = async (): Promise<void> => {
