@@ -5,13 +5,13 @@ import { MangaChapter } from "../models/MangaChapter.js";
 import { MangadexPulse } from "../models/MangadexPulse.js";
 
 // Message topic for a new alert for a chapter
-export const NewMangaAlertTopic = new MessengerTopic<MangaAlert>("NewMangaAlertTopic");
+export const NewMangaAlertTopic = new MessengerTopic<MangaAlert>("NewMangaAlert");
 
 // Message topic for a new Mangasee chapter being published
-export const NewMangaseeItemTopic = new MessengerTopic<MangaChapter>("NewMangaseeItemTopic");
+export const NewMangaseeItemTopic = new MessengerTopic<MangaChapter>("NewMangaseeItem");
 
 // Message topic for a new Mangadex chapter being published
-export const NewMangadexItemTopic = new MessengerTopic<MangaChapter>("NewMangadexItemTopic");
+export const NewMangadexItemTopic = new MessengerTopic<MangaChapter>("NewMangadexItem");
 
 // Message topic for last known Mangadex API status
-export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulseTopic");
+export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulse");
