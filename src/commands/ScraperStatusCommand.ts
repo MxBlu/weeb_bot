@@ -1,26 +1,25 @@
-import { isAdmin, sendCmdMessage, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
-import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
+import { BotCommand, CommandProvider, isAdmin, Logger, LogLevel, sendCmdMessage } from "bot-framework";
 
+import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
 
-export class ScraperCommandsHandler implements CommandInterface {
-  
+export class ScraperStatusCommand implements CommandProvider {
   logger: Logger;
 
   constructor() {
-    this.logger = new Logger("ScraperCommandsHandler");
+    this.logger = new Logger("ScraperStatusCommand");
   }
 
-  public commands() : Map<string, BotCommandHandlerFunction> {
-    const commandMap = new Map<string, BotCommandHandlerFunction>();
-
-    commandMap.set("scraperstatus", this.scraperstatusHandler)
-
-    return commandMap;
+  public provideAliases(): string[] {
+    return [ "scraperstatus" ];
   }
 
-  private scraperstatusHandler = async (command: BotCommand): Promise<void> => {
+  public provideHelpMessage(): string {
+    return "!scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper";
+  }
+
+  public async handle(command: BotCommand): Promise<void> {
     let type: ScraperType = null;
     let scraper: IScraper = null;
     let status = false;

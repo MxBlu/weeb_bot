@@ -1,28 +1,27 @@
-import { sendCmdMessage, Logger, LogLevel, BotCommand, CommandInterface, BotCommandHandlerFunction } from "bot-framework";
+import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
 
-export class MangadexCommandHandler implements CommandInterface {
-  
+export class DexStatusCommand implements CommandProvider {
   logger: Logger;
 
   constructor() {
-    this.logger = new Logger("MangadexCommandHandler");
+    this.logger = new Logger("DexStatusCommand");
   }
 
-  public commands() : Map<string, BotCommandHandlerFunction> {
-    const commandMap = new Map<string, BotCommandHandlerFunction>();
-
-    commandMap.set("dexstatus", this.dexstatusHandler)
-
-    return commandMap;
+  public provideAliases(): string[] {
+    return [ "dexstatus" ];
   }
 
-  private dexstatusHandler = async (command: BotCommand): Promise<void> => {
+  public provideHelpMessage(): string {
+    return "!dexstatus - Get last known status of Mangadex";
+  }
+
+  public async handle(command: BotCommand): Promise<void> {
     switch (command.arguments.length) {
     case 0:
       // Get the last known status about Mangadex
-      const dexStatus = MangadexPulseTopic.getLastData()
+      const dexStatus = MangadexPulseTopic.getLastData();
       if (dexStatus?.status === true) {
         let message = `Mangadex up`;
         if (dexStatus.lastDown != null) {

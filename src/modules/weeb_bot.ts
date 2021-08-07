@@ -1,14 +1,19 @@
-import { BaseBot, BotCommandHandlerFunction, Dependency } from "bot-framework";
+import { BaseBot, Dependency } from "bot-framework";
 import { Guild } from "discord.js";
 
 import { Store, StoreDependency } from "../support/store.js";
-import { ChannelManagementHandler } from "../commands/channel_management.js";
-import { MangadexCommandHandler } from "../commands/mangadex_commands.js";
-import { MangaseeCommandHandler } from "../commands/mangasee_commands.js";
 import { NewChapterEventHandler } from "../events/new_chapter_event.js";
-import { SubManagementHandler } from "../commands/sub_management.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
-import { ScraperCommandsHandler } from "../commands/scraper_commands.js";
+import { NotifChannelCommand } from "../commands/NotifChannelCommand.js";
+import { UnotifChannelCommand } from "../commands/UnnotifChannelCommand.js";
+import { SubCommand } from "../commands/SubCommand.js";
+import { UnsubCommand } from "../commands/UnsubCommand.js";
+import { ListSubsCommand } from "../commands/ListSubsCommand.js";
+import { ScraperStatusCommand } from "../commands/ScraperStatusCommand.js";
+import { DexStatusCommand } from "../commands/DexStatusCommand.js";
+import { GetAliasesCommand } from "../commands/GetAliasesCommand.js";
+import { AddAliasCommand } from "../commands/AddAliasCommand.js";
+import { DelAliasCommand } from "../commands/DelAliasCommand.js";
 
 export class WeebBotImpl extends BaseBot {
   // Event handlers
@@ -26,6 +31,7 @@ export class WeebBotImpl extends BaseBot {
   }
 
   public initCustomEventHandlers(): void {
+    this.discord.once('ready', this.onreadyHandler);
     // Subscribe to guild join/leave events, for ensuring guild set consistency
     this.discord.on('guildCreate', this.joinServerHandler);
     this.discord.on('guildDelete', this.leaveServerHandler);
@@ -35,16 +41,27 @@ export class WeebBotImpl extends BaseBot {
     NewMangaAlertTopic.subscribe("NewChapterEventHandler.newChapterHandler", this.newChapterEventHandler.newChapterHandler);
   }
 
-  public loadInterfaces(): void {
-    this.interfaces.push(new ChannelManagementHandler());
-    this.interfaces.push(new MangadexCommandHandler());
-    this.interfaces.push(new MangaseeCommandHandler());
-    this.interfaces.push(new SubManagementHandler());
-    this.interfaces.push(new ScraperCommandsHandler());
+  public loadProviders(): void {
+    this.providers.push(new NotifChannelCommand());
+    this.providers.push(new UnotifChannelCommand());
+    this.providers.push(new SubCommand());
+    this.providers.push(new UnsubCommand());
+    this.providers.push(new ListSubsCommand());
+    this.providers.push(new ScraperStatusCommand());
+    this.providers.push(new DexStatusCommand());
+    this.providers.push(new GetAliasesCommand());
+    this.providers.push(new AddAliasCommand());
+    this.providers.push(new DelAliasCommand());
+  }
+
+  public getHelpMessage(): string {
+    return "Weeb bot - Ping roles on new chapters in Mangadex\n" + 
+        "Subscription commands will only work after !notifchannel has been called for the channel";
   }
 
   // Discord event handlers
-  public async onReady(): Promise<void> {
+
+  public onreadyHandler = async (): Promise<void> => {
     // Call fetch on every guild to make sure we have all the members cached
     const guilds = this.discord.guilds.cache.map(g => g.id);
     Store.addGuilds(...guilds);
@@ -61,30 +78,6 @@ export class WeebBotImpl extends BaseBot {
     this.logger.debug(`Left guild: ${guild.name}`);
     Store.removeGuild(guild.id);
   }
-
-  public getHelpMessage(): string {
-    const msg = 
-      "Weeb bot - Ping roles on new chapters in Mangadex\n" +
-      "\n" +
-      "!notifchannel <role> - Set current channel as the notification channel for given role\n" +
-      "!unnotif <role> - Remove notif channel from given role\n" +
-      "!sub <role> <manga url> - Subscribe given role to given manga\n" +
-      "!unsub <role> <manga url> - Unubscribe given role from given manga\n" +
-      "!listsubs <role> <scraper type> - List all subscriptions for given role and scraper\n" +
-      "\n" +
-      "!scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper\n" +
-      "\n" +
-      "!dexstatus - Get last known status of Mangadex\n" +
-      "\n" +
-      "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee parser\n" +
-      "!addalias <manga url> <alias> -Add an alias to a given manga\n" +
-      "!delalias <manga url> <alias> - Delete an alias from a given manga\n" +
-      "\n" +
-      "Subscription commands will only work after !notifchannel has been called for the channel";
-
-    return msg;
-  }
-
 }
 
 export const WeebBot = new WeebBotImpl();
