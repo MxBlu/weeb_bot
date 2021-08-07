@@ -4,16 +4,16 @@ import { Guild } from "discord.js";
 import { Store, StoreDependency } from "../support/store.js";
 import { NewChapterEventHandler } from "../events/new_chapter_event.js";
 import { NewMangaAlertTopic } from "../constants/topics.js";
-import { NotifChannelCommand } from "../commands/NotifChannelCommand.js";
-import { UnotifChannelCommand } from "../commands/UnnotifChannelCommand.js";
-import { SubCommand } from "../commands/SubCommand.js";
-import { UnsubCommand } from "../commands/UnsubCommand.js";
-import { ListSubsCommand } from "../commands/ListSubsCommand.js";
-import { ScraperStatusCommand } from "../commands/ScraperStatusCommand.js";
-import { DexStatusCommand } from "../commands/DexStatusCommand.js";
-import { GetAliasesCommand } from "../commands/GetAliasesCommand.js";
-import { AddAliasCommand } from "../commands/AddAliasCommand.js";
-import { DelAliasCommand } from "../commands/DelAliasCommand.js";
+import { NotifChannelCommand } from "../commands/notif_channel_command.js";
+import { UnotifChannelCommand } from "../commands/unnotif_channel_command.js";
+import { SubCommand } from "../commands/sub_command.js";
+import { UnsubCommand } from "../commands/unsub_command.js";
+import { ListSubsCommand } from "../commands/list_subs_command.js";
+import { ScraperStatusCommand } from "../commands/scraper_status_command.js";
+import { DexStatusCommand } from "../commands/dex_status_command.js";
+import { GetAliasesCommand } from "../commands/get_aliases_command.js";
+import { AddAliasCommand } from "../commands/add_alias_command.js";
+import { DelAliasCommand } from "../commands/del_alias_command.js";
 
 export class WeebBotImpl extends BaseBot {
   // Event handlers
