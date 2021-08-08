@@ -8,13 +8,15 @@ import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 
+class SubscriptionItem {
+  title: string;
+  link: string;
+}
+
 class ListSubsProps {
-  // List query
-  titlesMap: Map<string, string>;
-  // List query title
   embedTitle: string;
-  // Scraper for querying
-  scraper: IScraper;
+  // All subscription items for listing
+  subscriptions: SubscriptionItem[];
   // Current index
   skip = 0;
 }
@@ -40,55 +42,66 @@ export class ListSubsCommand implements CommandProvider {
       this.logger.info(`Not listening to channel #${(command.message.channel as TextChannel).name}`);
       return;
     }
-    if (command.arguments.length < 2) {
-      sendCmdMessage(command.message, 'Error: missing an arugment, provide role and scraper type', this.logger, LogLevel.TRACE);
-      return;
-    }
-    const roleName = command.arguments[0];
-    const typeName = command.arguments[1];
 
     const guild = command.message.guild;
+    let subscriptions: SubscriptionItem[] = null;
+    let embedTitle: string = null;
 
-    const role = await findGuildRole(roleName, guild);
-    if (role == null) {
-      sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
+    switch (command.arguments.length) {
+    case 1:
+      // TODO: Implement as "all scraper types"
+      sendCmdMessage(command.message, 'Error: missing scraper type', this.logger, LogLevel.TRACE);
+      return;
+    case 2:
+      const roleName = command.arguments[0];
+      const typeName = command.arguments[1];
+
+      const role = await findGuildRole(roleName, guild);
+      if (role == null) {
+        sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
+        return;
+      }
+
+      // Lookup type from string
+      const type = typeFromLowercase(typeName.toLowerCase());
+      if (type == null) {
+        sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
+        return;
+      }
+
+      const scraper = ScraperHelper.getScraperForType(type);
+      if (scraper == null) {
+        sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
+        return;
+      }
+
+      const titleIds = await Store.getTitles(guild.id, role.id, type);
+      if (titleIds.size == 0) {
+        sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
+        return;
+      }
+
+      // Generate all subscription items to list
+      subscriptions = await Promise.all(Array.from(titleIds)
+          .map(async id => ({ 
+            title: await Store.getTitleName(type, id), 
+            link: scraper.uriForId(id) 
+          })));
+
+      embedTitle = `Subscriptions - @${role.name} - ${ScraperType[type]}`;
+      break;
+    default:
+      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
       return;
     }
 
-    // Lookup type from string
-    const type = typeFromLowercase(typeName.toLowerCase());
-    if (type == null) {
-      sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
-      return;
-    }
-
-    const scraper = ScraperHelper.getScraperForType(type);
-    if (scraper == null) {
-      sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
-      return;
-    }
-
-    const titles = await Store.getTitles(guild.id, role.id, type);
-    if (titles.size == 0) {
-      sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
-      return;
-    }
+    // Sort list by title
+    subscriptions.sort((a, b) => a.title.localeCompare(b.title));
     
-    let titleMap = new Map<string, string>();
-    for (const title of titles) {
-      titleMap.set(title, await Store.getTitleName(type, title));
-    }
-    // Sort title map by value (title name)
-    titleMap = new Map([...titleMap].sort((a, b) => a[1].localeCompare(b[1])));
-
-    let embedTitle = `Subscriptions - @${role.name}`;
-    if (type != null) {
-      embedTitle += ` - ${ScraperType[type]}`;
-    }
-    
-    const subscriptionsStr = Array.from(titleMap.entries())
+    // Create string with first ENTRIES_PER_LIST_QUERY number of subscription items
+    const subscriptionsStr = subscriptions
         .slice(0, ENTRIES_PER_LIST_QUERY)
-        .map(([id, name]) => `[${name}](${scraper.uriForId(id)})`)
+        .map(sub => `[${sub.title}](${sub.link})`)
         .join('\n');
 
     const embed = new MessageEmbed()
@@ -96,7 +109,7 @@ export class ListSubsCommand implements CommandProvider {
         .setDescription(subscriptionsStr);
 
     // Send initial embed
-    this.logger.info(`${embedTitle} - ${titles.size} subscriptions`);
+    this.logger.info(`${embedTitle} - ${subscriptions.length} subscriptions`);
     const message = await command.message.channel.send(embed);
 
     // Create scrollable modal
@@ -105,8 +118,7 @@ export class ListSubsCommand implements CommandProvider {
     reactable.registerHandler("➡️", this.listSubsRightHandler);
     reactable.props = new ListSubsProps();
     reactable.props.embedTitle = embedTitle;
-    reactable.props.titlesMap = titleMap;
-    reactable.props.scraper = scraper;
+    reactable.props.subscriptions = subscriptions;
 
     // Activate and track the modal
     reactable.activate(true);
@@ -118,16 +130,16 @@ export class ListSubsCommand implements CommandProvider {
     if (props.skip == 0) {
       // Already left-most, loop around
       // Go to the next lowest value of 10 (ensuring we don't end up on the same value)
-      props.skip = props.titlesMap.size - (props.titlesMap.size % 10);
+      props.skip = props.subscriptions.length - (props.subscriptions.length % 10);
     } else {
       // Go back 10 results
       props.skip -= 10;
     }
 
     // Generate new subscriptions string
-    const subscriptionsStr = Array.from(props.titlesMap.entries())
-        .slice(props.skip, props.skip + ENTRIES_PER_LIST_QUERY)
-        .map(([id, name]) => `[${name}](${props.scraper.uriForId(id)})`)
+    const subscriptionsStr = props.subscriptions
+    .slice(props.skip, props.skip + ENTRIES_PER_LIST_QUERY)
+        .map(sub => `[${sub.title}](${sub.link})`)
         .join('\n');
     
     // Modify original message with new quotes
@@ -144,14 +156,14 @@ export class ListSubsCommand implements CommandProvider {
     // Go forward 10 results
     props.skip += 10;
     // If we exceed the amount of subs we have, loop back around
-    if (props.skip > props.titlesMap.size) {
+    if (props.skip > props.subscriptions.length) {
       props.skip = 0;
     }
     
     // Generate new subscriptions string
-    const subscriptionsStr = Array.from(props.titlesMap.entries())
-        .slice(props.skip, props.skip + ENTRIES_PER_LIST_QUERY)
-        .map(([id, name]) => `[${name}](${props.scraper.uriForId(id)})`)
+    const subscriptionsStr = props.subscriptions
+    .slice(props.skip, props.skip + ENTRIES_PER_LIST_QUERY)
+        .map(sub => `[${sub.title}](${sub.link})`)
         .join('\n');
     
     // Modify original message with new quotes
