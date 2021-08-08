@@ -24,6 +24,11 @@ export class ScraperHelperImpl {
     return this.lookup.get(type);
   }
 
+  // Return all registered ScraperType enums
+  public getAllRegisteredScraperTypes(): ScraperType[] {
+    return Array.from(this.lookup.keys());
+  }
+
   // Parse a URI and return a Subscribable object
   public async parseUri(uri: string): Promise<Subscribable> {
     // For each registered scraper, attempt to parse the URI

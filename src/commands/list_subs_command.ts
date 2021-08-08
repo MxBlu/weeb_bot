@@ -1,5 +1,5 @@
 import { BotCommand, CommandProvider, findGuildRole, Logger, LogLevel, Reactable, sendCmdMessage } from "bot-framework";
-import { GuildMember, MessageEmbed, MessageReaction, TextChannel } from "discord.js";
+import { GuildMember, MessageEmbed, MessageReaction, Role, TextChannel } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
@@ -43,19 +43,46 @@ export class ListSubsCommand implements CommandProvider {
     }
 
     const guild = command.message.guild;
-    let subscriptions: SubscriptionItem[] = null;
+    let subscriptions: SubscriptionItem[] = [];
     let embedTitle: string = null;
 
+    let roleName: string = null;
+    let role: Role = null;
     switch (command.arguments.length) {
     case 1:
-      // TODO: Implement as "all scraper types"
-      sendCmdMessage(command.message, 'Error: missing scraper type', this.logger, LogLevel.TRACE);
-      return;
+      // Get all subscriptions for a given role and for all given scraper types
+      roleName = command.arguments[0];
+
+      role = await findGuildRole(roleName, guild);
+      if (role == null) {
+        sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
+        return;
+      }
+
+      // For every type, get all subscriptions and add it to the subscriptions array
+      for (const type of ScraperHelper.getAllRegisteredScraperTypes()) {
+        const scraper = ScraperHelper.getScraperForType(type);
+        const titleIds = await Store.getTitles(guild.id, role.id, type);
+        subscriptions = subscriptions.concat(await Promise.all(Array.from(titleIds)
+            .map(async id => ({ 
+              title: `${await Store.getTitleName(type, id)} - ${ScraperType[type]}`, 
+              link: scraper.uriForId(id)
+            }))))
+      }
+
+      if (subscriptions.length == 0) {
+        sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
+        return;
+      }
+
+      embedTitle = `Subscriptions - @${role.name}`;
+      break;
     case 2:
-      const roleName = command.arguments[0];
+      // Get all subscriptions for a given role and scraper type
+      roleName = command.arguments[0];
       const typeName = command.arguments[1];
 
-      const role = await findGuildRole(roleName, guild);
+      role = await findGuildRole(roleName, guild);
       if (role == null) {
         sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
         return;
