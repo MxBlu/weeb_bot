@@ -23,7 +23,7 @@ export interface IScraper {
   uriForId(id: string): string;
 }
 
-export class BaseScraper implements IScraper {
+export abstract class BaseScraper implements IScraper {
   // Name of parser - just a convenience since it comes from `type`
   name: string;
   // Scraper type enum
@@ -110,13 +110,7 @@ export class BaseScraper implements IScraper {
     return process.env[`Scraper.${this.name}.DISABLED`] === 'true';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public parseItemFromUri(uri: string): Promise<Subscribable> {
-    throw new Error('Method not implemented.');
-  }
+  public abstract parseItemFromUri(uri: string): Promise<Subscribable>;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public uriForId(id: string): string {
-    throw new Error('Method not implemented.');
-  }
+  public abstract uriForId(id: string): string;
 }
