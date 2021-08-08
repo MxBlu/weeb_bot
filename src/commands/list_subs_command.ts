@@ -3,7 +3,6 @@ import { GuildMember, MessageEmbed, MessageReaction, TextChannel } from "discord
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
-import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
