@@ -30,7 +30,7 @@ export class ScraperHelperImpl {
     // If successful (non-null), return the Subscribable parsed
     // Else return null;
     for (const scraper of this.lookup.values()) {
-      const subscribable = scraper.parseItemFromUri(uri);
+      const subscribable = await scraper.parseItemFromUri(uri);
       if (subscribable != null) {
         return subscribable;
       } 
