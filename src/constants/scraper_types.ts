@@ -1,7 +1,8 @@
 // Enum of all the scrapers runnable
 export enum ScraperType {
   Mangadex,
-  Mangasee
+  Mangasee,
+  MangaseeFallback
 }
 
 // Object map from lowercase key to ScraperType enum

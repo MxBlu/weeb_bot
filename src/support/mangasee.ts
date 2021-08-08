@@ -1,6 +1,12 @@
 import { CloudflareBypass } from "bot-framework";
 
+import { ScraperType } from "../constants/scraper_types.js";
+import { Subscribable } from "../models/Subscribable.js";
+import { Store } from "./store.js";
+
 const MANGASEE_URL = "https://mangasee123.com";
+const MANGASEE_TITLE_CSS = '.MainContainer h1';
+const MANGASEE_MANGA_RX = /https?:\/\/mangasee123.com\/manga\/([^/]+)/;
 
 class MangaseeChapterRaw {
   SeriesID: string;
@@ -21,6 +27,12 @@ export class MangaseeChapter {
   link: string;
   genres: string[];
   date: Date;
+}
+
+export class MangaseeManga implements Subscribable {
+  id: string;
+  title: string;
+  type = ScraperType.Mangasee;
 }
 
 export class Mangasee {
@@ -52,7 +64,7 @@ export class Mangasee {
         chapter.chapterNumber = this.getChapterNumber(raw.Chapter);
         chapter.date = new Date(raw.Date);
         chapter.genres = raw.Genres.split(", ");
-        chapter.link = this.createMangaseeLink(raw);
+        chapter.link = this.createMangaseeChapterLink(raw);
         chapter.scanStatus = raw.ScanStatus;
         chapter.seriesId = raw.SeriesID;
         chapter.seriesName = raw.SeriesName;
@@ -80,7 +92,7 @@ export class Mangasee {
         // Otherwise, parse the rest of the chapter and push to array
         chapter.chapterNumber = this.getChapterNumber(raw.Chapter);
         chapter.genres = raw.Genres.split(", ");
-        chapter.link = this.createMangaseeLink(raw);
+        chapter.link = this.createMangaseeChapterLink(raw);
         chapter.scanStatus = raw.ScanStatus;
         chapter.seriesId = raw.SeriesID;
         chapter.seriesName = raw.SeriesName;
@@ -90,8 +102,37 @@ export class Mangasee {
     }
   }
 
+  public static async parseMangaseeMangaLink(uri: string): Promise<MangaseeManga> {
+    // Test to see if URL format matches
+    const uri_match = uri.match(MANGASEE_MANGA_RX);
+    if (uri_match == null) {
+      return null;
+    }
+
+    const id = uri_match[1];
+    let title = await Store.getTitleName(ScraperType.Mangasee, id);
+    if (title == null) {
+      const matches = await CloudflareBypass.fetchElementTextMatches(uri, MANGASEE_TITLE_CSS);
+      // If there is no title, this is likely an invalid link
+      if (matches.length == 0) {
+        return null;
+      }
+
+      title = matches[0];
+    }
+
+    const manga = new MangaseeManga();
+    manga.id = id;
+    manga.title = title;
+    return manga;
+  }
+
+  public static toMangaUrl(id: string): string {
+    return `https://mangasee123.com/manga/${id}/`;
+  }
+
   // Create a link to a given chapter
-  private static createMangaseeLink(seriesChapter: MangaseeChapterRaw): string {
+  private static createMangaseeChapterLink(seriesChapter: MangaseeChapterRaw): string {
     return `${MANGASEE_URL}/read-online/${seriesChapter.IndexName}${this.ChapterURLEncode(seriesChapter.Chapter)}-page-1.html`;
   }
   

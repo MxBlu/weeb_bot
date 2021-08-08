@@ -1,7 +1,7 @@
 import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
 import { Manga } from "mangadex-full-api";
 
-import { MangadexHelper, MangaLite } from "../support/mangadex.js";
+import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
 export class GetAliasesCommand implements CommandProvider {
@@ -20,7 +20,7 @@ export class GetAliasesCommand implements CommandProvider {
   }
 
   public async handle(command: BotCommand): Promise<void> {
-    let manga: Manga | MangaLite = null;
+    let manga: Manga | MangadexManga = null;
     switch (command.arguments.length) {
     case 1:
       manga = await MangadexHelper.parseTitleUrlToMangaLite(command.arguments[0]);

@@ -10,7 +10,7 @@ import { Store } from './store.js';
 const mangadexTitleSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/title\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/;
 const mangadexChapterSyntax = /https?:\/\/(?:www\.)?mangadex\.org\/chapter\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/;
 
-export class MangaLite implements Subscribable {
+export class MangadexManga implements Subscribable {
   id: string;
   title: string;
   type = ScraperType.Mangadex;
@@ -41,7 +41,7 @@ class MangadexHelperImpl {
 
   // Extract id out of a Mangadex title url and return the best manga object we can
   // Returns null if invalid
-  public async parseTitleUrlToMangaLite(url: string): Promise<MangaLite> {
+  public async parseTitleUrlToMangaLite(url: string): Promise<MangadexManga> {
     const id = this.parseTitleUrl(url);
 
     // If the url was not a Mangadex URL, exit early
@@ -52,7 +52,7 @@ class MangadexHelperImpl {
     // Try requesting from the Mangadex API
     try {
       const manga = await Mangadex.Manga.get(id);
-      const mangalite = new MangaLite();
+      const mangalite = new MangadexManga();
       mangalite.id = id;
       mangalite.title = manga.title;
       return mangalite;
@@ -71,7 +71,7 @@ class MangadexHelperImpl {
     }
 
     // If we do have a title, it's been parsed in the past
-    const mangalite = new MangaLite();
+    const mangalite = new MangadexManga();
     mangalite.id = id;
     mangalite.title = title;
     return mangalite;
