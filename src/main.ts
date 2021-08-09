@@ -24,13 +24,9 @@ const mangadexUsername = process.env.MANGADEX_USERNAME;
 const mangadexPassword = process.env.MANGADEX_PASSWORD;
 MangadexHelper.init(mangadexUsername, mangadexPassword);
 
-// Setup RSS feed listener
+// Setup scrapers
 MangadexScraper.init();
-
-// Setup Mangasee scraper
 MangaseeScraper.init();
-
-// Setup Mangasee fallback scraper
 MangaseeFallbackScraper.init();
 
 // Setup parser services
