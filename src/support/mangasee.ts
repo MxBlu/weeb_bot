@@ -66,7 +66,7 @@ export class Mangasee {
         chapter.genres = raw.Genres.split(", ");
         chapter.link = this.createMangaseeChapterLink(raw);
         chapter.scanStatus = raw.ScanStatus;
-        chapter.seriesId = raw.SeriesID;
+        chapter.seriesId = raw.IndexName; // Better ID than SeriesID
         chapter.seriesName = raw.SeriesName;
         return chapter;
       });
