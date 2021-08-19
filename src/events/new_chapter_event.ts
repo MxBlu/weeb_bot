@@ -1,5 +1,6 @@
 import { sendMessage, Logger } from "bot-framework";
 import { Client as DiscordClient, TextChannel } from "discord.js";
+import { NEW_CHAPTER_EVENT_DISABLED } from "../constants/constants.js";
 
 import { MangaAlert } from "../models/MangaAlert.js";
 import { Store } from "../support/store.js";
@@ -17,6 +18,11 @@ export class NewChapterEventHandler {
 
 
   public newChapterHandler = async (alert: MangaAlert): Promise<void> => {
+    // If debug flag is set to disable this handler, just return
+    if (NEW_CHAPTER_EVENT_DISABLED) {
+      return;
+    }
+
     const guild = this.discord.guilds.cache.get(alert.guildId);
     if (guild == null) {
       this.logger.warn(`Notifying for a guild no longer available: ${alert.guildId} => ${alert.mangaChapter.titleId}`);
