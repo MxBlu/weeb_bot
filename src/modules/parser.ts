@@ -48,6 +48,8 @@ export class MangaParserImpl {
         mangaAlert.rolesIds = rolesToAlert;
 
         NewMangaAlertTopic.notify(mangaAlert);
+      } else {
+        this.logger.trace(`No roles to alert for: Guild ${guildId} Title ${item.titleId}`)
       }
     }
   }
