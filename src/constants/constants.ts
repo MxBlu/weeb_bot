@@ -8,4 +8,4 @@ export const MANGADEX_CACHE_LOCATION = process.env.MANGADEX_CACHE_LOCATION;
 export const ENTRIES_PER_LIST_QUERY = 10;
 
 // Env variable flag to disable NewChapterEventHandler
-export const NEW_CHAPTER_EVENT_DISABLED = process.env.NEW_CHAPTER_EVENT_DISABLED;
+export const NEW_CHAPTER_EVENT_DISABLED = process.env.NEW_CHAPTER_EVENT_DISABLED === "true" || false;
