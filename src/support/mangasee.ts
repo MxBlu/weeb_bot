@@ -156,7 +156,7 @@ export class Mangasee {
   }
 
   // Dervied from ChapterURLEncode
-  private static getChapterNumber(ChapterString: string) {
+  private static getChapterNumber(ChapterString: string): number {
     return Number(ChapterString.slice(1,-1));
   }
 }
