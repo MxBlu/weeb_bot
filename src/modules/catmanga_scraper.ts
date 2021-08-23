@@ -5,7 +5,7 @@ import { NewCatMangaItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
-import { CatManga } from "../support/CatManga.js";
+import { CatManga } from "../support/catmanga.js";
 
 export class CatMangaScraperImpl extends BaseScraper {
 
