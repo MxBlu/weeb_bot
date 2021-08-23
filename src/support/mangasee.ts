@@ -8,7 +8,7 @@ const MANGASEE_URL = "https://mangasee123.com";
 const MANGASEE_TITLE_CSS = '.MainContainer h1';
 const MANGASEE_MANGA_RX = /https?:\/\/mangasee123.com\/manga\/([^/]+)/;
 
-class MangaseeChapterRaw {
+interface MangaseeChapterRaw {
   SeriesID: string;
   IndexName: string;
   SeriesName: string
