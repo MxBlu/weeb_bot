@@ -38,7 +38,7 @@ export class MangaseeManga implements Subscribable {
 export class Mangasee {
   public static async getLatestChapters(fromDate: Date): Promise<MangaseeChapter[]> {
     // Get title page
-    let data = null;
+    let data: string = null;
     try {
       data = await CloudflareBypass.fetch(MANGASEE_URL);
     } catch(e) {
