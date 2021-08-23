@@ -16,5 +16,8 @@ export const NewMangaseeFallbackItemTopic = new MessengerTopic<MangaChapter>("Ne
 // Message topic for a new Mangadex chapter being published
 export const NewMangadexItemTopic = new MessengerTopic<MangaChapter>("NewMangadexItem");
 
+// Message topic for a new CatManga chapter being published
+export const NewCatMangaItemTopic = new MessengerTopic<MangaChapter>("NewCatMangaItem");
+
 // Message topic for last known Mangadex API status
 export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulse");

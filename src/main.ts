@@ -10,6 +10,7 @@ import { MangaParser } from './modules/parser.js';
 import { MangadexHelper } from './support/mangadex.js';
 import { Store } from './support/store.js';
 import { WeebBot } from './modules/weeb_bot.js';
+import { CatMangaScraper } from './modules/catmanga_scraper.js';
 
 // Main level logger
 const logger = new Logger("Server");
@@ -28,6 +29,7 @@ MangadexHelper.init(mangadexUsername, mangadexPassword);
 MangadexScraper.init();
 MangaseeScraper.init();
 MangaseeFallbackScraper.init();
+CatMangaScraper.init();
 
 // Setup parser services
 MangaParser.init();
