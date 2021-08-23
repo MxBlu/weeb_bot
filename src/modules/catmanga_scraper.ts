@@ -25,8 +25,8 @@ export class CatMangaScraperImpl extends BaseScraper {
     if (await super.enable()) {
       // On init, add every chapter currently on the site to the seen set
       // This works around the lack of date in CatManga chapters
-      // const chapters = await CatManga.getLatestChapters();
-      // chapters.forEach(chapter => this.seenUrls.add(chapter.link));
+      const chapters = await CatManga.getLatestChapters();
+      chapters.forEach(chapter => this.seenUrls.add(chapter.link));
 
       return true;
     }
