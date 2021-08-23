@@ -16,11 +16,11 @@ export class MangaseeFallbackScraperImpl extends BaseScraper {
   }
 
   public async enable(): Promise<boolean> {
-    return await super.enable();
+    return super.enable();
   }
   
   public async disable(): Promise<boolean> {
-    return await super.disable();
+    return super.disable();
   }
 
   public async parseItemFromUri(uri: string): Promise<Subscribable> {
