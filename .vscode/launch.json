@@ -5,20 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run Bot",
             "type": "node",
             "request": "launch",
-            "name": "Run Bot",
-            "preLaunchTask": "tsc: build - tsconfig.json",
-            "program": "${workspaceFolder}\\src\\main.ts",
-            "outFiles": ["${workspaceFolder}\\built\\**\\*.js"]
+            "runtimeExecutable": "node",
+            "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy"],
+            "args": ["src/main.ts"],
+            "cwd": "${workspaceRoot}",
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": ["<node_internals>/**", "node_modules/**"]
         },
         {
+            "name": "Run Sandbox",
             "type": "node",
             "request": "launch",
-            "name": "Run Sandbox",
-            "preLaunchTask": "tsc: build - tsconfig.json",
-            "program": "${workspaceFolder}\\src\\sandbox.ts",
-            "outFiles": ["${workspaceFolder}\\built\\**\\*.js"]
+            "runtimeExecutable": "node",
+            "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy"],
+            "args": ["src/sandbox.ts"],
+            "cwd": "${workspaceRoot}",
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": ["<node_internals>/**", "node_modules/**"]
         }
     ]
 }
