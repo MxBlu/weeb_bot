@@ -11,21 +11,7 @@ const CATMANGA_MANGA_RX = /https?:\/\/catmanga\.org\/series\/([^/]+)\/?$/;
 
 // A whole bunch of interfaces for interpretting the __NEXT_DATA__ object
 
-interface MangaChapter {
-  title: string;
-  groups: string[];
-  number: number;
-  volume: number;
-  display_number: string;
-}
-
 interface CoverArt {
-  source: string;
-  width: number;
-  height: number;
-}
-
-interface AllCover {
   source: string;
   width: number;
   height: number;
@@ -41,7 +27,15 @@ interface MangaSeries {
   description: string;
   status: string;
   cover_art: CoverArt;
-  all_covers: AllCover[];
+  all_covers: CoverArt[];
+}
+
+interface MangaChapter {
+  title: string;
+  groups: string[];
+  number: number;
+  volume: number;
+  display_number: string;
 }
 
 interface HomePageProps {
@@ -52,6 +46,8 @@ interface HomePageProps {
 interface SeriesPageProps {
   series: MangaSeries;
 }
+
+// Chapter and Manga objects to use for parsing
 
 export class CatMangaChapter {
   seriesId: string;
