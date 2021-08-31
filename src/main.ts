@@ -38,4 +38,6 @@ MangaParser.init();
 const discordToken = process.env.DISCORD_TOKEN;
 WeebBot.init(discordToken);
 
+// Set logger to handle global rejections
+logger.registerAsGlobal();
 logger.info(`Server started`);
