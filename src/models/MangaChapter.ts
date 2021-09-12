@@ -8,7 +8,7 @@ export class MangaChapter {
   // URI to the chapter
   link: string;
   // Chapter number of the chapter
-  chapterNumber: number;
+  chapter: string;
   // Page count of the chapter
   pageCount: number;
 }

@@ -69,7 +69,7 @@ export class CatMangaScraperImpl extends BaseScraper {
         mangaChapter.type = ScraperType.CatManga;
         mangaChapter.link = c.link;
         mangaChapter.titleId = c.seriesId;
-        mangaChapter.chapterNumber = c.chapterNumber;
+        mangaChapter.chapter = c.chapterNumber?.toString();
         mangaChapter.pageCount = null;
 
         this.logger.debug(`New CatManga item: ${c.seriesTitle} | ${c.chapterNumber}`);

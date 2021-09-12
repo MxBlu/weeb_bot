@@ -23,7 +23,7 @@ export class MangaseeChapter {
   seriesId: string;
   seriesName: string
   scanStatus: string;
-  chapterNumber: number;
+  chapter: string;
   link: string;
   genres: string[];
   date: Date;
@@ -61,7 +61,7 @@ export class Mangasee {
       //  (Chapter number, link)
       const latestChapters: MangaseeChapter[] = latestChaptersRaw.map(raw => {
         const chapter = new MangaseeChapter();
-        chapter.chapterNumber = this.getChapterNumber(raw.Chapter);
+        chapter.chapter = this.getChapterNumber(raw.Chapter);
         chapter.date = new Date(raw.Date);
         chapter.genres = raw.Genres.split(", ");
         chapter.link = this.createMangaseeChapterLink(raw);
@@ -90,7 +90,7 @@ export class Mangasee {
         }
 
         // Otherwise, parse the rest of the chapter and push to array
-        chapter.chapterNumber = this.getChapterNumber(raw.Chapter);
+        chapter.chapter = this.getChapterNumber(raw.Chapter);
         chapter.genres = raw.Genres.split(", ");
         chapter.link = this.createMangaseeChapterLink(raw);
         chapter.scanStatus = raw.ScanStatus;
@@ -156,7 +156,7 @@ export class Mangasee {
   }
 
   // Dervied from ChapterURLEncode
-  private static getChapterNumber(ChapterString: string): number {
-    return Number(ChapterString.slice(1,-1));
+  private static getChapterNumber(ChapterString: string): string {
+    return ChapterString.slice(1,-1);
   }
 }
