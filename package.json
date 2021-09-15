@@ -16,9 +16,8 @@
     "bufferutil": "4.0.2",
     "discord.js": "12.5.3",
     "dotenv": "8.0.0",
-    "erlpack": "discord/erlpack",
     "ioredis": "4.17.3",
-    "mangadex-full-api": "Mxblu/mangadex-full-api#order-optional",
+    "mangadex-full-api": "Mxblu/mangadex-full-api#chapter-order-optional",
     "utf-8-validate": "5.0.3",
     "zlib-sync": "0.1.7"
   },

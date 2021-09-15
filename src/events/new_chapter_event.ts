@@ -52,11 +52,11 @@ export class NewChapterEventHandler {
       const pagesStr = alert.mangaChapter.pageCount != null ? `${alert.mangaChapter.pageCount} pages - ` : '';
 
       const msg = 
-        `${alert.mangaTitle} - Chapter ${alert.mangaChapter.chapterNumber} - ${pagesStr}${pingStr}\n` +
+        `${alert.mangaTitle} - Chapter ${alert.mangaChapter.chapter} - ${pagesStr}${pingStr}\n` +
         `${alert.mangaChapter.link}`
       
       try {
-        this.logger.debug(`Notifying '${alert.mangaTitle} ${alert.mangaChapter.chapterNumber}' to ${guild.id}@${channelId}`);
+        this.logger.debug(`Notifying '${alert.mangaTitle} ${alert.mangaChapter.chapter}' to ${guild.id}@${channelId}`);
         sendMessage(channel, msg); 
       } catch (e) {
         this.logger.error(`Failed to send notification to ${guild.id}@${channelId}: ${e}`);

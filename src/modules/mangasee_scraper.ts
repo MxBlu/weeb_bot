@@ -72,10 +72,10 @@ export class MangaseeScraperImpl extends BaseScraper {
         mangaseeChapter.type = ScraperType.Mangasee;
         mangaseeChapter.link = c.link;
         mangaseeChapter.titleId = c.seriesId;
-        mangaseeChapter.chapterNumber = c.chapterNumber;
+        mangaseeChapter.chapter = c.chapter;
         mangaseeChapter.pageCount = null;
 
-        this.logger.debug(`New Mangasee item: ${c.seriesName} | ${c.chapterNumber}`);
+        this.logger.debug(`New Mangasee item: ${c.seriesName} | ${c.chapter}`);
         NewMangaseeItemTopic.notify(mangaseeChapter);
 
         if (await MangaseeFallbackScraper.isEnabled()) {
@@ -86,12 +86,12 @@ export class MangaseeScraperImpl extends BaseScraper {
             return;
           }
 
-          this.logger.debug(`New Mangasee fallback alertable: ${titleId} | ${c.chapterNumber}`);
+          this.logger.debug(`New Mangasee fallback alertable: ${titleId} | ${c.chapter}`);
           const fallbackChapter = new MangaChapter();
           fallbackChapter.type = ScraperType.Mangadex; // This is masquerading as a Mangadex chapter for subscriptions
           fallbackChapter.link = c.link;
           fallbackChapter.titleId = titleId;
-          fallbackChapter.chapterNumber = c.chapterNumber;
+          fallbackChapter.chapter = c.chapter;
           fallbackChapter.pageCount = null;
           NewMangaseeFallbackItemTopic.notify(fallbackChapter);
         }

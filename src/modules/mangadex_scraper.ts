@@ -53,7 +53,7 @@ export class MangadexScraperImpl extends BaseScraper {
       // Only get chapters since we started scraping
       let startDateStr = this.startDate.toISOString();
       // Since it wants ISO but without the milliseconds or Z
-      startDateStr = startDateStr.substring(0, startDateStr.length - 5)
+      startDateStr = startDateStr.substring(0, startDateStr.length - 5);
 
       // Get chapters since last refresh
       let results = await Chapter.search({
@@ -73,10 +73,10 @@ export class MangadexScraperImpl extends BaseScraper {
         mChapter.type = ScraperType.Mangadex;
         mChapter.link = MangadexHelper.toChapterUrl(chapter.id);
         mChapter.titleId = chapter.manga.id;
-        mChapter.chapterNumber = chapter.chapter;
+        mChapter.chapter = chapter.chapter;
         mChapter.pageCount = chapter.pageNames?.length;
 
-        this.logger.debug(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapterNumber}`);
+        this.logger.debug(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapter}`);
         NewMangadexItemTopic.notify(mChapter);
       }
 

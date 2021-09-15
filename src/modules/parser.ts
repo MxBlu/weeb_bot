@@ -37,7 +37,7 @@ export class MangaParserImpl {
       }
       if (rolesToAlert.size > 0) {
         const mangaTitle = await Store.getTitleName(item.type, item.titleId);
-        const title = `${mangaTitle} - Chapter ${item.chapterNumber}`;
+        const title = `${mangaTitle} - Chapter ${item.chapter}`;
 
         this.logger.debug(`New subscribed chapter for roles [ ${Array.from(rolesToAlert.values()).join(', ')} ] in guild ${guildId}: ` +
             `'${title}' of ${ScraperType[item.type]}`);
