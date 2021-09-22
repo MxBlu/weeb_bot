@@ -66,7 +66,8 @@ export class MangadexScraperImpl extends BaseScraper {
       // Filter out any chapters we've seen already
       results = results.filter(c => !this.guidSet.has(c.id));
       // For every result, notify 
-      for (const chapter of results) {
+      // Iterate backwards to go from earliest to latest
+      for (const chapter of results.reverse()) {
         this.guidSet.add(chapter.id);
 
         const mChapter = new MangaChapter();

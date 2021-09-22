@@ -58,7 +58,8 @@ export class CatMangaScraperImpl extends BaseScraper {
       // Fetch chapters sorted by latest
       const latestChapters = await CatManga.getLatestChapters();
 
-      latestChapters.forEach(async c => {
+      // Reverse the order of the chapters to go from earliest to latest
+      latestChapters.reverse().forEach(async c => {
         // Ignore chapters we've already seen
         if (this.seenUrls.has(c.link)) {
           return;
