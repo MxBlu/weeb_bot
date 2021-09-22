@@ -31,6 +31,12 @@ export class MangaseeScraperImpl extends BaseScraper {
     // Enable parser, and set start date if successful
     if (await super.enable()) {
       this.startDate = new Date();
+
+      // On init, add every chapter currently on the site to the seen set
+      // This prevents repeat notifs for new chapters
+      const chapters = await Mangasee.getLatestChapters(this.startDate);
+      chapters.forEach(chapter => this.seenUrls.add(chapter.link));
+      
       return true;
     }
     return false;
