@@ -40,11 +40,23 @@ interface MangaChapter {
 
 interface HomePageProps {
   series: MangaSeries[];
-  latests: [ MangaSeries, MangaChapter ][];
+  latestUpdates: LatestUpdates;
 }
 
 interface SeriesPageProps {
   series: MangaSeries;
+}
+
+interface Latest {
+  series_id: string;
+  number: number;
+}
+
+interface LatestUpdates {
+  popular: string[];
+  latest: Latest[];
+  featured: string[];
+  //newest: Newest[];
 }
 
 // Chapter and Manga objects to use for parsing
@@ -52,10 +64,10 @@ interface SeriesPageProps {
 export class CatMangaChapter {
   seriesId: string;
   seriesTitle: string
-  status: string;
+  status?: string;
   chapterNumber: number;
   link: string;
-  genres: string[];
+  genres?: string[];
 }
 
 export class CatMangaManga implements Subscribable {
@@ -82,26 +94,27 @@ export class CatManga {
     }
 
     // Extract "latests" array from __NEXT_DATA__
-    let latests: [ MangaSeries, MangaChapter ][] = null;
+    let latests: Latest[] = null;
+    const seriesMap = new Map<string, MangaSeries>();
     try {
       const props: HomePageProps = JSON.parse(data).props.pageProps;
-      latests = props.latests;
+      props.series.forEach(s => {
+        seriesMap.set(s.series_id, s);
+      });
+      latests = props.latestUpdates.latest;
     } catch(e) {
       throw `CatMangaException: Unable to decipher __NEXT_DATA__`;
     }
 
     // Map raw series and chapters to CatMangaChapters
-    const latestChapters = latests.map(chapterPair => {
-      const series = chapterPair[0];
-      const rawChapter = chapterPair[1];
+    const latestChapters = latests.map(latest => {
+      const series = seriesMap.get(latest.series_id);
 
       const chapter = new CatMangaChapter();
       chapter.seriesId = series.series_id;
       chapter.seriesTitle = series.title;
-      chapter.status = series.status;
-      chapter.genres = series.genres;
-      chapter.chapterNumber = rawChapter.number;
-      chapter.link = this.getChapterLink(series, rawChapter);
+      chapter.chapterNumber = latest.number;
+      chapter.link = this.getChapterLink(series, latest.number);
       return chapter;
     });
 
@@ -155,7 +168,7 @@ export class CatManga {
     return `https://catmanga.org/series/${id}`;
   }
 
-  private static getChapterLink(series: MangaSeries, chapter: MangaChapter): string {
-    return `https://catmanga.org/series/${series.series_id}/${chapter.number}`;
+  private static getChapterLink(series: MangaSeries, chapter: number): string {
+    return `https://catmanga.org/series/${series.series_id}/${chapter}`;
   }
 }
