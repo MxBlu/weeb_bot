@@ -63,10 +63,10 @@ interface SeriesPageProps {
 export class CatMangaChapter {
   seriesId: string;
   seriesTitle: string
-  status?: string;
+  status: string;
   chapterNumber: number;
   link: string;
-  genres?: string[];
+  genres: string[];
 }
 
 export class CatMangaManga implements Subscribable {
@@ -97,9 +97,12 @@ export class CatManga {
     const seriesMap = new Map<string, MangaSeries>();
     try {
       const props: HomePageProps = JSON.parse(data).props.pageProps;
+      
+      // Generate a map of series IDs to the MangaSeries objects
       props.series.forEach(s => {
         seriesMap.set(s.series_id, s);
       });
+      
       latests = props.latestUpdates.latest;
     } catch(e) {
       throw `CatMangaException: Unable to decipher __NEXT_DATA__`;
@@ -107,11 +110,14 @@ export class CatManga {
 
     // Map raw series and chapters to CatMangaChapters
     const latestChapters = latests.map(latest => {
+      // Fetch series object from generated
       const series = seriesMap.get(latest.series_id);
 
       const chapter = new CatMangaChapter();
       chapter.seriesId = series.series_id;
       chapter.seriesTitle = series.title;
+      chapter.status = series.status;
+      chapter.genres = series.genres;
       chapter.chapterNumber = latest.number;
       chapter.link = this.getChapterLink(series, latest.number);
       return chapter;
