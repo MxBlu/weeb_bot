@@ -38,6 +38,17 @@ interface MangaChapter {
   display_number: string;
 }
 
+interface LatestChapter {
+  series_id: string;
+  number: number;
+}
+
+interface LatestUpdates {
+  popular: string[];
+  latest: LatestChapter[];
+  featured: string[];
+}
+
 interface HomePageProps {
   series: MangaSeries[];
   latestUpdates: LatestUpdates;
@@ -45,18 +56,6 @@ interface HomePageProps {
 
 interface SeriesPageProps {
   series: MangaSeries;
-}
-
-interface Latest {
-  series_id: string;
-  number: number;
-}
-
-interface LatestUpdates {
-  popular: string[];
-  latest: Latest[];
-  featured: string[];
-  //newest: Newest[];
 }
 
 // Chapter and Manga objects to use for parsing
@@ -94,7 +93,7 @@ export class CatManga {
     }
 
     // Extract "latests" array from __NEXT_DATA__
-    let latests: Latest[] = null;
+    let latests: LatestChapter[] = null;
     const seriesMap = new Map<string, MangaSeries>();
     try {
       const props: HomePageProps = JSON.parse(data).props.pageProps;
