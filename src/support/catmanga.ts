@@ -21,32 +21,36 @@ interface MangaSeries {
   alt_titles: string[];
   authors: string[];
   genres: string[];
-  chapters: MangaChapter[];
   title: string;
   series_id: string;
   description: string;
   status: string;
   cover_art: CoverArt;
-  all_covers: CoverArt[];
+  chapter_text: string;
+  groups: string[];
 }
 
 interface MangaChapter {
-  title: string;
-  groups: string[];
-  number: number;
-  volume: number;
-  display_number: string;
+  series_id: string;
+  chapter: MangaChapter2;
 }
 
-interface LatestChapter {
-  series_id: string;
+interface MangaChapter2 {
+  groups: string[];
   number: number;
+  title: string;
+}
+
+interface Newest {
+  series_id: string;
+  timestamp: Date;
 }
 
 interface LatestUpdates {
+  chapters: MangaChapter[];
   popular: string[];
-  latest: LatestChapter[];
   featured: string[];
+  newest: Newest[];
 }
 
 interface HomePageProps {
@@ -93,7 +97,7 @@ export class CatManga {
     }
 
     // Extract "latests" array from __NEXT_DATA__
-    let latests: LatestChapter[] = null;
+    let latests: MangaChapter[] = null;
     const seriesMap = new Map<string, MangaSeries>();
     try {
       const props: HomePageProps = JSON.parse(data).props.pageProps;
@@ -103,7 +107,7 @@ export class CatManga {
         seriesMap.set(s.series_id, s);
       });
       
-      latests = props.latestUpdates.latest;
+      latests = props.latestUpdates.chapters;
     } catch(e) {
       throw `CatMangaException: Unable to decipher __NEXT_DATA__`;
     }
@@ -118,8 +122,8 @@ export class CatManga {
       chapter.seriesTitle = series.title;
       chapter.status = series.status;
       chapter.genres = series.genres;
-      chapter.chapterNumber = latest.number;
-      chapter.link = this.getChapterLink(series, latest.number);
+      chapter.chapterNumber = latest.chapter.number;
+      chapter.link = this.getChapterLink(series, latest.chapter.number);
       return chapter;
     });
 
