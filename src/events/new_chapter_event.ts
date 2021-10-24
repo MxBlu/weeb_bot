@@ -20,6 +20,7 @@ export class NewChapterEventHandler {
   constructor(discord: DiscordClient) {
     this.discord = discord;
     this.logger = new Logger("NewChapterEventHandler");
+    this.eventBuffer = [];
   }
 
   public async start(): Promise<void> {
