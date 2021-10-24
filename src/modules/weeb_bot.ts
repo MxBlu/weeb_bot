@@ -38,6 +38,7 @@ export class WeebBotImpl extends BaseBot {
 
     // Subscribe new chapter handler
     this.newChapterEventHandler = new NewChapterEventHandler(this.discord);
+    this.newChapterEventHandler.start();
     NewMangaAlertTopic.subscribe("NewChapterEventHandler.newChapterHandler", this.newChapterEventHandler.newChapterHandler);
   }
 
