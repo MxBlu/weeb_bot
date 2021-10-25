@@ -162,7 +162,7 @@ export class NewChapterEventHandler {
             ` - ${alert.mangaChapter.pageCount} pages` : '';
           
           chapterNumbers.push(alert.mangaChapter.chapter);
-          linkStrs.push(`<${alert.mangaChapter.link}>${pagesStr}`);
+          linkStrs.push(`Chapter ${alert.mangaChapter.chapter} - <${alert.mangaChapter.link}>${pagesStr}`);
         });
 
         msg = `${firstAlert.mangaTitle}\n` +
