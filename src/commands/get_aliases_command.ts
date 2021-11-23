@@ -1,9 +1,8 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
 import { CommandInteraction } from "discord.js";
-import { Manga } from "mangadex-full-api";
 
-import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
+import { MangadexHelper } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
 export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
@@ -31,28 +30,21 @@ export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
     return "/getaliases <manga url> - Get all aliases for given manga - Used by Mangasee fallback parser";
   }
 
-  public async handle(command: BotCommand): Promise<void> {
-    let manga: Manga | MangadexManga = null;
-    switch (command.arguments.length) {
-    case 1:
-      manga = await MangadexHelper.parseTitleUrlToMangaLite(command.arguments[0]);
-
-      break;
-    default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
-      return;
-    }
-
+  public async handle(interaction: CommandInteraction): Promise<void> {
+    const url = interaction.options.getString('url');
+    
     // Ensure we got a valid manga url
+    const manga = await MangadexHelper.parseTitleUrlToMangaLite(url);
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.DEBUG);
+      sendCmdReply(interaction, 'Error: bad title URL', this.logger, LogLevel.TRACE);
       return;
     }
 
     const altTitles = await Store.getAltTitles(manga.id);
     const str = `**${manga.title}**:\n` +
                 Array.from(altTitles.values()).join('\n');
+    
     this.logger.info(`Manga ${manga.title} has ${altTitles.size} alt titles`);
-    sendCmdMessage(command.message, str, this.logger, LogLevel.TRACE);
+    sendCmdReply(interaction, str, this.logger, LogLevel.TRACE);
   }
 }

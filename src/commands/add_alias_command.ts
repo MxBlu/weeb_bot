@@ -1,9 +1,8 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
 import { CommandInteraction } from "discord.js";
-import { Manga } from "mangadex-full-api";
 
-import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
+import { MangadexHelper } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
 export class AddAliasCommand implements CommandProvider<CommandInteraction> {
@@ -36,29 +35,18 @@ export class AddAliasCommand implements CommandProvider<CommandInteraction> {
     return "/addalias <manga url> <alias> - Add an alias to a given manga";
   }
 
-  public async handle(command: BotCommand): Promise<void> {
-    let manga: Manga | MangadexManga = null;
-    let altTitle: string = null;
-    switch (command.arguments.length) {
-    case 0:
-    case 1:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
-      return;
-    default:
-      manga = await MangadexHelper.parseTitleUrlToMangaLite(command.arguments[0]);
-      // Recombine all arguments after the first into one
-      altTitle = command.arguments.slice(1).join(' ');
-
-      break;
-    }
-
+  public async handle(interaction: CommandInteraction): Promise<void> {
+    const url = interaction.options.getString('url');
+    const alias = interaction.options.getString('alias');
+    
     // Ensure we got a valid manga url
+    const manga = await MangadexHelper.parseTitleUrlToMangaLite(url);
     if (manga == null) {
-      sendCmdMessage(command.message, 'Error: bad title URL', this.logger, LogLevel.DEBUG);
+      sendCmdReply(interaction, 'Error: bad title URL', this.logger, LogLevel.TRACE);
       return;
     }
 
-    await Store.addAltTitle(manga.id, altTitle);
-    sendCmdMessage(command.message, `Added alt title '${altTitle}' to '${manga.title}'`, this.logger, LogLevel.INFO);
+    await Store.addAltTitle(manga.id, alias);
+    sendCmdReply(interaction, `Added alt title '${alias}' to '${manga.title}'`, this.logger, LogLevel.INFO);
   }
 }
