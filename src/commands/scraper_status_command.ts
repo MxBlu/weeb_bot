@@ -1,22 +1,38 @@
-import { BotCommand, CommandProvider, isAdmin, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, isAdmin, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction } from "discord.js";
 
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
 
-export class ScraperStatusCommand implements CommandProvider {
+export class ScraperStatusCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("ScraperStatusCommand");
   }
-
-  public provideAliases(): string[] {
-    return [ "scraperstatus" ];
+  
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('scraperstatus')
+        .setDescription('Get (or set) status of a scraper')
+        .addStringOption(
+          new SlashCommandStringOption()
+            .setName('scraper')
+            .setDescription('Manga scraper')
+            .setRequired(true)
+        ).addBooleanOption(
+          new SlashCommandBooleanOption()
+            .setName('state')
+            .setDescription('State to set')
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper";
+    return "/scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper";
   }
 
   public async handle(command: BotCommand): Promise<void> {

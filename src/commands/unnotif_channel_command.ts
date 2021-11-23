@@ -1,22 +1,33 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage, stringEquivalence } from "bot-framework";
-import { Role, TextChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandRoleOption } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, stringEquivalence } from "bot-framework";
+import { CommandInteraction, Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 
-export class UnotifChannelCommand implements CommandProvider {
+export class UnotifChannelCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("UnnotifChannelCommand");
   }
 
-  public provideAliases(): string[] {
-    return [ "unnotif" ];
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('unnotif')
+        .setDescription('Remove notif channel from given role')
+        .addRoleOption(
+          new SlashCommandRoleOption()
+            .setName('role')
+            .setDescription('Role')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!unnotif <role> - Remove notif channel from given role";
+    return "/unnotif <role> - Remove notif channel from given role";
   }
 
   public async handle(command: BotCommand): Promise<void> {

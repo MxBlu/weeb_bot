@@ -1,24 +1,40 @@
-import { BotCommand, CommandProvider, findGuildRole, Logger, LogLevel, sendCmdMessage } from "bot-framework";
-import { TextChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, findGuildRole, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction, TextChannel } from "discord.js";
 
 import { ScraperType } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 
-export class SubCommand implements CommandProvider {
+export class SubCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("SubCommand");
   }
-
-  public provideAliases(): string[] {
-    return [ "sub" ];
+    
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('sub')
+        .setDescription('Subscribe given manga to given role')
+        .addRoleOption(
+          new SlashCommandRoleOption()
+            .setName('role')
+            .setDescription('Role')
+            .setRequired(true)
+        ).addStringOption(
+          new SlashCommandStringOption()
+            .setName('url')
+            .setDescription('Manga URL')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!sub <role> <manga url> - Subscribe given role to given manga";
+    return "/sub <role> <manga url> - Subscribe given manga to given role";
   }
 
   public async handle(command: BotCommand): Promise<void> {

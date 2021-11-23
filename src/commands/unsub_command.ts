@@ -1,23 +1,39 @@
-import { BotCommand, CommandProvider, findGuildRole, Logger, LogLevel, sendCmdMessage } from "bot-framework";
-import { TextChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, findGuildRole, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction, TextChannel } from "discord.js";
 
 import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 import { checkIfSubscribed } from "../support/weeb_utils.js";
 
-export class UnsubCommand implements CommandProvider {
+export class UnsubCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("UnsubCommand");
   }
-
-  public provideAliases(): string[] {
-    return [ "unsub" ];
+      
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('unsub')
+        .setDescription('Unsubscribe given manga from given role')
+        .addRoleOption(
+          new SlashCommandRoleOption()
+            .setName('role')
+            .setDescription('Role')
+            .setRequired(true)
+        ).addStringOption(
+          new SlashCommandStringOption()
+            .setName('url')
+            .setDescription('Manga URL')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!unsub <role> <manga url> - Unubscribe given role from given manga";
+    return "!unsub <role> <manga url> - Unsubscribe given manga from given role";
   }
 
   public async handle(command: BotCommand): Promise<void> {

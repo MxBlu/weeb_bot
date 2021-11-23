@@ -1,21 +1,32 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage, stringEquivalence } from "bot-framework";
-import { Role, TextChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandRoleOption } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, stringEquivalence } from "bot-framework";
+import { CommandInteraction, Role, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 
-export class NotifChannelCommand implements CommandProvider {
+export class NotifChannelCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("NotifChannelCommand");
   }
 
-  public provideAliases(): string[] {
-    return [ "notifchannel" ];
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('notifchannel')
+        .setDescription('Set current channel as the notification channel for given role')
+        .addRoleOption(
+          new SlashCommandRoleOption()
+            .setName('role')
+            .setDescription('Role')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!notifchannel <role> - Set current channel as the notification channel for given role";
+    return "/notifchannel <role> - Set current channel as the notification channel for given role";
   }
 
   public async handle(command: BotCommand): Promise<void> {

@@ -1,20 +1,27 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction } from "discord.js";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
 
-export class DexStatusCommand implements CommandProvider {
+export class DexStatusCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("DexStatusCommand");
   }
 
-  public provideAliases(): string[] {
-    return [ "dexstatus" ];
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('dexstatus')
+        .setDescription('Get last known status of Mangadex')
+        .toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!dexstatus - Get last known status of Mangadex";
+    return "/dexstatus - Get last known status of Mangadex";
   }
 
   public async handle(command: BotCommand): Promise<void> {

@@ -1,22 +1,39 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction } from "discord.js";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class AddAliasCommand implements CommandProvider {
+export class AddAliasCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("AddAliasCommand");
   }
 
-  public provideAliases(): string[] {
-    return [ "addalias" ];
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('addalias')
+        .setDescription('Add an alias to a given manga')
+        .addStringOption(
+          new SlashCommandStringOption()
+            .setName('url')
+            .setDescription('Manga URL')
+            .setRequired(true)
+        ).addStringOption(
+          new SlashCommandStringOption()
+            .setName('alias')
+            .setDescription('Name alias to set')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!addalias <manga url> <alias> -Add an alias to a given manga";
+    return "/addalias <manga url> <alias> - Add an alias to a given manga";
   }
 
   public async handle(command: BotCommand): Promise<void> {

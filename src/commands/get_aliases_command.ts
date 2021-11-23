@@ -1,22 +1,34 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction } from "discord.js";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class GetAliasesCommand implements CommandProvider {
+export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("GetAliasesCommand");
   }
-
-  public provideAliases(): string[] {
-    return [ "getaliases" ];
+  
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('getaliases')
+        .setDescription('Get all aliases for given manga')
+        .addStringOption(
+          new SlashCommandStringOption()
+            .setName('url')
+            .setDescription('Manga URL')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!getaliases <manga url> - Get all aliases for given manga - Used by Mangasee fallback parser";
+    return "/getaliases <manga url> - Get all aliases for given manga - Used by Mangasee fallback parser";
   }
 
   public async handle(command: BotCommand): Promise<void> {

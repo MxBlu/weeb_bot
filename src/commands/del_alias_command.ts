@@ -1,22 +1,39 @@
-import { BotCommand, CommandProvider, Logger, LogLevel, sendCmdMessage } from "bot-framework";
+import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandInteraction } from "discord.js";
 import { Manga } from "mangadex-full-api";
 
 import { MangadexHelper, MangadexManga } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class DelAliasCommand implements CommandProvider {
+export class DelAliasCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("DelAliasCommand");
   }
 
-  public provideAliases(): string[] {
-    return [ "delalias" ];
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('delalias')
+        .setDescription('Delete an alias from a given manga')
+        .addStringOption(
+          new SlashCommandStringOption()
+            .setName('url')
+            .setDescription('Manga URL')
+            .setRequired(true)
+        ).addStringOption(
+          new SlashCommandStringOption()
+            .setName('alias')
+            .setDescription('Name alias to remove')
+            .setRequired(true)
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!delalias <manga url> <alias> - Delete an alias from a given manga";
+    return "/delalias <manga url> <alias> - Delete an alias from a given manga";
   }
 
   public async handle(command: BotCommand): Promise<void> {

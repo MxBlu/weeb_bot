@@ -1,5 +1,6 @@
-import { BotCommand, CommandProvider, findGuildRole, Logger, LogLevel, Reactable, sendCmdMessage } from "bot-framework";
-import { GuildMember, MessageEmbed, MessageReaction, Role, TextChannel } from "discord.js";
+import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
+import { CommandProvider, findGuildRole, Logger, LogLevel, ModernApplicationCommandJSONBody, Reactable } from "bot-framework";
+import { CommandInteraction, GuildMember, MessageEmbed, MessageReaction, Role, TextChannel } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
@@ -20,19 +21,33 @@ class ListSubsProps {
   skip = 0;
 }
 
-export class ListSubsCommand implements CommandProvider {
+export class ListSubsCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("ListSubsCommand");
-  }
-
-  public provideAliases(): string[] {
-    return [ "listsubs" ];
+  }  
+  
+  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+    return [
+      new SlashCommandBuilder()
+        .setName('listsubs')
+        .setDescription('List all subscriptions for given role and scraper')
+        .addRoleOption(
+          new SlashCommandRoleOption()
+            .setName('role')
+            .setDescription('Role')
+            .setRequired(true)
+        ).addStringOption(
+          new SlashCommandStringOption()
+            .setName('scraper')
+            .setDescription('Manga scraper')
+        ).toJSON()
+    ];
   }
 
   public provideHelpMessage(): string {
-    return "!listsubs <role> <scraper type> - List all subscriptions for given role and scraper";
+    return "/listsubs <role> <scraper type> - List all subscriptions for given role and scraper";
   }
 
   public async handle(command: BotCommand): Promise<void> {
