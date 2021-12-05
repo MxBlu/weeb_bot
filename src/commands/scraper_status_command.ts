@@ -1,9 +1,8 @@
 import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, isAdmin, Logger, LogLevel, ModernApplicationCommandJSONBody } from "bot-framework";
+import { CommandProvider, isAdmin, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
 import { CommandInteraction } from "discord.js";
 
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
-import { IScraper } from "../support/base_scraper.js";
 import { ScraperHelper } from "../support/scrapers.js";
 
 export class ScraperStatusCommand implements CommandProvider<CommandInteraction> {
@@ -35,68 +34,54 @@ export class ScraperStatusCommand implements CommandProvider<CommandInteraction>
     return "/scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper";
   }
 
-  public async handle(command: BotCommand): Promise<void> {
-    let type: ScraperType = null;
-    let scraper: IScraper = null;
-    let status = false;
-    switch (command.arguments.length) {
-    case 1:
-      // Lookup type from string
-      type = typeFromLowercase(command.arguments[0].toLowerCase());
-      if (type == null) {
-        sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
-        return;
-      }
+  public async handle(interaction: CommandInteraction): Promise<void> {
+    const scraperName = interaction.options.getString('scraper');
+    const state = interaction.options.getString('state');
 
-      scraper = ScraperHelper.getScraperForType(type);
-      if (scraper == null) {
-        sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
-        return;
-      }
+    // Lookup type from string
+    const type = typeFromLowercase(scraperName.toLowerCase());
+    if (type == null) {
+      sendCmdReply(interaction, 'Error: invalid type', this.logger, LogLevel.TRACE);
+      return;
+    }
+
+    // Get Scraper implementation class
+    const scraper = ScraperHelper.getScraperForType(type);
+    if (scraper == null) {
+      sendCmdReply(interaction, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
+      return;
+    }
+
+    if (state == null) {
+      // state == null - Print current state of scraper
 
       // Also notify about parsing status
-      status = await scraper.isEnabled();
+      const currentState = await scraper.isEnabled();
       if (scraper.isExplicitlyDisabled()) {
-        sendCmdMessage(command.message, `${ScraperType[type]} parser is explicitly disabled`, this.logger, LogLevel.INFO);
-      } else if (status == true) {
-        sendCmdMessage(command.message, `${ScraperType[type]} parser is enabled`, this.logger, LogLevel.INFO);
+        sendCmdReply(interaction, `${ScraperType[type]} parser is explicitly disabled`, this.logger, LogLevel.INFO);
+      } else if (currentState == true) {
+        sendCmdReply(interaction, `${ScraperType[type]} parser is enabled`, this.logger, LogLevel.INFO);
       } else {
-        sendCmdMessage(command.message, `${ScraperType[type]} parser is disabled`, this.logger, LogLevel.INFO);
+        sendCmdReply(interaction, `${ScraperType[type]} parser is disabled`, this.logger, LogLevel.INFO);
       }
-      return;
-    case 2:
-      // Handle as "set parsing status"
+    } else {
+      // state != null - Set state for scraper
+
       // Admin only
-      if (! await isAdmin(command.message)) {
-        sendCmdMessage(command.message, 'Error: not admin', this.logger, LogLevel.INFO);
+      if (! await isAdmin(interaction.guild, interaction.user)) {
+        sendCmdReply(interaction, 'Error: not admin', this.logger, LogLevel.INFO);
         return;
       }
 
-      // Lookup type from string
-      type = typeFromLowercase(command.arguments[0].toLowerCase());
-      if (type == null) {
-        sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
-        return;
-      }
-
-      scraper = ScraperHelper.getScraperForType(type);
-      if (scraper == null) {
-        sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
-        return;
-      }
-
-      status = command.arguments[1] == 'true';
+      const toState = state == 'true';
       
-      if (status == true) {
+      if (toState == true) {
         await scraper.enable();
       } else {
         await scraper.disable();
       }
 
-      sendCmdMessage(command.message, `${ScraperType[type]} scraping status updated to ${status}`, this.logger, LogLevel.INFO);
-      return;
-    default:
-      sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
+      sendCmdReply(interaction, `${ScraperType[type]} scraping status updated to ${toState}`, this.logger, LogLevel.INFO);
       return;
     }
   }

@@ -1,12 +1,11 @@
 import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
 import { CommandProvider, Interactable, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
-import { ButtonInteraction, CommandInteraction, Message, MessageEmbed, TextChannel } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Message, MessageEmbed } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
-import { checkIfSubscribed } from "../support/weeb_utils.js";
 
 class SubscriptionItem {
   title: string;
@@ -51,12 +50,6 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
   }
 
   public async handle(interaction: CommandInteraction): Promise<void> {
-    if (! await checkIfSubscribed(interaction)) {
-      // Only handle if listening to this channel already
-      this.logger.info(`Not listening to channel #${(interaction.channel as TextChannel).name}`);
-      return;
-    }
-
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
     const scraperName = interaction.options.getString('scraper');
@@ -108,84 +101,6 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
       sendCmdReply(interaction, 'No subscriptions', this.logger, LogLevel.INFO);
       return;
     }
-
-    // let subscriptions: SubscriptionItem[] = [];
-    // let embedTitle: string = null;
-
-    // let roleName: string = null;
-    // let role: Role = null;
-    // switch (command.arguments.length) {
-    // case 1:
-    //   // Get all subscriptions for a given role and for all given scraper types
-    //   roleName = command.arguments[0];
-
-    //   role = await findGuildRole(roleName, guild);
-    //   if (role == null) {
-    //     sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
-    //     return;
-    //   }
-
-    //   // For every type, get all subscriptions and add it to the subscriptions array
-    //   for (const type of ScraperHelper.getAllRegisteredScraperTypes()) {
-    //     const scraper = ScraperHelper.getScraperForType(type);
-    //     const titleIds = await Store.getTitles(guild.id, role.id, type);
-    //     subscriptions = subscriptions.concat(await Promise.all(Array.from(titleIds)
-    //         .map(async id => ({ 
-    //           title: `${await Store.getTitleName(type, id)} - ${ScraperType[type]}`, 
-    //           link: scraper.uriForId(id)
-    //         }))))
-    //   }
-
-    //   if (subscriptions.length == 0) {
-    //     sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
-    //     return;
-    //   }
-
-    //   embedTitle = `Subscriptions - @${role.name}`;
-    //   break;
-    // case 2:
-    //   // Get all subscriptions for a given role and scraper type
-    //   roleName = command.arguments[0];
-    //   const typeName = command.arguments[1];
-
-    //   role = await findGuildRole(roleName, guild);
-    //   if (role == null) {
-    //     sendCmdMessage(command.message, 'Error: role does not exist', this.logger, LogLevel.TRACE);
-    //     return;
-    //   }
-
-    //   // Lookup type from string
-    //   const type = typeFromLowercase(typeName.toLowerCase());
-    //   if (type == null) {
-    //     sendCmdMessage(command.message, 'Error: invalid type', this.logger, LogLevel.TRACE);
-    //     return;
-    //   }
-
-    //   const scraper = ScraperHelper.getScraperForType(type);
-    //   if (scraper == null) {
-    //     sendCmdMessage(command.message, 'Error: scraper is not loaded', this.logger, LogLevel.TRACE);
-    //     return;
-    //   }
-
-    //   const titleIds = await Store.getTitles(guild.id, role.id, type);
-    //   if (titleIds.size == 0) {
-    //     sendCmdMessage(command.message, 'No subscriptions', this.logger, LogLevel.INFO);
-    //     return;
-    //   }
-
-    //   // Generate all subscription items to list
-    //   subscriptions = await Promise.all(Array.from(titleIds)
-    //       .map(async id => ({ 
-    //         title: await Store.getTitleName(type, id), 
-    //         link: scraper.uriForId(id) 
-    //       })));
-
-    //   embedTitle = `Subscriptions - @${role.name} - ${ScraperType[type]}`;
-    //   break;
-    // default:
-    //   sendCmdMessage(command.message, 'Error: incorrect argument count', this.logger, LogLevel.DEBUG);
-    //   return;
-    // }
 
     // Sort list by title
     subscriptions.sort((a, b) => a.title.localeCompare(b.title));
