@@ -4,7 +4,7 @@ import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { ButtonInteraction, CommandInteraction, Message, MessageEmbed } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
-import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
+import { ScraperType, ScraperTypeNames, typeFromLowercase } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Cache } from "../support/store.js";
 
@@ -41,8 +41,8 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
           builder.setName('scraper')
             .setDescription('Manga scraper')
             .addChoices(
-              ScraperHelper.getAllRegisteredScraperTypes().map(
-                type => [ ScraperType[type], ScraperType[type] ]))
+              ScraperTypeNames.map(
+                type => [ type, type ]))
         ).toJSON()
     ];
   }
