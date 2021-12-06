@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Interactable, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Interactable, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { ButtonInteraction, CommandInteraction, Message, MessageEmbed } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
-import { Store } from "../support/store.js";
+import { Cache } from "../support/store.js";
 
 class SubscriptionItem {
   title: string;
@@ -27,20 +28,21 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
     this.logger = new Logger("ListSubsCommand");
   }  
   
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('listsubs')
         .setDescription('List all subscriptions for given role and scraper')
-        .addRoleOption(
-          new SlashCommandRoleOption()
-            .setName('role')
+        .addRoleOption(builder =>
+          builder.setName('role')
             .setDescription('Role')
             .setRequired(true)
-        ).addStringOption(
-          new SlashCommandStringOption()
-            .setName('scraper')
+        ).addStringOption(builder =>
+          builder.setName('scraper')
             .setDescription('Manga scraper')
+            .addChoices(
+              ScraperHelper.getAllRegisteredScraperTypes().map(
+                type => [ ScraperType[type], ScraperType[type] ]))
         ).toJSON()
     ];
   }
@@ -72,27 +74,25 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
         return;
       }
 
-      const titleIds = await Store.getTitles(guild.id, role.id, type);
+      // Get titles for given role and type
+      const titleCacheRecords = await Cache.getTitleRecordsTyped(guild.id, role.id, type);
 
       // Generate all subscription items to list
-      subscriptions = await Promise.all(Array.from(titleIds)
-          .map(async id => ({ 
-            title: await Store.getTitleName(type, id), 
-            link: scraper.uriForId(id) 
-          })));
+      subscriptions = titleCacheRecords.map(record => ({ 
+            title: record.title,
+            link: record.url
+          }));
         
       embedTitle = `Subscriptions - @${role.name} - ${ScraperType[type]}`;
     } else {
-      // For every scraper type, get all subscriptions and add it to the subscriptions array
-      for (const type of ScraperHelper.getAllRegisteredScraperTypes()) {
-        const scraper = ScraperHelper.getScraperForType(type);
-        const titleIds = await Store.getTitles(guild.id, role.id, type);
-        subscriptions = subscriptions.concat(await Promise.all(Array.from(titleIds)
-            .map(async id => ({ 
-              title: `${await Store.getTitleName(type, id)} - ${ScraperType[type]}`, 
-              link: scraper.uriForId(id)
-            }))))
-      }
+      // Get titles for given role
+      const titleCacheRecords = await Cache.getTitleRecordsAll(guild.id, role.id);
+
+      // Generate all subscription items to list
+      subscriptions = titleCacheRecords.map(record => ({ 
+            title: record.title,
+            link: record.url
+          }));
 
       embedTitle = `Subscriptions - @${role.name}`;
     }

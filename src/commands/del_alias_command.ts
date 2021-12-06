@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
 import { MangadexHelper } from "../support/mangadex.js";
@@ -12,19 +13,17 @@ export class DelAliasCommand implements CommandProvider<CommandInteraction> {
     this.logger = new Logger("DelAliasCommand");
   }
 
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('delalias')
         .setDescription('Delete an alias from a given manga')
-        .addStringOption(
-          new SlashCommandStringOption()
-            .setName('url')
+        .addStringOption(builder =>
+          builder.setName('url')
             .setDescription('Manga URL')
             .setRequired(true)
-        ).addStringOption(
-          new SlashCommandStringOption()
-            .setName('alias')
+        ).addStringOption(builder =>
+          builder.setName('alias')
             .setDescription('Name alias to remove')
             .setRequired(true)
         ).toJSON()

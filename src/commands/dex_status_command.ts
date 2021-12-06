@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
@@ -11,7 +12,7 @@ export class DexStatusCommand implements CommandProvider<CommandInteraction> {
     this.logger = new Logger("DexStatusCommand");
   }
 
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('dexstatus')

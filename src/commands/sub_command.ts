@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, SlashCommandRoleOption, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
 import { ScraperType } from "../constants/scraper_types.js";
@@ -13,19 +14,17 @@ export class SubCommand implements CommandProvider<CommandInteraction> {
     this.logger = new Logger("SubCommand");
   }
     
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('sub')
         .setDescription('Subscribe given manga to given role')
-        .addRoleOption(
-          new SlashCommandRoleOption()
-            .setName('role')
+        .addRoleOption(builder =>
+          builder.setName('role')
             .setDescription('Role')
             .setRequired(true)
-        ).addStringOption(
-          new SlashCommandStringOption()
-            .setName('url')
+        ).addStringOption(builder =>
+          builder.setName('url')
             .setDescription('Manga URL')
             .setRequired(true)
         ).toJSON()

@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
 import { MangadexHelper } from "../support/mangadex.js";
@@ -12,14 +13,13 @@ export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
     this.logger = new Logger("GetAliasesCommand");
   }
   
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('getaliases')
         .setDescription('Get all aliases for given manga')
-        .addStringOption(
-          new SlashCommandStringOption()
-            .setName('url')
+        .addStringOption(builder =>
+          builder.setName('url')
             .setDescription('Manga URL')
             .setRequired(true)
         ).toJSON()
