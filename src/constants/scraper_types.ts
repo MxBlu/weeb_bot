@@ -3,7 +3,8 @@ export enum ScraperType {
   Mangadex,
   Mangasee,
   MangaseeFallback,
-  CatManga
+  CatManga,
+  NovelUpdates
 }
 
 export const ScraperTypeNames = Object.keys(ScraperType).filter(k => isNaN(Number(k)));

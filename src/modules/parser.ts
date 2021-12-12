@@ -1,7 +1,7 @@
 import { Logger } from "bot-framework";
 import { ScraperType } from "../constants/scraper_types.js";
 
-import { NewCatMangaItemTopic, NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeFallbackItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";
+import { NewCatMangaItemTopic, NewMangaAlertTopic, NewMangadexItemTopic, NewMangaseeFallbackItemTopic, NewMangaseeItemTopic, NewNovelUpdatesItemTopic } from "../constants/topics.js";
 import { MangaAlert } from "../models/MangaAlert.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Store } from "../support/store.js";
@@ -19,6 +19,7 @@ export class MangaParserImpl {
     NewMangaseeItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
     NewMangaseeFallbackItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
     NewCatMangaItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
+    NewNovelUpdatesItemTopic.subscribe("MangaParser.itemHandler", this.itemHandler);
   }
 
   private itemHandler = async (item: MangaChapter): Promise<void> => {
