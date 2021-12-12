@@ -6,11 +6,16 @@ import { AutocompleteInteraction, CommandInteraction } from "discord.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Cache, Store, TitleCacheRecord } from "../support/store.js";
 
+const SUGGESTION_PREFIX = 'suggestion:';
+
 export class UnsubCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
+  suggestionCache: Map<string, TitleCacheRecord[]>;
+
   constructor() {
     this.logger = new Logger("UnsubCommand");
+    this.suggestionCache = new Map();
   }
       
   public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
@@ -38,7 +43,17 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
   public async handle(interaction: CommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
-    const url = interaction.options.getString('url');
+    let url = interaction.options.getString('url');
+
+    if (url.startsWith(SUGGESTION_PREFIX)) {
+      // Get suggestion out of the cache
+      const suggestionId = `${interaction.channel.id}${interaction.user.id}`;
+      const suggestions = this.suggestionCache.get(suggestionId);
+      const index = parseInt(url.substring(SUGGESTION_PREFIX.length));
+      url = suggestions[index].url;
+      // Clean up from the cache
+      this.suggestionCache.delete(suggestionId);
+    }
 
     const subscribable = await ScraperHelper.parseUri(url);
     if (subscribable == null) {
@@ -73,12 +88,17 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
       suggestions = search.search(partial).map(result => result.item);
     }
 
+    // Only take the top 25 suggestions
+    suggestions = suggestions.slice(0, 25);
+    // Cache the suggestions for the users
+    this.suggestionCache.set(`${autocomplete.channel.id}${autocomplete.user.id}`, suggestions);
+
     // Respond with suggestion
     await autocomplete.respond(
-      suggestions.slice(0, 25).map(
-        suggestion => ({ 
+      suggestions.map(
+        (suggestion, index) => ({ 
           name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
-          value: suggestion.url 
+          value: `${SUGGESTION_PREFIX}${index}`
         })));
   }
 
