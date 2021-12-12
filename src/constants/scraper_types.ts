@@ -3,7 +3,8 @@ export enum ScraperType {
   Mangadex,
   Mangasee,
   MangaseeFallback,
-  CatManga
+  CatManga,
+  NovelUpdates
 }
 
 // Object map from lowercase key to ScraperType enum
