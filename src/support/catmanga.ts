@@ -93,7 +93,7 @@ export class CatManga {
 
       data = dataArray[0];
     } catch(e) {
-      throw `MangaseeException: CloudFlareBypass encountered an error: ${e}`;
+      throw `CatMangaException: CloudFlareBypass encountered an error: ${e}`;
     }
 
     // Extract "latests" array from __NEXT_DATA__
