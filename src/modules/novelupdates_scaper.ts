@@ -7,7 +7,7 @@ import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
 import { NovelUpdates } from "../support/novelupdates.js";
 
-export class CatMangaScraperImpl extends BaseScraper {
+export class NovelUpdatesScraperImpl extends BaseScraper {
 
   // Sets of seen chapters
   seenUrls: Set<string>;
@@ -82,4 +82,4 @@ export class CatMangaScraperImpl extends BaseScraper {
   }
 }
 
-export const CatMangaScraper = new CatMangaScraperImpl();
+export const NovelUpdatesScraper = new NovelUpdatesScraperImpl();
