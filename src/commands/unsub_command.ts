@@ -77,7 +77,7 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
     await autocomplete.respond(
       suggestions.slice(0, 25).map(
         suggestion => ({ 
-          name: `${this.ellipsify(suggestion.title, 85)} - ${suggestion.scraper}`, 
+          name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
           value: suggestion.url 
         })));
   }
