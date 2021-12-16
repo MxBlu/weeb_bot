@@ -3,7 +3,6 @@ export enum ScraperType {
   Mangadex,
   Mangasee,
   MangaseeFallback,
-  CatManga,
   NovelUpdates
 }
 
