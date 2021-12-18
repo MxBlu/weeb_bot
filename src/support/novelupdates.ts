@@ -69,6 +69,10 @@ export class NovelUpdates {
       const releaseANode = releaseNode.querySelector('a');
       chapter.releaseTitle = releaseANode.getAttribute('title');
       chapter.releaseUrl = releaseANode.href;
+      // If the URL doesn't have a protocol in front of it, add it in
+      if (!chapter.releaseUrl.startsWith('//')) {
+        chapter.releaseUrl = 'https:' + chapter.releaseUrl;
+      }
 
       // Get group name from third node
       const groupANode = groupNode.querySelector('a');
