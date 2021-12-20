@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { AutocompleteInteraction, CommandInteraction } from "discord.js";
+import { FIFOCache } from "../support/fifo_cache.js";
 
 import { ScraperHelper } from "../support/scrapers.js";
 import { Cache, Store, TitleCacheRecord } from "../support/store.js";
@@ -11,11 +12,11 @@ const SUGGESTION_PREFIX = 'suggestion:';
 export class UnsubCommand implements CommandProvider<CommandInteraction> {
   logger: Logger;
 
-  suggestionCache: Map<string, TitleCacheRecord[]>;
+  suggestionCache: FIFOCache<string, TitleCacheRecord[]>;
 
   constructor() {
     this.logger = new Logger("UnsubCommand");
-    this.suggestionCache = new Map();
+    this.suggestionCache = new FIFOCache(5);
   }
       
   public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
