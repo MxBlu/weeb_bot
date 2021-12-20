@@ -50,6 +50,9 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
       // Get suggestion out of the cache
       const suggestionId = `${interaction.channel.id}${interaction.user.id}`;
       const suggestions = this.suggestionCache.get(suggestionId);
+      if (suggestions == null || suggestions.length == 0) {
+        throw `No suggestions found - bump FIFO cache size?`;
+      }
       const index = parseInt(url.substring(SUGGESTION_PREFIX.length));
       url = suggestions[index].url;
       // Clean up from the cache
