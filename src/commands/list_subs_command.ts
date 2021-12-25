@@ -90,7 +90,7 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
 
       // Generate all subscription items to list
       subscriptions = titleCacheRecords.map(record => ({ 
-            title: record.title,
+            title: `${record.title} - ${record.scraper}`,
             link: record.url
           }));
 
