@@ -47,6 +47,8 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
     let url = interaction.options.getString('url');
 
     if (url.startsWith(SUGGESTION_PREFIX)) {
+      this.logger.debug(
+        `Fetching suggestions for {guild=${guild.id},role=${role.id}}`);
       // Get suggestion out of the cache
       const suggestionId = `${interaction.channel.id}${interaction.user.id}`;
       const suggestions = this.suggestionCache.get(suggestionId);
@@ -96,6 +98,9 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
     suggestions = suggestions.slice(0, 25);
     // Cache the suggestions for the users
     this.suggestionCache.set(`${autocomplete.channel.id}${autocomplete.user.id}`, suggestions);
+
+    this.logger.debug(
+      `Generated suggestions for {guild=${guild.id},role=${roleId},term=${partial}}: ${suggestions.length} suggestions`);
 
     // Respond with suggestion
     await autocomplete.respond(
