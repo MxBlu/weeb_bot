@@ -92,12 +92,17 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
       this.logger.debug(
         `Returned old suggestions for {guild=${guild.id},role=${roleId},term=${partial}}: ${oldSuggestions.length} suggestions`);
 
-      await autocomplete.respond(
-        oldSuggestions.map(
-          (suggestion, index) => ({ 
-            name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
-            value: `${SUGGESTION_PREFIX}${index}`
-          })));
+      // If suggestions exist, return them. Otherwise, return an empty list
+      if (oldSuggestions != null) {
+        await autocomplete.respond(
+          oldSuggestions.map(
+            (suggestion, index) => ({ 
+              name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
+              value: `${SUGGESTION_PREFIX}${index}`
+            })));
+      } else {
+        await autocomplete.respond([]);
+      }
       return;
     }
 
