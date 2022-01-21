@@ -74,12 +74,25 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
   public async autocomplete(autocomplete: AutocompleteInteraction): Promise<void> {
     const guild = autocomplete.guild;
     const role = autocomplete.options.get('role');
-    const partial = autocomplete.options.getString('url');
+    const partial: string = autocomplete.options.getString('url');
 
     // If we have no role, we have nothing to suggest
     if (role == null) {
       await autocomplete.respond([]);
       return;
+    }
+
+    // If the partial is actually a suggestions string, return the old suggestions
+    if (partial.startsWith('suggestion:')) {
+      const oldSuggestions =
+        this.suggestionCache.get(`${autocomplete.channel.id}${autocomplete.user.id}`);
+      await autocomplete.respond(
+        oldSuggestions.map(
+          (suggestion, index) => ({ 
+            name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
+            value: `${SUGGESTION_PREFIX}${index}`
+          })));
+      return
     }
 
     const roleId = role.value as string;
