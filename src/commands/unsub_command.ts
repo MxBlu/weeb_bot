@@ -82,20 +82,25 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
       return;
     }
 
+    const roleId = role.value as string;
+
     // If the partial is actually a suggestions string, return the old suggestions
     if (partial.startsWith('suggestion:')) {
       const oldSuggestions =
         this.suggestionCache.get(`${autocomplete.channel.id}${autocomplete.user.id}`);
+
+      this.logger.debug(
+        `Returned old suggestions for {guild=${guild.id},role=${roleId},term=${partial}}: ${oldSuggestions.length} suggestions`);
+
       await autocomplete.respond(
         oldSuggestions.map(
           (suggestion, index) => ({ 
             name: `${this.ellipsify(suggestion.title, 80)} - ${suggestion.scraper}`, 
             value: `${SUGGESTION_PREFIX}${index}`
           })));
-      return
+      return;
     }
 
-    const roleId = role.value as string;
 
     let suggestions: TitleCacheRecord[] = [];
     if (partial == null || partial.length == 0) {
