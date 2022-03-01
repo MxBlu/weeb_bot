@@ -50,7 +50,7 @@ export class NewChapterEventHandler {
 
   // Task to flush and process events in the buffer
   private bufferFlushTask = async (): Promise<void> => {
-    this.logger.trace(`Running event buffer flush'`);
+    this.logger.trace(`Running event buffer flush`);
 
     // Check if there's any events to process
     // If not, just return
