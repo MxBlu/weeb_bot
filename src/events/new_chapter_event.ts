@@ -3,6 +3,7 @@ import { Client as DiscordClient, Guild, TextChannel } from "discord.js";
 
 import { NEW_CHAPTER_EVENT_DISABLED, NEW_CHAPTER_EVENT_FLUSH_INVERVAL } from "../constants/constants.js";
 import { MangaAlert } from "../models/MangaAlert.js";
+import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 
 type SeriesMap = Map<string, MangaAlert[]>;
@@ -149,8 +150,15 @@ export class NewChapterEventHandler {
             `${firstAlert.mangaChapter.pageCount} pages - ` : '';
 
         msg = 
-          `${firstAlert.mangaTitle} - Chapter ${firstAlert.mangaChapter.chapter} - ${pagesStr}${pingStr}\n` +
-          `${firstAlert.mangaChapter.link}`;
+          `${firstAlert.mangaTitle} - Chapter ${firstAlert.mangaChapter.chapter} - ${pagesStr}${pingStr}\n`;
+
+        // If the scraper specifies not to embed, wrap the link in `<>`
+        const scraper = ScraperHelper.getScraperForType(firstAlert.mangaChapter.type);
+        if (scraper.shouldEmbed()) {
+          msg += firstAlert.mangaChapter.link;
+        } else {
+          msg += `<${firstAlert.mangaChapter.link}>`
+        }
         
         chapterNumbers.push(firstAlert.mangaChapter.chapter);
       } else {

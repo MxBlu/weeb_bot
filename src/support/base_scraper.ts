@@ -21,6 +21,8 @@ export interface IScraper {
   parseItemFromUri(uri: string): Promise<Subscribable>;
 
   uriForId(id: string): string;
+
+  shouldEmbed(): boolean;
 }
 
 export abstract class BaseScraper implements IScraper {
@@ -110,7 +112,15 @@ export abstract class BaseScraper implements IScraper {
     return process.env[`Scraper.${this.name}.DISABLED`] === 'true';
   }
 
+  // Return a Subscribable for a given URI, provided a valid URI for the scraper
   public abstract parseItemFromUri(uri: string): Promise<Subscribable>;
 
+  // Return a URI string given an ID string provided by a valid Subscribable
   public abstract uriForId(id: string): string;
+
+  // Returns whether to allow an embed for a chapter release in Discord
+  // Overload and return false to prevent spoilers
+  public shouldEmbed(): boolean {
+    return true;
+  }
 }
