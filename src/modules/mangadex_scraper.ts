@@ -63,6 +63,10 @@ export class MangadexScraperImpl extends BaseScraper {
         translatedLanguage: [ 'en' ]
       });
 
+      // https://github.com/md-y/mangadex-full-api/issues/51
+      // Chapters can be null if the API is busted, ignore these
+      results = results.filter(c => c.id != null);
+
       // Filter out any chapters we've seen already
       results = results.filter(c => !this.guidSet.has(c.id));
       // For every result, notify 

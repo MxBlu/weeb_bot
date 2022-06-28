@@ -51,6 +51,11 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
     return NovelUpdates.toMangaUrl(id);
   }
 
+  public shouldEmbed(): boolean {
+    // To prevent spoilers
+    return false;
+  }
+
   timerTask = async (): Promise<void> => {
     this.logger.debug('Running NovelUpdates scraper');
 

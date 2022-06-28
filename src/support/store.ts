@@ -1,28 +1,21 @@
 import { Dependency, Logger } from 'bot-framework';
+import Fuse from 'fuse.js';
 import IORedis, { Redis } from 'ioredis';
 
 import { ScraperType } from '../constants/scraper_types.js';
+import { FutureComputingMap } from './computing_map.js';
+import { ScraperHelper } from './scrapers.js';
 
 /*
   API class to interact with underlying storage implementation
   In this case, Redis
 
   Schema:
-    // OLD
-    <guildId>_roles: String                   # Roles with subscriptions for a given guild ID
-    <guildId>_<roleId>_notifChannel: String   # Channel ID to notify for alerts
-    <guildId>_<roleId>_titles: Set<String>    # Title IDs to generate alerts for
-    title_<titleId>: String                   # Friendly title name for a given title ID
-    <parserName>_enabled: Boolean             # State for a given parser
-    title_<titleId>_altTitles                 # Alternative title(s) (or ID(s)) for a given title Id
-    mangasee_altTitles_<altTitleId>           # Inverted lookup for title IDs from alternative title IDs
-
-    // NEW ( * indicates changed)
     <guildId>_roles: String                                 # Roles with subscriptions for a given guild ID
     <guildId>_<roleId>_notifChannel: String                 # Channel ID to notify for alerts
-    <guildId>_<roleId>_<scraperType>_titles: Set<String>    # * Title IDs to generate alerts for
-    title_<scraperType>_<titleId>: String                   # * Friendly title name for a given title ID
-    <scraperType>_enabled: Boolean                          # * State for a given parser
+    <guildId>_<roleId>_<scraperType>_titles: Set<String>    # Title IDs to generate alerts for
+    title_<scraperType>_<titleId>: String                   # Friendly title name for a given title ID
+    <scraperType>_enabled: Boolean                          # State for a given parser
     title_<titleId>_altTitles                               # LEGACY - Alternative title(s) (or ID(s)) for a given title Id
     mangasee_altTitles_<altTitleId>                         # LEGACY - Inverted lookup for title IDs from alternative title IDs
 */
@@ -107,36 +100,19 @@ class StoreImpl {
   // Add alertable title for a given role and guild
   public async addTitle(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
     await this.rclient.sadd(`${guildId}_${roleId}_${ScraperType[type]}_titles`, titleId);
+    await Cache.invalidate(guildId, roleId, type);
   }
 
   // Delete alertable title for a given role and guild
   public async delTitle(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
     await this.rclient.srem(`${guildId}_${roleId}_${ScraperType[type]}_titles`, titleId);
+    await Cache.invalidate(guildId, roleId, type);
   }
 
   // Delete all alertable titles for a given role and guild
   public async clearTitles(guildId: string, roleId: string, type: ScraperType): Promise<void> {
     await this.rclient.del(`${guildId}_${roleId}_${ScraperType[type]}_titles`);
-  }
-
-  // Fetch alertable titles for a given role and guild, returns set
-  public async old_getTitles(guildId: string, roleId:string): Promise<Set<string>> {
-    return new Set(await this.rclient.smembers(`${guildId}_${roleId}_titles`));
-  }
-
-  // Add alertable title for a given role and guild
-  public async old_addTitle(guildId: string, roleId: string, titleId: string): Promise<void> {
-    await this.rclient.sadd(`${guildId}_${roleId}_titles`, titleId);
-  }
-
-  // Delete alertable title for a given role and guild
-  public async old_delTitle(guildId: string, roleId: string, titleId: string): Promise<void> {
-    await this.rclient.srem(`${guildId}_${roleId}_titles`, titleId);
-  }
-
-  // Delete all alertable titles for a given role and guild
-  public async old_clearTitles(guildId: string, roleId: string): Promise<void> {
-    await this.rclient.del(`${guildId}_${roleId}_titles`);
+    await Cache.invalidate(guildId, roleId, type);
   }
 
   // Fetch title name for a given title id
@@ -152,21 +128,6 @@ class StoreImpl {
   // Delete title name for a given title id
   public async delTitleName(type: ScraperType, titleId: string): Promise<void> {
     await this.rclient.del(`title_${ScraperType[type]}_${titleId}`);
-  }
-
-  // Fetch title name for a given title id
-  public async old_getTitleName(titleId: string): Promise<string> {
-    return this.rclient.get(`title_${titleId}`);
-  }
-
-  // Set title name for a given title id
-  public async old_setTitleName(titleId: string, titleName: string): Promise<void> {
-    await this.rclient.set(`title_${titleId}`, titleName);
-  }
-
-  // Delete title name for a given title id
-  public async old_delTitleName(titleId: string): Promise<void> {
-    await this.rclient.del(`title_${titleId}`);
   }
 
   // Check if a given scraper is enabled
@@ -214,6 +175,126 @@ class StoreImpl {
  
 }
 
+export interface TitleCacheRecord {
+  title: string;
+  scraper: string;
+  url: string;
+}
+
+type RoleTitleCacheL1 = FutureComputingMap<string, RoleTitleCacheL2>;
+type RoleTitleCacheL2 = FutureComputingMap<string, RoleTitleCacheL3>;
+type RoleTitleCacheL3 = FutureComputingMap<ScraperType, TitleCacheRecord[]>;
+
+type RoleTitleSearchCacheL1 = FutureComputingMap<string, RoleTitleSearchCacheL2>;
+type RoleTitleSearchCacheL2 = FutureComputingMap<string, RoleTitleSearchCacheL3>;
+type RoleTitleSearchCacheL3 = FutureComputingMap<ScraperType, Fuse<TitleCacheRecord>>;
+
+class CacheImpl {
+
+  titlesPerRole: RoleTitleCacheL1;
+
+  titlesPerRoleSeaches: RoleTitleSearchCacheL1;
+
+  constructor() {
+    // Cache for title records
+    this.titlesPerRole = new FutureComputingMap<string, RoleTitleCacheL2>(
+      async guildId => new FutureComputingMap<string, RoleTitleCacheL3>(
+        async roleId => new FutureComputingMap<ScraperType, TitleCacheRecord[]>(
+          scraper => this.generateCacheRecords(guildId, roleId, scraper))));
+    // Cache for searches across title records
+    this.titlesPerRoleSeaches = new FutureComputingMap<string, RoleTitleSearchCacheL2>(
+      async guildId => new FutureComputingMap<string, RoleTitleSearchCacheL3>(
+        async roleId => new FutureComputingMap<ScraperType, Fuse<TitleCacheRecord>>(
+          scraper => this.generateSearch(guildId, roleId, scraper))));
+  }
+
+  public async getTitleRecordsAll(guildId: string, roleId: string): Promise<TitleCacheRecord[]> {
+    return this.getTitleRecordsTyped(guildId, roleId, null);
+  }
+
+  public async getTitleRecordsTyped(guildId: string, roleId: string, 
+      type: ScraperType): Promise<TitleCacheRecord[]> {
+    return this.titlesPerRole.get(guildId)
+      .then(l2 => l2.get(roleId))
+      .then(l3 => l3.get(type));
+  }
+
+  public async getSearchAll(guildId: string, roleId: string): Promise<Fuse<TitleCacheRecord>> {
+    return this.getSearchTyped(guildId, roleId, null);
+  }
+
+  public async getSearchTyped(guildId: string, roleId: string, 
+      type: ScraperType): Promise<Fuse<TitleCacheRecord>> {
+    return this.titlesPerRoleSeaches.get(guildId)
+      .then(l2 => l2.get(roleId))
+      .then(l3 => l3.get(type));
+  }
+
+  public async invalidate(guildId: string, roleId: string, type: ScraperType) {
+    // Remove records
+    await this.titlesPerRole.get(guildId)
+      .then(l2 => l2.get(roleId))
+      .then(l3 => {
+        l3.delete(type);
+        // null type is the 'all' entry, always invalidate that too
+        if (type != null) {
+          l3.delete(null);
+        }
+      });
+    // Remove searches
+    await this.titlesPerRoleSeaches.get(guildId)
+      .then(l2 => l2.get(roleId))
+      .then(l3 => {
+        l3.delete(type);
+        // null type is the 'all' entry, always invalidate that too
+        if (type != null) {
+          l3.delete(null);
+        }
+      });
+  }
+
+  private async generateCacheRecords(guildId: string, roleId: string, 
+      type: ScraperType): Promise<TitleCacheRecord[]> {
+    // Ensure store is ready before generating
+    await StoreDependency.await();
+
+    if (type != null) {
+      // If a type is present, get the specific values for the type
+      const scraper = ScraperHelper.getScraperForType(type);
+      const titleIds = await Store.getTitles(guildId, roleId, type);
+      return Promise.all(Array.from(titleIds)
+        .map(async id => ({ 
+            title: await Store.getTitleName(type, id),
+            scraper: ScraperType[type],
+            url: scraper.uriForId(id)
+        })));
+    } else {
+      // Generate records for all scraper types
+      let titleNames: TitleCacheRecord[] = [];
+      // Iterate over all types, append records for each
+      for (const iType of ScraperHelper.getAllRegisteredScraperTypes()) {
+        const scraper = ScraperHelper.getScraperForType(iType);
+        const titleIds = await Store.getTitles(guildId, roleId, iType);
+        titleNames = titleNames.concat(await Promise.all(Array.from(titleIds)
+          .map(async id => ({ 
+            title: await Store.getTitleName(iType, id),
+            scraper: ScraperType[iType],
+            url: scraper.uriForId(id)
+          }))));
+      }
+      return titleNames;
+    }
+  }
+
+  private async generateSearch(guildId: string, roleId: string, 
+      type: ScraperType): Promise<Fuse<TitleCacheRecord>> {
+    const records = await this.getTitleRecordsTyped(guildId, roleId, type);
+    return new Fuse(records, { keys: [ 'title' ] });
+  }
+
+}
+
 export const Store = new StoreImpl();
+export const Cache = new CacheImpl();
 
 export const StoreDependency = new Dependency("Store");

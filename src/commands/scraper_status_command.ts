@@ -1,8 +1,9 @@
-import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandStringOption } from "@discordjs/builders";
-import { CommandProvider, isAdmin, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, isAdmin, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 
-import { ScraperType, typeFromLowercase } from "../constants/scraper_types.js";
+import { ScraperType, ScraperTypeNames, typeFromLowercase } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 
 export class ScraperStatusCommand implements CommandProvider<CommandInteraction> {
@@ -12,19 +13,20 @@ export class ScraperStatusCommand implements CommandProvider<CommandInteraction>
     this.logger = new Logger("ScraperStatusCommand");
   }
   
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('scraperstatus')
         .setDescription('Get (or set) status of a scraper')
-        .addStringOption(
-          new SlashCommandStringOption()
-            .setName('scraper')
+        .addStringOption(builder =>
+          builder.setName('scraper')
             .setDescription('Manga scraper')
+            .addChoices(
+              ScraperTypeNames.map(
+                type => [ type, type ]))
             .setRequired(true)
-        ).addBooleanOption(
-          new SlashCommandBooleanOption()
-            .setName('state')
+        ).addBooleanOption(builder =>
+          builder.setName('state')
             .setDescription('State to set')
         ).toJSON()
     ];

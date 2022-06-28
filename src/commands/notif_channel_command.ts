@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, SlashCommandRoleOption } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, ModernApplicationCommandJSONBody, sendCmdReply } from "bot-framework";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { CommandInteraction, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
@@ -11,14 +12,13 @@ export class NotifChannelCommand implements CommandProvider<CommandInteraction> 
     this.logger = new Logger("NotifChannelCommand");
   }
 
-  public provideSlashCommands(): ModernApplicationCommandJSONBody[] {
+  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
     return [
       new SlashCommandBuilder()
         .setName('notifchannel')
         .setDescription('Set current channel as the notification channel for given role')
-        .addRoleOption(
-          new SlashCommandRoleOption()
-            .setName('role')
+        .addRoleOption(builder =>
+          builder.setName('role')
             .setDescription('Role')
             .setRequired(true)
         ).toJSON()

@@ -70,7 +70,7 @@ export class NovelUpdates {
       chapter.releaseTitle = releaseANode.getAttribute('title');
       chapter.releaseUrl = releaseANode.href;
       // If the URL doesn't have a protocol in front of it, add it in
-      if (!chapter.releaseUrl.startsWith('//')) {
+      if (chapter.releaseUrl.startsWith('//')) {
         chapter.releaseUrl = 'https:' + chapter.releaseUrl;
       }
 
