@@ -1,5 +1,9 @@
 # Weeb Bot
 
+Bot to notify users when new manga/light novel chapters are published
+
+Concept is around polling providers to check for new content since the last poll, processing the polled data into a common format (see `MangaChapter` class), then iterating over the new items and testing them against the subscriptions under Discord roles. Notifications are sent to channels tied to roles (using `/notifchannel <role>`).
+
 ## Prerequisites
 ### Generating a .dotenv
 You can follow the example found in `.env.example`, or read the template in `.env.template` for more information.
