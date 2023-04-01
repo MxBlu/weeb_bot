@@ -40,6 +40,8 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
       return;
     }
 
+    // Next few steps gonna take a while so let's defer the reply
+    await interaction.deferReply();
     // Get the actual Manga object from Mangadex, since that's what we wanna display
     const manga = await Mangadex.Manga.get(mangaLite.id, true);
 
