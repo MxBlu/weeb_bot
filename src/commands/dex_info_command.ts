@@ -68,6 +68,6 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
     this.logger.info(`${interaction.user.username} requested for Mangadex info on ${mangaLite.id}`);
 
     // Send the embed as a reply
-    interaction.reply({ embeds: [ embed ] });
+    interaction.editReply({ embeds: [ embed ] });
   }
 }
