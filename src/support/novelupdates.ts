@@ -1,4 +1,4 @@
-import { CloudflareBypass } from "bot-framework";
+import { CloudflareBypass, Logger } from "bot-framework";
 import { JSDOM } from 'jsdom';
 
 import { ScraperType } from "../constants/scraper_types.js";
@@ -16,9 +16,10 @@ const NOVELUPDATES_SERIES_RX = /https?:\/\/(?:www\.)?novelupdates\.com\/series\/
 
 export class NovelUpdatesChapter {
   seriesId: string;
-  seriesTitle: string
+  seriesTitle: string;
+  seriesUrl: string;
   releaseTitle: string;
-  releaseUrl: string;
+  releaseUrl?: string;
   releaseGroup: string;
 }
 
@@ -29,6 +30,9 @@ export class NovelUpdatesSeries implements Subscribable {
 }
 
 export class NovelUpdates {
+
+  private static logger: Logger = new Logger("NovelUpdates");
+
   // Get chapters on NovelUpdates, sorted by date order
   // WARNING: Date is not available on the website, so relative order is all we got to work with
   public static async getLatestChapters(): Promise<NovelUpdatesChapter[]> {
@@ -54,29 +58,48 @@ export class NovelUpdates {
       const tr = latestTableBody.children.item(i);
       const chapter = new NovelUpdatesChapter();
 
-      // Get nodes containing useful info
-      const titleNode = tr.children.item(0);
-      const releaseNode = tr.children.item(1);
-      const groupNode = tr.children.item(2);
+      try {
+        // Get nodes containing useful info
+        const titleNode = tr.children.item(0);
+        const releaseNode = tr.children.item(1);
+        const groupNode = tr.children.item(2);
 
-      // Get series title and ID from the first node
-      const titleANode = titleNode.querySelector('a');
-      chapter.seriesTitle = titleANode.getAttribute('title');
-      const titleMatch = titleANode.href.match(NOVELUPDATES_SERIES_RX);
-      chapter.seriesId = titleMatch[1];
+        // Get series title and ID from the first node
+        const titleANode = titleNode.querySelector('a');
+        chapter.seriesTitle = titleANode.getAttribute('title');
+        chapter.seriesUrl = titleANode.href;
+        const titleMatch = titleANode.href.match(NOVELUPDATES_SERIES_RX);
+        chapter.seriesId = titleMatch[1];
 
-      // Get release title and URL from second node
-      const releaseANode = releaseNode.querySelector('a');
-      chapter.releaseTitle = releaseANode.getAttribute('title');
-      chapter.releaseUrl = releaseANode.href;
-      // If the URL doesn't have a protocol in front of it, add it in
-      if (chapter.releaseUrl.startsWith('//')) {
-        chapter.releaseUrl = 'https:' + chapter.releaseUrl;
+        // Get release title and URL from second node - if we can
+        const releaseANode = releaseNode.querySelector('a');
+        if (releaseANode != null) {
+          // We do have an A node, so we can get a link
+          chapter.releaseTitle = releaseANode.getAttribute('title');
+          chapter.releaseUrl = releaseANode.href;
+        } else {
+          // No A node available so make do with just a title
+          const releaseSpanNode = releaseNode.querySelector('span');
+          chapter.releaseTitle = releaseSpanNode.getAttribute('title');
+        }
+
+        // If the chapter URL doesn't have a protocol in front of it, add it in
+        if (chapter.releaseUrl != null && chapter.releaseUrl.startsWith('//')) {
+          chapter.releaseUrl = 'https:' + chapter.releaseUrl;
+        }
+        // If the series URL doesn't have a protocol in front of it, add it in
+        if (chapter.seriesUrl.startsWith('//')) {
+          chapter.seriesUrl = 'https:' + chapter.seriesUrl;
+        }
+
+        // Get group name from third node
+        const groupANode = groupNode.querySelector('a');
+        chapter.releaseGroup = groupANode.getAttribute('title');
+      } catch (e) {
+        this.logger.error("Error processing chapter node");
+        this.logger.error(tr.outerHTML);
+        this.logger.error((e as Error).stack);
       }
-
-      // Get group name from third node
-      const groupANode = groupNode.querySelector('a');
-      chapter.releaseGroup = groupANode.getAttribute('title');
       
       chapters.push(chapter);
     }

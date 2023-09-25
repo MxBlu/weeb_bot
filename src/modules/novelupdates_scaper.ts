@@ -5,16 +5,16 @@ import { NewNovelUpdatesItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
-import { NovelUpdates } from "../support/novelupdates.js";
+import { NovelUpdates, NovelUpdatesChapter } from "../support/novelupdates.js";
 
 export class NovelUpdatesScraperImpl extends BaseScraper {
 
   // Sets of seen chapters
-  seenUrls: Set<string>;
+  seenChapterIds: Set<string>;
 
   constructor() {
     super(ScraperType.NovelUpdates);
-    this.seenUrls = new Set();
+    this.seenChapterIds = new Set();
   }
 
   public async init(): Promise<void> {
@@ -26,7 +26,7 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
       // On init, add every chapter currently on the site to the seen set
       // This works around the lack of date
       const chapters = await NovelUpdates.getLatestChapters();
-      chapters.forEach(chapter => this.seenUrls.add(chapter.releaseUrl));
+      chapters.forEach(chapter => this.seenChapterIds.add(this.chapterToId(chapter)));
 
       return true;
     }
@@ -56,6 +56,10 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
     return false;
   }
 
+  private chapterToId(chapter: NovelUpdatesChapter): string {
+    return `${chapter.seriesId};${chapter.releaseGroup};${chapter.releaseTitle}`;
+  }
+
   timerTask = async (): Promise<void> => {
     this.logger.debug('Running NovelUpdates scraper');
 
@@ -66,14 +70,15 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
       // Reverse the order of the chapters to go from earliest to latest
       latestChapters.reverse().forEach(async c => {
         // Ignore chapters we've already seen
-        if (this.seenUrls.has(c.releaseUrl)) {
+        const chapterId = this.chapterToId(c);
+        if (this.seenChapterIds.has(chapterId)) {
           return;
         }
-        this.seenUrls.add(c.releaseUrl);
+        this.seenChapterIds.add(chapterId);
 
         const mangaChapter = new MangaChapter();
         mangaChapter.type = ScraperType.NovelUpdates;
-        mangaChapter.link = c.releaseUrl;
+        mangaChapter.link = c.releaseUrl ?? c.seriesUrl;
         mangaChapter.titleId = c.seriesId;
         mangaChapter.chapter = c.releaseTitle;
         mangaChapter.pageCount = null;
