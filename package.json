@@ -5,8 +5,9 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon --watch src/** --ext ts,json --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/main.ts",
+    "start": "node built/main.js",
     "fstart": "pm2 start --name weebbot built/main.js",
+    "watch": "nodemon --watch src/** --ext ts,json --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/main.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ext .ts"
@@ -23,8 +24,7 @@
     "ioredis": "4.17.3",
     "jsdom": "19.0.0",
     "mangadex-full-api": "Mxblu/mangadex-full-api#chapter-order-optional",
-    "utf-8-validate": "5.0.5",
-    "zlib-sync": "0.1.7"
+    "utf-8-validate": "5.0.5"
   },
   "devDependencies": {
     "@types/ioredis": "^4.26.4",
