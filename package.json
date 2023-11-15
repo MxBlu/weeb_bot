@@ -1,6 +1,6 @@
 {
   "name": "weeb_bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Notify on new manga from Mangadex",
   "main": "main.js",
   "type": "module",
