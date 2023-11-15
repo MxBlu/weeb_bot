@@ -15,6 +15,7 @@ import { GetAliasesCommand } from "../commands/get_aliases_command.js";
 import { AddAliasCommand } from "../commands/add_alias_command.js";
 import { DelAliasCommand } from "../commands/del_alias_command.js";
 import { DexInfoCommand } from "../commands/dex_info_command.js";
+import { SpoilerTitleCommand } from "../commands/spoiler_title_command.js";
 
 export class WeebBotImpl extends BaseBot {
   // Event handlers
@@ -49,6 +50,7 @@ export class WeebBotImpl extends BaseBot {
     this.providers.push(new SubCommand());
     this.providers.push(new UnsubCommand());
     this.providers.push(new ListSubsCommand());
+    this.providers.push(new SpoilerTitleCommand());
     this.providers.push(new ScraperStatusCommand());
     this.providers.push(new DexStatusCommand());
     this.providers.push(new GetAliasesCommand());

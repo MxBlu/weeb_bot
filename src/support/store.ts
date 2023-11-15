@@ -130,6 +130,16 @@ class StoreImpl {
     await this.rclient.del(`title_${ScraperType[type]}_${titleId}`);
   }
 
+  // Check whether this title's link should be spoilered - prevents chapter link embed
+  public async isTitleEmbedDisabled(type: ScraperType, titleId: string): Promise<boolean> {
+    return await this.rclient.get(`title_${ScraperType[type]}_${titleId}_embedDisabled`) == 'true';
+  }
+
+  // Set whether this title's link should be spoilered
+  public async setTitleEmbedDisabled(type: ScraperType, titleId: string, disabled: boolean): Promise<void> {
+    await this.rclient.set(`title_${ScraperType[type]}_${titleId}_embedDisabled`, disabled == true ? 'true' : 'false');
+  }
+
   // Check if a given scraper is enabled
   public async isScraperEnabled(type: ScraperType): Promise<boolean> {
     return await this.rclient.get(`${ScraperType[type]}_enabled`) == 'true';

@@ -154,7 +154,7 @@ export class NewChapterEventHandler {
 
         // If the scraper specifies not to embed, wrap the link in `<>`
         const scraper = ScraperHelper.getScraperForType(firstAlert.mangaChapter.type);
-        if (scraper.shouldEmbed()) {
+        if (scraper.shouldEmbed() && ! await Store.isTitleEmbedDisabled(firstAlert.mangaChapter.type, firstAlert.mangaChapter.titleId)) {
           msg += firstAlert.mangaChapter.link;
         } else {
           msg += `<${firstAlert.mangaChapter.link}>`
