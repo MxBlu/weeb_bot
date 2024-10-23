@@ -1,7 +1,6 @@
 import { Dependency, Logger } from 'bot-framework';
 import * as Mangadex from 'mangadex-full-api';
 
-import { MANGADEX_CACHE_LOCATION } from '../constants/constants.js';
 import { ScraperType } from '../constants/scraper_types.js';
 import { Subscribable } from '../models/Subscribable.js';
 import { Store } from './store.js';
@@ -23,15 +22,20 @@ class MangadexHelperImpl {
     this.logger = new Logger("MangadexHelper");
   }
 
-  public async init(username: string, password: string): Promise<void> {
-    await Mangadex.login(username, password, MANGADEX_CACHE_LOCATION);
+  public async init(username: string, password: string, clientId: string, clientSecret: string): Promise<void> {
+    await Mangadex.loginPersonal({
+      clientId: clientId,
+      clientSecret: clientSecret,
+      username: username,
+      password: password
+    });
     this.logger.info("Mangadex API logged in");
     MangadexHelperDependency.ready();
   }
 
   // Extract id out of a Mangadex title url
   // Returns null if invalid
-  public parseTitleUrl(url: string): string {
+  public parseTitleUrl(url: string): string | null {
     const matchObj = url.match(mangadexTitleSyntax);
     if (matchObj == null || matchObj[1].length == 0) {
       return null;
@@ -41,7 +45,7 @@ class MangadexHelperImpl {
 
   // Extract id out of a Mangadex title url and return the best manga object we can
   // Returns null if invalid
-  public async parseTitleUrlToMangaLite(url: string): Promise<MangadexManga> {
+  public async parseTitleUrlToMangaLite(url: string): Promise<MangadexManga | null> {
     const id = this.parseTitleUrl(url);
 
     // If the url was not a Mangadex URL, exit early
@@ -54,11 +58,20 @@ class MangadexHelperImpl {
       const manga = await Mangadex.Manga.get(id);
       const mangalite = new MangadexManga();
       mangalite.id = id;
-      mangalite.title = manga.title;
+      mangalite.title = manga.title.localString;
       return mangalite;
     } catch (e) {
-      if (!(e instanceof APIRequestError)) {
-        // If it's not an API error, might be something worth throwing
+      const error = e as Error;
+
+      let handled = false;
+      if (error.name == 'APIResponseError') {
+        if (error.message.includes('not_found_http_exception')) {
+          // Manga not found, more on
+          handled = true;
+        }
+      }
+      // If we didn't handle the error, rethrow it
+      if (!handled) {
         throw e;
       }
     }
@@ -79,7 +92,7 @@ class MangadexHelperImpl {
 
   // Extract id out of a Mangadex chapter url
   // Returns null if invalid
-  public parseChapterUrl(url: string): string {
+  public parseChapterUrl(url: string): string | null {
     const matchObj = url.match(mangadexChapterSyntax);
     if (matchObj == null || matchObj[1].length == 0) {
       return null;
@@ -89,36 +102,50 @@ class MangadexHelperImpl {
 
   // Use API to get title of a manga, given id
   // Return null if the title could not be found
-  public async getMangaTitle(titleId: string): Promise<string> {
+  public async getMangaTitle(titleId: string): Promise<string | null> {
     let manga: Mangadex.Manga = null;
     try {
       manga = await Mangadex.Manga.get(titleId);
     } catch (e) {
-      // API Request error = oh no couldn't find it
-      // Just reutn null
-      if (e instanceof APIRequestError) {
-        return null;
-      } else {
+      const error = e as Error;
+
+      let handled = false;
+      if (error.name == 'APIResponseError') {
+        if (error.message.includes('not_found_http_exception')) {
+          // Manga not found, more on
+          handled = true;
+        }
+      }
+      // If we didn't handle the error, rethrow it
+      if (!handled) {
         throw e;
       }
     }
-    return manga.title;
+    return manga?.title?.localString;
   }
 
   // Use API to get page count of a chapter, given id
   // Will throw an exception if API returns an invalid response
-  public async getChapterPageCount(chapterId: string): Promise<number> {
+  public async getChapterPageCount(chapterId: string): Promise<number | null> {
     let chapter: Mangadex.Chapter = null;
     try {
       chapter = await Mangadex.Chapter.get(chapterId);
     } catch (e) {
-      if (e instanceof APIRequestError) {
-        return null;
-      } else {
+      const error = e as Error;
+
+      let handled = false;
+      if (error.name == 'APIResponseError') {
+        if (error.message.includes('not_found_http_exception')) {
+          // Manga not found, more on
+          handled = true;
+        }
+      }
+      // If we didn't handle the error, rethrow it
+      if (!handled) {
         throw e;
       }
     }
-    return chapter.pageNames.length;
+    return chapter?.pages;
   }
 
   // Returns a manga url given an id 
@@ -129,10 +156,6 @@ class MangadexHelperImpl {
   // Returns a chapter url given an id 
   public toChapterUrl(chapterId: string) {
     return `https://mangadex.org/chapter/${chapterId}/`;
-  }
-
-  public async converyLegacyId(...ids: number[]): Promise<string[]> {
-    return Mangadex.convertLegacyId("manga", ids);
   }
 
 }

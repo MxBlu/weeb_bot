@@ -43,7 +43,26 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
     // Next few steps gonna take a while so let's defer the reply
     await interaction.deferReply();
     // Get the actual Manga object from Mangadex, since that's what we wanna display
-    const manga = await Mangadex.Manga.get(mangaLite.id, true);
+    let manga: Mangadex.Manga;
+    try {
+      manga = await Mangadex.Manga.get(mangaLite.id);
+    } catch (e) {
+      const error = e as Error;
+
+      let handled = false;
+      if (error.name == 'APIResponseError') {
+        if (error.message.includes('not_found_http_exception')) {
+          // Manga not found, more on
+          sendCmdReply(interaction, "Manga not found", this.logger, LogLevel.TRACE);
+          return;
+        }
+      }
+      // If we didn't handle the error, rethrow it
+      if (!handled) {
+        sendCmdReply(interaction, "An error occured", this.logger, LogLevel.TRACE);
+        throw e;
+      }
+    }
 
     // Get supplementary metadata about the manga
     const authors: Mangadex.Author[] = await Promise.all(manga.authors.map(a => a.resolve()));
@@ -51,18 +70,18 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
 
     // Generate a rich embed
     const embed = new MessageEmbed()
-        .setTitle(manga.title)
-        .setDescription(manga.description)
+        .setTitle(manga.title.localString)
+        .setDescription(manga.description.localString)
         .setURL(url)
         .setFields([{
           name: "Tags",
-          value: manga.tags.map(t => t.name).join(", ")
+          value: manga.tags.map(t => t.name.localString).join(", ")
         }])
         .setFooter(authors.map(a => a.name).join(", "))
         .setTimestamp(manga.updatedAt);
 
     if (image != null) {
-      embed.setImage(image.imageSource);
+      embed.setImage(image.url);
     }
 
     this.logger.info(`${interaction.user.username} requested for Mangadex info on ${mangaLite.id}`);

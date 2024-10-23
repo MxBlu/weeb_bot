@@ -23,7 +23,9 @@ Store.init(redisHost, redisPort);
 // Initialise the Mangadex API helper
 const mangadexUsername = process.env.MANGADEX_USERNAME;
 const mangadexPassword = process.env.MANGADEX_PASSWORD;
-MangadexHelper.init(mangadexUsername, mangadexPassword);
+const mangadexClientId = process.env.MANGADEX_CLIENT_ID;
+const mangadexClientSecret = process.env.MANGADEX_CLIENT_SECRET;
+MangadexHelper.init(mangadexUsername, mangadexPassword, mangadexClientId, mangadexClientSecret);
 
 // Setup scrapers
 MangadexScraper.init();

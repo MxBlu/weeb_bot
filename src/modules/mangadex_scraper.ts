@@ -58,7 +58,8 @@ export class MangadexScraperImpl extends BaseScraper {
       // Get chapters since last refresh
       let results = await Chapter.search({
         limit: 100,
-        publishAtSince: startDateStr, 
+        publishAtSince: startDateStr,
+        includeFuturePublishAt: 0,
         order: {updatedAt: 'desc'},
         translatedLanguage: [ 'en' ]
       });
@@ -79,7 +80,7 @@ export class MangadexScraperImpl extends BaseScraper {
         mChapter.link = MangadexHelper.toChapterUrl(chapter.id);
         mChapter.titleId = chapter.manga.id;
         mChapter.chapter = chapter.chapter;
-        mChapter.pageCount = chapter.pageNames?.length;
+        mChapter.pageCount = chapter.pages;
 
         this.logger.debug(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapter}`);
         NewMangadexItemTopic.notify(mChapter);
