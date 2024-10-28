@@ -108,6 +108,9 @@ export class Mangasee {
         chapter.seriesName = raw.SeriesName;
         latestChapters.push(chapter);
       }
+
+      // Since we've succeeded in fetching data, set the scraper status to up
+      ScraperHelper.getScraperForType(ScraperType.Mangasee).setStatus(true);
       return latestChapters;
     }
   }

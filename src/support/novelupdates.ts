@@ -111,6 +111,7 @@ export class NovelUpdates {
       chapters.push(chapter);
     }
 
+    // Since we've succeeded in fetching data, set the scraper status to up
     return chapters;
   }
 
