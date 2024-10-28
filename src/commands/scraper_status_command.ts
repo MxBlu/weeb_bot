@@ -57,14 +57,17 @@ export class ScraperStatusCommand implements CommandProvider<CommandInteraction>
     if (state == null) {
       // state == null - Print current state of scraper
 
-      // Also notify about parsing status
-      const currentState = await scraper.isEnabled();
+      // First, check if the scraper has been disabled
+      // Then check 
+      const isEnabled = await scraper.isEnabled();
       if (scraper.isExplicitlyDisabled()) {
         sendCmdReply(interaction, `${ScraperType[type]} parser is explicitly disabled`, this.logger, LogLevel.INFO);
-      } else if (currentState == true) {
-        sendCmdReply(interaction, `${ScraperType[type]} parser is enabled`, this.logger, LogLevel.INFO);
-      } else {
+      } else if (isEnabled == false) {
         sendCmdReply(interaction, `${ScraperType[type]} parser is disabled`, this.logger, LogLevel.INFO);
+      } else if (scraper.getStatus() == false) {
+        sendCmdReply(interaction, `${ScraperType[type]} parser is enabled, but down`, this.logger, LogLevel.INFO);
+      } else {
+        sendCmdReply(interaction, `${ScraperType[type]} parser is enabled and up`, this.logger, LogLevel.INFO);
       }
     } else {
       // state != null - Set state for scraper

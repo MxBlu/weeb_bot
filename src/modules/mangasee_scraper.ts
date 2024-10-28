@@ -67,6 +67,11 @@ export class MangaseeScraperImpl extends BaseScraper {
       // Fetch chapters from now back until the date we started
       const latestChapters = await Mangasee.getLatestChapters(this.startDate);
 
+      // Make sure we succesfully get chapters first
+      if (latestChapters == null) {
+        return;
+      }
+
       // Iterate backwards to go from earliest to latest
       latestChapters.reverse().forEach(async c => {
         // Avoid double notifications

@@ -18,6 +18,10 @@ export interface IScraper {
 
   isExplicitlyDisabled(): boolean;
 
+  getStatus(): boolean;
+
+  setStatus(state: boolean): void;
+
   parseItemFromUri(uri: string): Promise<Subscribable>;
 
   uriForId(id: string): string;
@@ -30,6 +34,8 @@ export abstract class BaseScraper implements IScraper {
   name: string;
   // Scraper type enum
   type: ScraperType;
+  // Current status of the scraper - true = up and false = down
+  status: boolean;
   // Refresh interval
   interval: number;
   // Logger instance for scraper - must be initialised by superclass
@@ -42,6 +48,7 @@ export abstract class BaseScraper implements IScraper {
   constructor(type: ScraperType) {
     this.name = ScraperType[type];
     this.type = type;
+    this.status = true;
     this.logger = new Logger(`Scraper.${this.name}`);
     this.handle = null;
   }
@@ -110,6 +117,20 @@ export abstract class BaseScraper implements IScraper {
   // Returns whether parser has been explicitly disabled in env
   public isExplicitlyDisabled(): boolean {
     return process.env[`Scraper.${this.name}.DISABLED`] === 'true';
+  }
+
+  // Get the current status of the scraper
+  public getStatus(): boolean {
+    return this.status;
+  }
+
+  // Update the current status of the scraper
+  // Seting a new status will trigger a log message as well
+  public setStatus(state: boolean): void {
+    if (this.status != state) {
+      this.logger.error(`${this.name} is now ${state ? 'up' : 'down'}`);
+    }
+    this.status = state;
   }
 
   // Return a Subscribable for a given URI, provided a valid URI for the scraper

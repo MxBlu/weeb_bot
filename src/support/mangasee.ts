@@ -1,8 +1,9 @@
-import { CloudflareBypass } from "bot-framework";
+import { CloudflareBypass, Logger } from "bot-framework";
 
 import { ScraperType } from "../constants/scraper_types.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { Store } from "./store.js";
+import { ScraperHelper } from "./scrapers.js";
 
 const MANGASEE_URL = "https://mangasee123.com";
 const MANGASEE_TITLE_CSS = '.MainContainer h1';
@@ -36,13 +37,19 @@ export class MangaseeManga implements Subscribable {
 }
 
 export class Mangasee {
+  
+  private static logger: Logger = new Logger("Mangasee");
+  
   public static async getLatestChapters(fromDate: Date): Promise<MangaseeChapter[]> {
     // Get title page
     let data: string = null;
     try {
       data = await CloudflareBypass.fetch(MANGASEE_URL);
     } catch(e) {
-      throw `MangaseeException: CloudFlareBypass encountered an error: ${e}`;
+      // Log the error to debug and update the scraper staus
+      this.logger.debug(e);
+      ScraperHelper.getScraperForType(ScraperType.Mangasee).setStatus(false);
+      return null;
     }
 
     // Extract LatestJSON variable, containing new chapters
@@ -52,7 +59,10 @@ export class Mangasee {
       json_match = data.match(/vm\.LatestJSON = (\[.+?\]);/);
       latestChaptersRaw = JSON.parse(json_match[1]);
     } catch(e) {
-      throw `MangaseeException: Unable to find JSON in body`;
+      // Log the error to debug and update the scraper staus
+      this.logger.debug(e);
+      ScraperHelper.getScraperForType(ScraperType.Mangasee).setStatus(false);
+      return null;
     }
 
     // Optionally filter it down to the be from a given date

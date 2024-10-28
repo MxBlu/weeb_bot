@@ -67,6 +67,11 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
       // Fetch chapters sorted by latest
       const latestChapters = await NovelUpdates.getLatestChapters();
 
+      // Make sure we succesfully get chapters first
+      if (latestChapters == null) {
+        return;
+      }
+
       // Reverse the order of the chapters to go from earliest to latest
       latestChapters.reverse().forEach(async c => {
         // Ignore chapters we've already seen

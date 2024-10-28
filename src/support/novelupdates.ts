@@ -4,6 +4,7 @@ import { JSDOM } from 'jsdom';
 import { ScraperType } from "../constants/scraper_types.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { Store } from "./store.js";
+import { ScraperHelper } from "./scrapers.js";
 
 // NovelUpdates homepage URL
 const NOVELUPDATES_URL = "https://www.novelupdates.com/";
@@ -41,7 +42,10 @@ export class NovelUpdates {
     try {
      data = await CloudflareBypass.fetch(NOVELUPDATES_URL);
     } catch(e) {
-      throw `NovelUpdatesException: CloudFlareBypass encountered an error: ${e}`;
+      // Log the error to debug and update the scraper staus
+      this.logger.debug(e);
+      ScraperHelper.getScraperForType(ScraperType.NovelUpdates).setStatus(false);
+      return null;
     }
 
     // Parse HTML and pull out the releases
@@ -49,7 +53,10 @@ export class NovelUpdates {
     const latestTableBody = pageDom.window.document.querySelector("#myTable tbody");
 
     if (latestTableBody == null) {
-      throw `NovelUpdatesException: Latest releases table not found`;
+      // Log the error to debug and update the scraper staus
+      this.logger.debug(`NovelUpdatesException: Latest releases table not found`);
+      ScraperHelper.getScraperForType(ScraperType.NovelUpdates).setStatus(false);
+      return null;
     }
 
     // Iterate through table rows and add "chapters" (really releases, but keeping to the interface I wrote)
