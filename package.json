@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "bot-framework": "Mxblu/bot-framework#8.0.4",
+    "bot-framework": "Mxblu/bot-framework#8.0.5",
     "bufferutil": "4.0.3",
     "discord-api-types": "0.37.103",
     "discord.js": "14.16.3",
