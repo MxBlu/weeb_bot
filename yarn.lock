@@ -541,9 +541,9 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bot-framework@Mxblu/bot-framework#8.0.5:
-  version "8.0.5"
-  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/ca07f067b1ad7f7789eac7fe972f9b9f748b3534"
+bot-framework@Mxblu/bot-framework#8.0.6:
+  version "8.0.6"
+  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/aa637370145331cd6fb079367011787e47eda0b9"
   dependencies:
     discord-api-types "0.37.103"
     discord.js "14.16.3"
