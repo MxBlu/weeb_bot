@@ -26,7 +26,10 @@ export class NovelUpdatesScraperImpl extends BaseScraper {
       // On init, add every chapter currently on the site to the seen set
       // This works around the lack of date
       const chapters = await NovelUpdates.getLatestChapters();
-      chapters.forEach(chapter => this.seenChapterIds.add(this.chapterToId(chapter)));
+      // Mark these chapters as seen if there are any
+      if (chapters != null) {
+        chapters.forEach(chapter => this.seenChapterIds.add(this.chapterToId(chapter)));
+      }
 
       return true;
     }
