@@ -1,19 +1,17 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import * as Mangadex from 'mangadex-full-api';
 
 import { MangadexHelper } from "../support/mangadex.js";
 
-export class DexInfoCommand implements CommandProvider<CommandInteraction> {
+export class DexInfoCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("DexInfoCommand");
   }
   
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('dexinfo')
@@ -22,7 +20,7 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
           builder.setName('url')
             .setDescription('Mangadex URL')
             .setRequired(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -30,7 +28,7 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
     return "/dexinfo <mangadex url> - Provide a rich embed for a Mangadex link";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const url = interaction.options.getString('url');
     
     // Ensure we got a valid manga url by using `parseTitleUrlToMangaLite()`
@@ -69,7 +67,7 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
     const image: Mangadex.Cover = await manga.mainCover.resolve();
 
     // Generate a rich embed
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(manga.title.localString)
         .setDescription(manga.description.localString)
         .setURL(url)
@@ -77,7 +75,7 @@ export class DexInfoCommand implements CommandProvider<CommandInteraction> {
           name: "Tags",
           value: manga.tags.map(t => t.name.localString).join(", ")
         }])
-        .setFooter(authors.map(a => a.name).join(", "))
+        .setFooter({ text: authors.map(a => a.name).join(", ") })
         .setTimestamp(manga.updatedAt);
 
     if (image != null) {

@@ -1,23 +1,21 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction } from "discord.js";
 
 import { MangadexPulseTopic } from "../constants/topics.js";
 
-export class DexStatusCommand implements CommandProvider<CommandInteraction> {
+export class DexStatusCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("DexStatusCommand");
   }
 
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('dexstatus')
         .setDescription('Get last known status of Mangadex')
-        .toJSON()
     ];
   }
 
@@ -25,9 +23,9 @@ export class DexStatusCommand implements CommandProvider<CommandInteraction> {
     return "/dexstatus - Get last known status of Mangadex";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     // Get the last known status about Mangadex
-    const dexStatus = MangadexPulseTopic.getLastData();
+    const dexStatus = MangadexPulseTopic.lastData;
     if (dexStatus?.status === true) {
       let message = `Mangadex up`;
       if (dexStatus.lastDown != null) {

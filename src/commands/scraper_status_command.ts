@@ -1,19 +1,18 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, isAdmin, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, isAdmin, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction } from "discord.js";
 
 import { ScraperType, ScraperTypeNames, typeFromLowercase } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 
-export class ScraperStatusCommand implements CommandProvider<CommandInteraction> {
+export class ScraperStatusCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("ScraperStatusCommand");
   }
   
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('scraperstatus')
@@ -23,12 +22,12 @@ export class ScraperStatusCommand implements CommandProvider<CommandInteraction>
             .setDescription('Manga scraper')
             .addChoices(
               ScraperTypeNames.map(
-                type => [ type, type ]))
+                type => ({ name: type, value: type })))
             .setRequired(true)
         ).addBooleanOption(builder =>
           builder.setName('state')
             .setDescription('State to set')
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -36,7 +35,7 @@ export class ScraperStatusCommand implements CommandProvider<CommandInteraction>
     return "/scraperstatus <scraper type> [<enable>] - Get (or set) status of a scraper";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const scraperName = interaction.options.getString('scraper');
     const state = interaction.options.getString('state');
 

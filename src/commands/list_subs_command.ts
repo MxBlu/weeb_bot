@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Interactable, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { ButtonInteraction, CommandInteraction, Message, MessageEmbed } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
+import { CommandBuilder, CommandProvider, Interactable, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ButtonInteraction, ChatInputCommandInteraction, Message } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, ScraperTypeNames, typeFromLowercase } from "../constants/scraper_types.js";
@@ -21,14 +20,14 @@ class ListSubsProps {
   skip = 0;
 }
 
-export class ListSubsCommand implements CommandProvider<CommandInteraction> {
+export class ListSubsCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("ListSubsCommand");
   }  
   
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('listsubs')
@@ -42,8 +41,9 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
             .setDescription('Manga scraper')
             .addChoices(
               ScraperTypeNames.map(
-                type => [ type, type ]))
-        ).toJSON()
+                type => ({ name: type, value: type }))
+            )
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -51,7 +51,7 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
     return "/listsubs <role> <scraper type> - List all subscriptions for given role and scraper";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
     const scraperName = interaction.options.getString('scraper');
@@ -111,14 +111,14 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
         .map(sub => `[${sub.title}](${sub.link})`)
         .join('\n');
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(embedTitle)
         .setDescription(subscriptionsStr);
 
     // Create scrollable modal
     const interactable = new Interactable<ListSubsProps>();
-    interactable.registerHandler(this.listSubsLeftHandler, { emoji: "⬅️" });
-    interactable.registerHandler(this.listSubsRightHandler, { emoji: "➡️" });
+    interactable.registerButtonHandler(this.listSubsLeftHandler, { emoji: "⬅️" });
+    interactable.registerButtonHandler(this.listSubsRightHandler, { emoji: "➡️" });
     interactable.props = new ListSubsProps();
     interactable.props.embedTitle = embedTitle;
     interactable.props.subscriptions = subscriptions;
@@ -157,10 +157,10 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
         .join('\n');
 
     // Generate new embed
-    const newEmbed = new MessageEmbed()
+    const newEmbed = new EmbedBuilder()
         .setTitle(props.embedTitle)
         .setDescription(subscriptionsStr)
-        .setFooter(props.skip > 0 ? `+${props.skip}` : '');
+        .setFooter({ text: props.skip > 0 ? `+${props.skip}` : '' });
     
     // Update message with new embed
     this.logger.debug(`${interaction.user.username} navigated sub list - ${props.embedTitle} skip ${props.skip}`);
@@ -184,10 +184,10 @@ export class ListSubsCommand implements CommandProvider<CommandInteraction> {
         .join('\n');
     
     // Generate new embed
-    const newEmbed = new MessageEmbed()
+    const newEmbed = new EmbedBuilder()
         .setTitle(props.embedTitle)
         .setDescription(subscriptionsStr)
-        .setFooter(props.skip > 0 ? `+${props.skip}` : '');
+        .setFooter({ text: props.skip > 0 ? `+${props.skip}` : '' });
     
     // Update message with new embed
     this.logger.debug(`${interaction.user.username} navigated sub list - ${props.embedTitle} skip ${props.skip}`);

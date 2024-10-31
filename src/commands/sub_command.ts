@@ -1,20 +1,19 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction } from "discord.js";
 
 import { ScraperType } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Store } from "../support/store.js";
 
-export class SubCommand implements CommandProvider<CommandInteraction> {
+export class SubCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("SubCommand");
   }
     
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('sub')
@@ -27,7 +26,7 @@ export class SubCommand implements CommandProvider<CommandInteraction> {
           builder.setName('url')
             .setDescription('Manga URL')
             .setRequired(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -35,7 +34,7 @@ export class SubCommand implements CommandProvider<CommandInteraction> {
     return "/sub <role> <manga url> - Subscribe given manga to given role";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
     const url = interaction.options.getString('url');

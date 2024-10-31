@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { AutocompleteInteraction, CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { AutocompleteInteraction, ChatInputCommandInteraction } from "discord.js";
 import { FIFOCache } from "../support/fifo_cache.js";
 
 import { ScraperHelper } from "../support/scrapers.js";
@@ -9,7 +8,7 @@ import { Cache, Store, TitleCacheRecord } from "../support/store.js";
 
 const SUGGESTION_PREFIX = 'suggestion:';
 
-export class SpoilerTitleCommand implements CommandProvider<CommandInteraction> {
+export class SpoilerTitleCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   suggestionCache: FIFOCache<string, TitleCacheRecord[]>;
@@ -19,7 +18,7 @@ export class SpoilerTitleCommand implements CommandProvider<CommandInteraction> 
     this.suggestionCache = new FIFOCache(5);
   }
       
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('spoilertitle')
@@ -36,7 +35,7 @@ export class SpoilerTitleCommand implements CommandProvider<CommandInteraction> 
         ).addBooleanOption(builder =>
           builder.setName('disabled')
             .setDescription('Disable embed')
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -44,7 +43,7 @@ export class SpoilerTitleCommand implements CommandProvider<CommandInteraction> 
     return "!spoilertitle <manga url> [<disable>] - Prevent an alert from creating an embed";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guildId = interaction.guild.id;
     const role = interaction.options.getRole('role');
     let url = interaction.options.getString('url');

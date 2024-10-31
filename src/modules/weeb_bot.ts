@@ -1,4 +1,4 @@
-import { BaseBot, Dependency } from "bot-framework";
+import { Dependency, DiscordBot } from "bot-framework";
 import { Guild } from "discord.js";
 
 import { Store, StoreDependency } from "../support/store.js";
@@ -17,7 +17,7 @@ import { DelAliasCommand } from "../commands/del_alias_command.js";
 import { DexInfoCommand } from "../commands/dex_info_command.js";
 import { SpoilerTitleCommand } from "../commands/spoiler_title_command.js";
 
-export class WeebBotImpl extends BaseBot {
+export class WeebBotImpl extends DiscordBot {
   // Event handlers
   newChapterEventHandler: NewChapterEventHandler;
 

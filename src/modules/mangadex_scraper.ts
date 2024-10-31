@@ -90,14 +90,14 @@ export class MangadexScraperImpl extends BaseScraper {
       MangadexPulseTopic.notify({
         status: true,
         lastUp: new Date(),
-        lastDown: MangadexPulseTopic.getLastData()?.lastDown
+        lastDown: MangadexPulseTopic.lastData?.lastDown
       });
     } catch (e) {
       // If we encounter an error, the API is probably problematic
       // Notify the pulse topic with an error
       MangadexPulseTopic.notify({
         status: false,
-        lastUp: MangadexPulseTopic.getLastData()?.lastUp,
+        lastUp: MangadexPulseTopic.lastData?.lastUp,
         lastDown: new Date()
       });
       this.logger.error(e);

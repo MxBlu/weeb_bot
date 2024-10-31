@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { AutocompleteInteraction, CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteraction } from "discord.js";
 import { FIFOCache } from "../support/fifo_cache.js";
 
 import { ScraperHelper } from "../support/scrapers.js";
@@ -9,7 +8,7 @@ import { Cache, Store, TitleCacheRecord } from "../support/store.js";
 
 const SUGGESTION_PREFIX = 'suggestion:';
 
-export class UnsubCommand implements CommandProvider<CommandInteraction> {
+export class UnsubCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   suggestionCache: FIFOCache<string, TitleCacheRecord[]>;
@@ -19,7 +18,7 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
     this.suggestionCache = new FIFOCache(5);
   }
       
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('unsub')
@@ -33,7 +32,7 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
             .setDescription('Manga URL')
             .setRequired(true)
             .setAutocomplete(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -41,7 +40,7 @@ export class UnsubCommand implements CommandProvider<CommandInteraction> {
     return "!unsub <role> <manga url> - Unsubscribe given manga from given role";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
     let url = interaction.options.getString('url');

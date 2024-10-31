@@ -1,19 +1,18 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction } from "discord.js";
 
 import { MangadexHelper } from "../support/mangadex.js";
 import { Store } from "../support/store.js";
 
-export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
+export class GetAliasesCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("GetAliasesCommand");
   }
   
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('getaliases')
@@ -22,7 +21,7 @@ export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
           builder.setName('url')
             .setDescription('Manga URL')
             .setRequired(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -30,7 +29,7 @@ export class GetAliasesCommand implements CommandProvider<CommandInteraction> {
     return "/getaliases <manga url> - Get all aliases for given manga - Used by Mangasee fallback parser";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const url = interaction.options.getString('url');
     
     // Ensure we got a valid manga url

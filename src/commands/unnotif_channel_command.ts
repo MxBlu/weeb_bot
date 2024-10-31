@@ -1,18 +1,17 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction } from "discord.js";
 
 import { Store } from "../support/store.js";
 
-export class UnotifChannelCommand implements CommandProvider<CommandInteraction> {
+export class UnotifChannelCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("UnnotifChannelCommand");
   }
 
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('unnotif')
@@ -21,7 +20,7 @@ export class UnotifChannelCommand implements CommandProvider<CommandInteraction>
           builder.setName('role')
             .setDescription('Role')
             .setRequired(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -29,7 +28,7 @@ export class UnotifChannelCommand implements CommandProvider<CommandInteraction>
     return "/unnotif <role> - Remove notif channel from given role";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
 

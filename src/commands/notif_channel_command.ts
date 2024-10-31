@@ -1,18 +1,17 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { CommandInteraction, TextChannel } from "discord.js";
+import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 
 import { Store } from "../support/store.js";
 
-export class NotifChannelCommand implements CommandProvider<CommandInteraction> {
+export class NotifChannelCommand implements CommandProvider<ChatInputCommandInteraction> {
   logger: Logger;
 
   constructor() {
     this.logger = new Logger("NotifChannelCommand");
   }
 
-  public provideSlashCommands(): RESTPostAPIApplicationCommandsJSONBody[] {
+  public provideCommands(): CommandBuilder[] {
     return [
       new SlashCommandBuilder()
         .setName('notifchannel')
@@ -21,7 +20,7 @@ export class NotifChannelCommand implements CommandProvider<CommandInteraction> 
           builder.setName('role')
             .setDescription('Role')
             .setRequired(true)
-        ).toJSON()
+        ) as unknown as CommandBuilder
     ];
   }
 
@@ -29,7 +28,7 @@ export class NotifChannelCommand implements CommandProvider<CommandInteraction> 
     return "/notifchannel <role> - Set current channel as the notification channel for given role";
   }
 
-  public async handle(interaction: CommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
 
