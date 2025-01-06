@@ -98,6 +98,8 @@ export class WeebCentral {
       }
     }
 
+    // Since we've succeeded in fetching data, set the scraper status to up
+    ScraperHelper.getScraperForType(ScraperType.WeebCentral).setStatus(true);
     return latestChapters;
   }
 
