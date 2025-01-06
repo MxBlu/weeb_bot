@@ -142,7 +142,8 @@ class StoreImpl {
 
   // Check if a given scraper is enabled
   public async isScraperEnabled(type: ScraperType): Promise<boolean> {
-    return await this.rclient.get(`${ScraperType[type]}_enabled`) == 'true';
+    // Check the negative so that new scrapers are enabled by default
+    return await this.rclient.get(`${ScraperType[type]}_enabled`) != 'false';
   }
 
   // Set parsing status of a given parser
