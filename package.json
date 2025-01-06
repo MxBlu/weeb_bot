@@ -19,7 +19,7 @@
     "discord.js": "14.16.3",
     "dotenv": "8.0.0",
     "fuse.js": "6.4.6",
-    "ioredis": "4.17.3",
+    "ioredis": "5.4.2",
     "jsdom": "19.0.0",
     "mangadex-full-api": "6.0.0",
     "utf-8-validate": "5.0.5"
