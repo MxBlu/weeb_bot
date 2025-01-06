@@ -128,6 +128,32 @@ export class WeebCentral {
     return manga;
   }
 
+  public static async search(query: string): Promise<WeebCentralManga[]> {
+    // POST to the search endpoint, which returns an SSR response
+    const resp = await fetch('https://weebcentral.com/search/simple?location=main', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({ 'text': query })
+    });
+
+    // Parse HTML to a JSDOM object
+    const pageDom = new JSDOM(await resp.text());
+    
+    const results: WeebCentralManga[] = [];
+    // Parse all result nodes and create WeebCentralManga objects
+    const resultNodes = pageDom.window.document.querySelectorAll('a');
+    for (const resultNode of resultNodes) {
+      const manga = new WeebCentralManga();
+      manga.title = resultNode.querySelector('div.text-left').textContent.trim();
+      manga.id = this.parseIdFromSeriesLink(resultNode.getAttribute('href'));
+      results.push(manga);
+    }
+
+    return results;
+  }
+
   public static toMangaUrl(id: string): string {
     return `https://weebcentral.com/series/${id}/`;
   }
