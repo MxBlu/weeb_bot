@@ -37,7 +37,7 @@ export class ScraperStatusCommand implements CommandProvider<ChatInputCommandInt
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const scraperName = interaction.options.getString('scraper');
-    const state = interaction.options.getString('state');
+    const state = interaction.options.getBoolean('state');
 
     // Lookup type from string
     const type = typeFromLowercase(scraperName.toLowerCase());
@@ -76,16 +76,14 @@ export class ScraperStatusCommand implements CommandProvider<ChatInputCommandInt
         sendCmdReply(interaction, 'Error: not admin', this.logger, LogLevel.INFO);
         return;
       }
-
-      const toState = state == 'true';
       
-      if (toState == true) {
+      if (state == true) {
         await scraper.enable();
       } else {
         await scraper.disable();
       }
 
-      sendCmdReply(interaction, `${ScraperType[type]} scraping status updated to ${toState}`, this.logger, LogLevel.INFO);
+      sendCmdReply(interaction, `${ScraperType[type]} scraping status updated to ${state}`, this.logger, LogLevel.INFO);
       return;
     }
   }
