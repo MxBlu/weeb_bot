@@ -11,6 +11,7 @@ import { MangadexHelper } from './support/mangadex.js';
 import { Store } from './support/store.js';
 import { WeebBot } from './modules/weeb_bot.js';
 import { NovelUpdatesScraper } from './modules/novelupdates_scaper.js';
+import { WeebCentralScraper } from './modules/weebcentral_scraper.js';
 
 // Main level logger
 const logger = new Logger("Server");
@@ -32,6 +33,7 @@ MangadexScraper.init();
 MangaseeScraper.init();
 MangaseeFallbackScraper.init();
 NovelUpdatesScraper.init();
+WeebCentralScraper.init();
 
 // Setup parser services
 MangaParser.init();
