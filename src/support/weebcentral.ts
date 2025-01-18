@@ -80,7 +80,7 @@ export class WeebCentral {
         const chapterText = chapterNode.querySelector('div:nth-of-type(2) > span').textContent.trim();
         chapter.chapter = WeebCentral.parseChapterNumber(chapterText);
         
-        chapter.seriesName = chapterNode.querySelector('span.font-semibold.text-lg').textContent.trim();
+        chapter.seriesName = chapterNode.querySelector('div.font-semibold.text-lg').textContent.trim();
         const mangaLink = articleNode.querySelector('a:nth-of-type(1)').getAttribute('href');
         chapter.seriesId = WeebCentral.parseIdFromSeriesLink(mangaLink);
 
