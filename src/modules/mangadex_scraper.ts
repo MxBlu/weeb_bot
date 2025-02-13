@@ -93,6 +93,14 @@ export class MangadexScraperImpl extends BaseScraper {
         lastDown: MangadexPulseTopic.lastData?.lastDown
       });
     } catch (e) {
+      if (e.name == 'AuthError') {
+        // Try another login
+        try {
+          await MangadexHelper.login();
+        } catch (e) {
+          this.logger.error(e);
+        }
+      }
       // If we encounter an error, the API is probably problematic
       // Notify the pulse topic with an error
       MangadexPulseTopic.notify({

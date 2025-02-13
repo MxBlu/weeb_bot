@@ -18,19 +18,35 @@ export class MangadexManga implements Subscribable {
 class MangadexHelperImpl {
   logger: Logger;
 
+  username: string;
+  password: string;
+  clientId: string;
+  clientSecret: string;
+
   constructor() {
     this.logger = new Logger("MangadexHelper");
   }
 
   public async init(username: string, password: string, clientId: string, clientSecret: string): Promise<void> {
-    await Mangadex.loginPersonal({
-      clientId: clientId,
-      clientSecret: clientSecret,
-      username: username,
-      password: password
-    });
-    this.logger.info("Mangadex API logged in");
+    this.username = username;
+    this.password = password;
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+
+    await this.login();
     MangadexHelperDependency.ready();
+  }
+
+  public async login(): Promise<void> {
+    if (this.username != null) {
+      await Mangadex.loginPersonal({
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
+        username: this.username,
+        password: this.password
+      });
+      this.logger.info("Mangadex API logged in");
+    }
   }
 
   // Extract id out of a Mangadex title url
@@ -69,6 +85,10 @@ class MangadexHelperImpl {
           // Manga not found, more on
           handled = true;
         }
+      }
+      if (error.name == 'AuthError') {
+        // Try another login
+        await this.login();
       }
       // If we didn't handle the error, rethrow it
       if (!handled) {
@@ -116,6 +136,10 @@ class MangadexHelperImpl {
           handled = true;
         }
       }
+      if (error.name == 'AuthError') {
+        // Try another login
+        await this.login();
+      }
       // If we didn't handle the error, rethrow it
       if (!handled) {
         throw e;
@@ -139,6 +163,10 @@ class MangadexHelperImpl {
           // Manga not found, more on
           handled = true;
         }
+      }
+      if (error.name == 'AuthError') {
+        // Try another login
+        await this.login();
       }
       // If we didn't handle the error, rethrow it
       if (!handled) {
