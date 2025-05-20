@@ -1,8 +1,8 @@
 import { Logger } from "bot-framework";
-import { ScraperType } from "../constants/scraper_types";
-import { Subscribable } from "../models/Subscribable";
-import { ScraperHelper } from "./scrapers";
-import { Store } from "./store";
+import { ScraperType } from "../constants/scraper_types.js";
+import { Subscribable } from "../models/Subscribable.js";
+import { ScraperHelper } from "./scrapers.js";
+import { Store } from "./store.js";
 
 const COMICK_LATEST_ENDPOINT = "https://api.comick.fun/chapter/";
 const COMICK_COMIC_ENDPOINT = "https://api.comick.fun/comic";
