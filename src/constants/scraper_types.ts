@@ -4,7 +4,8 @@ export enum ScraperType {
   Mangasee,
   MangaseeFallback,
   NovelUpdates,
-  WeebCentral
+  WeebCentral,
+  Comick
 }
 
 export const ScraperTypeNames = Object.keys(ScraperType).filter(k => isNaN(Number(k)));

@@ -22,5 +22,8 @@ export const NewNovelUpdatesItemTopic = new MessengerTopic<MangaChapter>("NewNov
 // Message topic for a new Weeb Central chapter being published
 export const NewWeebCentralItemTopic = new MessengerTopic<MangaChapter>("NewWeebCentralItemTopic");
 
+// Message topic for a new Comick chapter being published
+export const NewComickItemTopic = new MessengerTopic<MangaChapter>("NewComickItemTopic");
+
 // Message topic for last known Mangadex API status
 export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulse");

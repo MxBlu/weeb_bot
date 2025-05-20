@@ -13,7 +13,8 @@
             "args": ["src/main.ts"],
             "cwd": "${workspaceRoot}",
             "internalConsoleOptions": "openOnSessionStart",
-            "skipFiles": ["<node_internals>/**", "node_modules/**"]
+            "skipFiles": ["<node_internals>/**", "node_modules/**"],
+            "runtimeVersion": "22"
         },
         {
             "name": "Run Sandbox",
@@ -24,7 +25,8 @@
             "args": ["src/sandbox.ts"],
             "cwd": "${workspaceRoot}",
             "internalConsoleOptions": "openOnSessionStart",
-            "skipFiles": ["<node_internals>/**", "node_modules/**"]
+            "skipFiles": ["<node_internals>/**", "node_modules/**"],
+            "runtimeVersion": "22"
         }
     ]
 }
