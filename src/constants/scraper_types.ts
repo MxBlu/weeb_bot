@@ -2,7 +2,6 @@
 export enum ScraperType {
   Mangadex,
   Mangasee,
-  MangaseeFallback,
   NovelUpdates,
   WeebCentral,
   Comick

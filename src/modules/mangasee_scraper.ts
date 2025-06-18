@@ -7,7 +7,6 @@ import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
 import { Mangasee } from "../support/mangasee.js";
 import { Store } from "../support/store.js";
-import { MangaseeFallbackScraper } from "./mangasee_fallback_scraper.js";
 
 export class MangaseeScraperImpl extends BaseScraper {
 
@@ -92,24 +91,6 @@ export class MangaseeScraperImpl extends BaseScraper {
 
         this.logger.debug(`New Mangasee item: ${c.seriesName} | ${c.chapter}`);
         NewMangaseeItemTopic.notify(mangaseeChapter);
-
-        if (await MangaseeFallbackScraper.isEnabled()) {
-          // Get the titleId for the series
-          // If it exists, also notify as a Mangadex item
-          const titleId = await Store.getTitleIdForAlt(c.seriesName);
-          if (titleId == null) {
-            return;
-          }
-
-          this.logger.debug(`New Mangasee fallback alertable: ${titleId} | ${c.chapter}`);
-          const fallbackChapter = new MangaChapter();
-          fallbackChapter.type = ScraperType.Mangadex; // This is masquerading as a Mangadex chapter for subscriptions
-          fallbackChapter.link = c.link;
-          fallbackChapter.titleId = titleId;
-          fallbackChapter.chapter = c.chapter;
-          fallbackChapter.pageCount = null;
-          NewMangaseeFallbackItemTopic.notify(fallbackChapter);
-        }
       });
     } catch (e) {
       this.logger.error(e);

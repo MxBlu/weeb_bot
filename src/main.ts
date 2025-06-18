@@ -5,7 +5,6 @@ import { Logger } from 'bot-framework';
 
 import { MangadexScraper } from './modules/mangadex_scraper.js';
 import { MangaseeScraper } from './modules/mangasee_scraper.js';
-import { MangaseeFallbackScraper } from './modules/mangasee_fallback_scraper.js';
 import { MangaParser } from './modules/parser.js';
 import { MangadexHelper } from './support/mangadex.js';
 import { Store } from './support/store.js';
@@ -32,7 +31,6 @@ MangadexHelper.init(mangadexUsername, mangadexPassword, mangadexClientId, mangad
 // Setup scrapers
 MangadexScraper.init();
 MangaseeScraper.init();
-MangaseeFallbackScraper.init();
 NovelUpdatesScraper.init();
 WeebCentralScraper.init();
 ComickScraper.init();
