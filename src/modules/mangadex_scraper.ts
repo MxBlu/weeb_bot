@@ -1,7 +1,7 @@
 import { Chapter } from "mangadex-full-api";
 import { ScraperType } from "../constants/scraper_types.js";
 
-import { MangadexPulseTopic, NewMangadexItemTopic } from "../constants/topics.js";
+import { NewMangadexItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
@@ -85,13 +85,6 @@ export class MangadexScraperImpl extends BaseScraper {
         this.logger.debug(`New Mangadex item: ${mChapter.titleId} | ${mChapter.chapter}`);
         NewMangadexItemTopic.notify(mChapter);
       }
-
-      // Notify the pulse topic that Mangadex is alive
-      MangadexPulseTopic.notify({
-        status: true,
-        lastUp: new Date(),
-        lastDown: MangadexPulseTopic.lastData?.lastDown
-      });
     } catch (e) {
       if (e.name == 'AuthError') {
         // Try another login
@@ -101,13 +94,6 @@ export class MangadexScraperImpl extends BaseScraper {
           this.logger.error(e);
         }
       }
-      // If we encounter an error, the API is probably problematic
-      // Notify the pulse topic with an error
-      MangadexPulseTopic.notify({
-        status: false,
-        lastUp: MangadexPulseTopic.lastData?.lastUp,
-        lastDown: new Date()
-      });
       this.logger.error(e);
     }
   }

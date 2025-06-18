@@ -2,7 +2,6 @@ import { MessengerTopic } from "bot-framework";
 
 import { MangaAlert } from "../models/MangaAlert.js";
 import { MangaChapter } from "../models/MangaChapter.js";
-import { MangadexPulse } from "../models/MangadexPulse.js";
 
 // Message topic for a new alert for a chapter
 export const NewMangaAlertTopic = new MessengerTopic<MangaAlert>("NewMangaAlert");
@@ -24,6 +23,3 @@ export const NewWeebCentralItemTopic = new MessengerTopic<MangaChapter>("NewWeeb
 
 // Message topic for a new Comick chapter being published
 export const NewComickItemTopic = new MessengerTopic<MangaChapter>("NewComickItemTopic");
-
-// Message topic for last known Mangadex API status
-export const MangadexPulseTopic = new MessengerTopic<MangadexPulse>("MangadexPulse");
