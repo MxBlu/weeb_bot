@@ -1,8 +1,8 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteraction } from "discord.js";
-import { FIFOCache } from "../support/fifo_cache.js";
+import { Logger, LogLevel } from "bot-framework";
+import { CommandBuilder, CommandProvider, sendCmdReply } from "bot-framework/discord";
+import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
+import { FIFOCache } from "../support/fifo_cache.js";
 import { ScraperHelper } from "../support/scrapers.js";
 import { Cache, Store, TitleCacheRecord } from "../support/store.js";
 

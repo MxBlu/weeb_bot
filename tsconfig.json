@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "outDir": "./built",
-        "module": "ESNext",
+        "module": "node16",
         "target": "ESNext",
-        "moduleResolution": "node",
+        "moduleResolution": "node16",
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,

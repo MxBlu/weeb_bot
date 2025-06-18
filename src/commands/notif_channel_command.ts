@@ -1,6 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { Logger, LogLevel } from "bot-framework";
+import { CommandBuilder, CommandProvider, sendCmdReply } from "bot-framework/discord";
+import { ChatInputCommandInteraction, TextChannel, SlashCommandBuilder } from "discord.js";
 
 import { Store } from "../support/store.js";
 

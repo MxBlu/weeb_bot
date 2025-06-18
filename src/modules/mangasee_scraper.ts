@@ -1,4 +1,4 @@
-import { CloudflareBypass } from "bot-framework";
+import { CloudflareBypass } from "bot-framework/cloudflare_bypass";
 import { ScraperType } from "../constants/scraper_types.js";
 
 import { NewMangaseeFallbackItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";

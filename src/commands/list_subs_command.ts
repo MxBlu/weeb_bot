@@ -1,6 +1,6 @@
-import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
-import { CommandBuilder, CommandProvider, Interactable, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { ButtonInteraction, ChatInputCommandInteraction, Message } from "discord.js";
+import { Logger, LogLevel } from "bot-framework";
+import { CommandBuilder, CommandProvider, Interactable, sendCmdReply } from "bot-framework/discord";
+import { ButtonInteraction, ChatInputCommandInteraction, Message, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 import { ENTRIES_PER_LIST_QUERY } from "../constants/constants.js";
 import { ScraperType, ScraperTypeNames, typeFromLowercase } from "../constants/scraper_types.js";

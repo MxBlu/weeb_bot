@@ -1,4 +1,5 @@
-import { CloudflareBypass, Logger } from "bot-framework";
+import { Logger } from "bot-framework";
+import { CloudflareBypass } from "bot-framework/cloudflare_bypass";
 
 import { ScraperType } from "../constants/scraper_types.js";
 import { Subscribable } from "../models/Subscribable.js";

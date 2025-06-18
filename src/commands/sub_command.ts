@@ -1,6 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
-import { ChatInputCommandInteraction } from "discord.js";
+import { Logger, LogLevel } from "bot-framework";
+import { CommandBuilder, CommandProvider, sendCmdReply } from "bot-framework/discord";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import { ScraperType } from "../constants/scraper_types.js";
 import { ScraperHelper } from "../support/scrapers.js";

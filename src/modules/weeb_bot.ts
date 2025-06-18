@@ -1,4 +1,5 @@
-import { Dependency, DiscordBot } from "bot-framework";
+import { Dependency } from "bot-framework";
+import { DiscordBot } from "bot-framework/discord";
 import { Guild } from "discord.js";
 
 import { Store, StoreDependency } from "../support/store.js";

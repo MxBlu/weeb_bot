@@ -13,15 +13,18 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "bot-framework": "Mxblu/bot-framework#8.0.6",
+    "bot-framework": "Mxblu/bot-framework#9.0.9",
     "bufferutil": "4.0.3",
     "discord-api-types": "0.37.103",
     "discord.js": "14.16.3",
     "dotenv": "8.0.0",
-    "fuse.js": "6.4.6",
+    "fuse.js": "7.1.0",
     "ioredis": "5.4.2",
     "jsdom": "19.0.0",
     "mangadex-full-api": "6.0.0",
+    "puppeteer": "19.3.0",
+    "puppeteer-extra": "3.3.4",
+    "puppeteer-extra-plugin-stealth": "2.11.1",
     "utf-8-validate": "5.0.5"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
-import { sendMessage, Logger } from "bot-framework";
+import { Logger } from "bot-framework";
+import { sendMessage } from "bot-framework/discord";
 import { Client as DiscordClient, Guild, TextChannel } from "discord.js";
 
 import { NEW_CHAPTER_EVENT_DISABLED, NEW_CHAPTER_EVENT_FLUSH_INVERVAL } from "../constants/constants.js";

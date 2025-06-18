@@ -1,6 +1,6 @@
 import { Dependency, Logger } from 'bot-framework';
 import Fuse from 'fuse.js';
-import IORedis, { Redis } from 'ioredis';
+import { Redis } from 'ioredis';
 
 import { ScraperType } from '../constants/scraper_types.js';
 import { FutureComputingMap } from './computing_map.js';
@@ -35,7 +35,7 @@ class StoreImpl {
 
   // Create client and register handlers
   public init(host: string, port: number): void {
-    this.rclient = new IORedis(port, host);
+    this.rclient = new Redis(port, host);
 
     this.rclient.on('error', (err) => {
       this.logger.error(`Redis error: ${err}`);

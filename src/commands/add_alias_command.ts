@@ -1,4 +1,5 @@
-import { CommandBuilder, CommandProvider, Logger, LogLevel, sendCmdReply } from "bot-framework";
+import { Logger, LogLevel } from "bot-framework";
+import { CommandBuilder, CommandProvider, sendCmdReply } from "bot-framework/discord";
 import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 
 import { MangadexHelper } from "../support/mangadex.js";
