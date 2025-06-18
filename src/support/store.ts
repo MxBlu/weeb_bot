@@ -150,39 +150,6 @@ class StoreImpl {
   public async setScraperEnabled(type: ScraperType, enabled: boolean): Promise<void> {
     await this.rclient.set(`${ScraperType[type]}_enabled`, enabled == true ? 'true' : 'false');
   }
-
-  // Mangasee hackjobs
-
-  // Get alternative titles (for Mangasee parsing) for a given titleId
-  public async getAltTitles(titleId: string): Promise<Set<string>> {
-    return new Set(await this.rclient.smembers(`title_${titleId}_altTitles`));
-  }
-
-  // Add an alternative title for a given titleId
-  public async addAltTitle(titleId: string, altTitle: string): Promise<void> {
-    await this.rclient.sadd(`title_${titleId}_altTitles`, altTitle);
-    await this.rclient.set(`mangasee_altTitles_${altTitle}`, titleId);
-  }
-
-  // Delete an alternative title for a given titleId
-  public async delAltTitle(titleId: string, altTitle: string): Promise<void> {
-    await this.rclient.srem(`title_${titleId}_altTitles`, altTitle);
-    await this.rclient.del(`mangasee_altTitles_${altTitle}`, titleId);
-  }
-
-  // Remove all alt tiltes for a given titleId
-  public async clearAltTitles(titleId: string): Promise<void> {
-    const altTitles = await this.rclient.smembers(`title_${titleId}_altTitles`);
-    for (const altTitle of altTitles) {
-      await this.rclient.del(`mangasee_altTitles_${altTitle}`);
-    }
-    await this.rclient.del(`title_${titleId}_altTitles`);
-  }
-
-  // Get titleId for a given altTitle
-  public async getTitleIdForAlt(altTitle: string): Promise<string> {
-    return await this.rclient.get(`mangasee_altTitles_${altTitle}`);
-  }
  
 }
 

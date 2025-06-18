@@ -11,9 +11,6 @@ import { SubCommand } from "../commands/sub_command.js";
 import { UnsubCommand } from "../commands/unsub_command.js";
 import { ListSubsCommand } from "../commands/list_subs_command.js";
 import { ScraperStatusCommand } from "../commands/scraper_status_command.js";
-import { GetAliasesCommand } from "../commands/get_aliases_command.js";
-import { AddAliasCommand } from "../commands/add_alias_command.js";
-import { DelAliasCommand } from "../commands/del_alias_command.js";
 import { DexInfoCommand } from "../commands/dex_info_command.js";
 import { SpoilerTitleCommand } from "../commands/spoiler_title_command.js";
 
@@ -52,9 +49,6 @@ export class WeebBotImpl extends DiscordBot {
     this.providers.push(new ListSubsCommand());
     this.providers.push(new SpoilerTitleCommand());
     this.providers.push(new ScraperStatusCommand());
-    this.providers.push(new GetAliasesCommand());
-    this.providers.push(new AddAliasCommand());
-    this.providers.push(new DelAliasCommand());
     this.providers.push(new DexInfoCommand());
   }
 
