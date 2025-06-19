@@ -35,7 +35,6 @@ export class NotifChannelCommand implements CommandProvider<ChatInputCommandInte
     // As TextChannel so we can get a name
     const channel = interaction.channel as TextChannel;
 
-    await Store.addRole(guild.id, role.id);
     await Store.setNotifChannel(guild.id, role.id, channel.id);
     sendCmdReply(interaction, `Notif channel set to #${channel.name} for role @${role.name}`, this.logger, LogLevel.INFO);
   }

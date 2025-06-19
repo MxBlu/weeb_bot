@@ -26,18 +26,11 @@ export class MangaParserImpl {
   private itemHandler = async (item: MangaChapter): Promise<void> => {
     // Check whether the manga has a existing subscription
     const guilds = Store.getGuilds();
+    const subscribers = await Store.getSubscriptionsForTitle(item.type, item.titleId);
     for (const guildId of guilds) {
-      // If any guild has any roles that have subscribed to this manga
       // Notify for a new chapter with a list of roles subbed
-      const roles = await Store.getRoles(guildId);
-      const rolesToAlert = new Set<string>();
-      for (const roleId of roles) {
-        const titles = await Store.getTitles(guildId, roleId, item.type);
-        if (titles.has(item.titleId)) {
-          rolesToAlert.add(roleId);
-        }
-      }
-      if (rolesToAlert.size > 0) {
+      const rolesToAlert = subscribers.filter(sub => sub.guildId === guildId).map(sub => sub.roleId);
+      if (rolesToAlert.length > 0) {
         const mangaTitle = await Store.getTitleName(item.type, item.titleId);
         const title = `${mangaTitle} - Chapter ${item.chapter}`;
 

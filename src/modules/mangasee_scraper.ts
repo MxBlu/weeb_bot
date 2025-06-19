@@ -1,12 +1,11 @@
 import { CloudflareBypass } from "bot-framework/cloudflare_bypass";
 import { ScraperType } from "../constants/scraper_types.js";
 
-import { NewMangaseeFallbackItemTopic, NewMangaseeItemTopic } from "../constants/topics.js";
+import { NewMangaseeItemTopic } from "../constants/topics.js";
 import { MangaChapter } from "../models/MangaChapter.js";
 import { Subscribable } from "../models/Subscribable.js";
 import { BaseScraper } from "../support/base_scraper.js";
 import { Mangasee } from "../support/mangasee.js";
-import { Store } from "../support/store.js";
 
 export class MangaseeScraperImpl extends BaseScraper {
 

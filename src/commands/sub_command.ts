@@ -46,7 +46,7 @@ export class SubCommand implements CommandProvider<ChatInputCommandInteraction> 
     }
 
     await Store.setTitleName(subscribable.type, subscribable.id, subscribable.title);
-    await Store.addTitle(guild.id, role.id, subscribable.type, subscribable.id);
+    await Store.addSubscription(guild.id, role.id, subscribable.type, subscribable.id);
     sendCmdReply(interaction, 
         `Added title '${subscribable.title}' from '${ScraperType[subscribable.type]}' to role @${role.name}`, this.logger, LogLevel.INFO);
   }

@@ -1,10 +1,14 @@
 import { Dependency, Logger } from 'bot-framework';
 import Fuse from 'fuse.js';
-import { Redis } from 'ioredis';
+import mongoose from 'mongoose';
 
 import { ScraperType } from '../constants/scraper_types.js';
 import { FutureComputingMap } from './computing_map.js';
 import { ScraperHelper } from './scrapers.js';
+import { NotifChannelModel } from '../models/NotifChannel.js';
+import { Subscription, SubscriptionModel } from '../models/Subscription.js';
+import { MangaInfoModel } from '../models/MangaInfo.js';
+import { ScraperStatusModel } from '../models/ScraperStatus.js';
 
 /*
   API class to interact with underlying storage implementation
@@ -21,28 +25,30 @@ import { ScraperHelper } from './scrapers.js';
 */
 class StoreImpl {
 
-  // Redis client
-  rclient: Redis;
   // Current guilds
   guilds: Set<string>;
   // General logger
   logger: Logger;
 
   constructor () {
+    this.logger = new Logger('Store');
     this.guilds = new Set();
-    this.logger = new Logger("Store");
   }
 
   // Create client and register handlers
-  public init(host: string, port: number): void {
-    this.rclient = new Redis(port, host);
+  public init(mongoUri: string): void {
+    this.registerMongoHandlers();
 
-    this.rclient.on('error', (err) => {
-      this.logger.error(`Redis error: ${err}`);
+    mongoose.connect(mongoUri, { autoCreate: true, autoIndex: true });
+  }
+
+  private registerMongoHandlers(): void {
+    mongoose.connection.on('error', (err) => {  
+      this.logger.error(`MongoDB error: ${err}`);
     });
-
-    this.rclient.once('connect', () => {
-      this.logger.info('Redis connected');
+  
+    mongoose.connection.once('open', () => {
+      this.logger.info('MongoDB connected');
       StoreDependency.ready();
     });
   }
@@ -62,95 +68,149 @@ class StoreImpl {
     this.guilds.delete(guildId);
   }
 
-  // Fetch roles from db for a given guild, returns set
-  public async getRoles(guildId: string): Promise<Set<string>> {
-    return new Set(await this.rclient.smembers(`${guildId}_roles`));
-  }
-
-  // Add role to db for a given guild
-  public async addRole(guildId: string, roleId: string): Promise<void> {
-    await this.rclient.sadd(`${guildId}_roles`, roleId);
-  }
-
-  // Delete role from db for a given guild
-  public async delRole(guildId: string, roleId: string): Promise<void> {
-    await this.rclient.srem(`${guildId}_roles`, roleId);
-  }
-
   // Get operating channel for a given role and guild
-  public async getNotifChannel(guildId: string, roleId: string): Promise<string> {
-    return this.rclient.get(`${guildId}_${roleId}_notifChannel`);
+  public async getNotifChannel(guildId: string, roleId: string): Promise<string | null> {
+    const notifChannel = await NotifChannelModel.findOne({ guildId, roleId });
+    return notifChannel?.channelId;
   }
 
   // Set operating channel for a given role and guild
   public async setNotifChannel(guildId: string, roleId: string, channelId: string): Promise<void> {
-    await this.rclient.set(`${guildId}_${roleId}_notifChannel`, channelId);
+    await NotifChannelModel.findOneAndUpdate({
+      guildId,
+      roleId
+    }, { 
+      channelId
+    });
   }
   
   // Delete operating channel for a given role and guild
   public async delNotifChannel(guildId: string, roleId: string): Promise<void> {
-    await this.rclient.del(`${guildId}_${roleId}_notifChannel`);
+    await NotifChannelModel.deleteOne({
+      guildId,
+      roleId
+    });
   }
 
   // Fetch alertable titles for a given role and guild, returns set
-  public async getTitles(guildId: string, roleId:string, type: ScraperType): Promise<Set<string>> {
-    return new Set(await this.rclient.smembers(`${guildId}_${roleId}_${ScraperType[type]}_titles`));
+  public async getSubscriptionsForRole(guildId: string, roleId: string, type?: ScraperType): Promise<Subscription[]> {
+    if (type != null) {
+      return await SubscriptionModel.find({
+        guildId,
+        roleId,
+        scraperType: type
+      });
+    } else {
+      return await SubscriptionModel.find({
+        guildId,
+        roleId
+      });
+    }
+  }
+
+  // Fetch alertable titles for a given role and guild, returns set
+  public async getSubscriptionsForTitle(type: ScraperType, titleId: string): Promise<Subscription[]> {
+    return await SubscriptionModel.find({
+      titleId,
+      scraperType: type
+    });
   }
 
   // Add alertable title for a given role and guild
-  public async addTitle(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
-    await this.rclient.sadd(`${guildId}_${roleId}_${ScraperType[type]}_titles`, titleId);
+  public async addSubscription(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
+    // Ensure a subscription exists, upsert it so we don't duplicate it
+    await SubscriptionModel.findOneAndUpdate({
+      guildId,
+      roleId,
+      scraperType: type,
+      titleId
+    }, { }, { upsert: true });
     await Cache.invalidate(guildId, roleId, type);
   }
 
   // Delete alertable title for a given role and guild
-  public async delTitle(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
-    await this.rclient.srem(`${guildId}_${roleId}_${ScraperType[type]}_titles`, titleId);
+  public async delSubscription(guildId: string, roleId: string, type: ScraperType, titleId: string): Promise<void> {
+    await SubscriptionModel.deleteOne({
+      guildId,
+      roleId,
+      scraperType: type,
+      titleId
+    });
     await Cache.invalidate(guildId, roleId, type);
   }
 
   // Delete all alertable titles for a given role and guild
-  public async clearTitles(guildId: string, roleId: string, type: ScraperType): Promise<void> {
-    await this.rclient.del(`${guildId}_${roleId}_${ScraperType[type]}_titles`);
+  public async clearSubscriptions(guildId: string, roleId: string, type: ScraperType): Promise<void> {
+    await SubscriptionModel.deleteMany({
+      guildId,
+      roleId,
+      scraperType: type
+    });
     await Cache.invalidate(guildId, roleId, type);
   }
 
   // Fetch title name for a given title id
   public async getTitleName(type: ScraperType, titleId: string): Promise<string> {
-    return this.rclient.get(`title_${ScraperType[type]}_${titleId}`);
+    const manga = await MangaInfoModel.findOne({
+      scraperType: type,
+      id: titleId
+    });
+    return manga?.title;
   }
 
   // Set title name for a given title id
   public async setTitleName(type: ScraperType, titleId: string, titleName: string): Promise<void> {
-    await this.rclient.set(`title_${ScraperType[type]}_${titleId}`, titleName);
+    await MangaInfoModel.findOneAndUpdate({
+      scraperType: type,
+      id: titleId
+    }, {
+      title: titleName
+    }, { upsert: true });
   }
 
   // Delete title name for a given title id
-  public async delTitleName(type: ScraperType, titleId: string): Promise<void> {
-    await this.rclient.del(`title_${ScraperType[type]}_${titleId}`);
+  public async delTitleInfo(type: ScraperType, titleId: string): Promise<void> {
+    await MangaInfoModel.deleteOne({
+      scraperType: type,
+      id: titleId
+    });
   }
 
   // Check whether this title's link should be spoilered - prevents chapter link embed
   public async isTitleEmbedDisabled(type: ScraperType, titleId: string): Promise<boolean> {
-    return await this.rclient.get(`title_${ScraperType[type]}_${titleId}_embedDisabled`) == 'true';
+    const manga = await MangaInfoModel.findOne({
+      scraperType: type,
+      id: titleId
+    });
+    return manga?.embedDisabled == true;
   }
 
   // Set whether this title's link should be spoilered
   public async setTitleEmbedDisabled(type: ScraperType, titleId: string, disabled: boolean): Promise<void> {
-    await this.rclient.set(`title_${ScraperType[type]}_${titleId}_embedDisabled`, disabled == true ? 'true' : 'false');
+    await MangaInfoModel.findOneAndUpdate({
+      scraperType: type,
+      id: titleId
+    }, {
+      embedDisabled: disabled
+    });
   }
 
   // Check if a given scraper is enabled
   public async isScraperEnabled(type: ScraperType): Promise<boolean> {
-    // Check the negative so that new scrapers are enabled by default
-    return await this.rclient.get(`${ScraperType[type]}_enabled`) != 'false';
+    const scraperStatus = await ScraperStatusModel.findOne({
+      scraperType: type
+    });
+    return scraperStatus?.enabled ?? true; // Default to true if no status in db
   }
 
   // Set parsing status of a given parser
   public async setScraperEnabled(type: ScraperType, enabled: boolean): Promise<void> {
-    await this.rclient.set(`${ScraperType[type]}_enabled`, enabled == true ? 'true' : 'false');
+    await ScraperStatusModel.findOneAndUpdate({
+      scraperType: type
+    }, {
+      enabled
+    }, { upsert: true });
   }
- 
 }
 
 export interface TitleCacheRecord {
@@ -236,32 +296,13 @@ class CacheImpl {
     // Ensure store is ready before generating
     await StoreDependency.await();
 
-    if (type != null) {
-      // If a type is present, get the specific values for the type
-      const scraper = ScraperHelper.getScraperForType(type);
-      const titleIds = await Store.getTitles(guildId, roleId, type);
-      return Promise.all(Array.from(titleIds)
-        .map(async id => ({ 
-            title: await Store.getTitleName(type, id),
-            scraper: ScraperType[type],
-            url: scraper.uriForId(id)
-        })));
-    } else {
-      // Generate records for all scraper types
-      let titleNames: TitleCacheRecord[] = [];
-      // Iterate over all types, append records for each
-      for (const iType of ScraperHelper.getAllRegisteredScraperTypes()) {
-        const scraper = ScraperHelper.getScraperForType(iType);
-        const titleIds = await Store.getTitles(guildId, roleId, iType);
-        titleNames = titleNames.concat(await Promise.all(Array.from(titleIds)
-          .map(async id => ({ 
-            title: await Store.getTitleName(iType, id),
-            scraper: ScraperType[iType],
-            url: scraper.uriForId(id)
-          }))));
-      }
-      return titleNames;
-    }
+    const subscriptions = await Store.getSubscriptionsForRole(guildId, roleId, type);
+    return Promise.all(Array.from(subscriptions)
+      .map(async sub => ({ 
+          title: await Store.getTitleName(sub.scraperType, sub.titleId),
+          scraper: ScraperType[sub.scraperType],
+          url: ScraperHelper.getScraperForType(sub.scraperType).uriForId(sub.titleId)
+      })));
   }
 
   private async generateSearch(guildId: string, roleId: string, 

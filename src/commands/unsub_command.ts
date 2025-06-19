@@ -66,7 +66,7 @@ export class UnsubCommand implements CommandProvider<ChatInputCommandInteraction
       return;
     }
 
-    await Store.delTitle(guild.id, role.id, subscribable.type, subscribable.id);
+    await Store.delSubscription(guild.id, role.id, subscribable.type, subscribable.id);
     sendCmdReply(interaction, `Removed title '${subscribable.title}' from role @${role.name}`, this.logger, LogLevel.INFO);
   }
 

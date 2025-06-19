@@ -4,5 +4,5 @@ export class MangaAlert {
   mangaChapter: MangaChapter;
   mangaTitle: string;
   guildId: string;
-  rolesIds: Set<string>;
+  rolesIds: string[];
 }

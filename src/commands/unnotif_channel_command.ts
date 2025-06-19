@@ -32,7 +32,6 @@ export class UnotifChannelCommand implements CommandProvider<ChatInputCommandInt
     const guild = interaction.guild;
     const role = interaction.options.getRole('role');
 
-    await Store.delRole(guild.id, role.id);
     await Store.delNotifChannel(guild.id, role.id);
     sendCmdReply(interaction, `No longer notifying for role @${role.name}`, this.logger, LogLevel.INFO);
   }
