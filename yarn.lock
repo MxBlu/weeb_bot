@@ -570,9 +570,9 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bot-framework@Mxblu/bot-framework#9.0.9:
-  version "9.0.9"
-  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/00075ca839a9dd7b0622188e4760a0e19f932eb2"
+bot-framework@Mxblu/bot-framework#9.1.0:
+  version "9.1.0"
+  resolved "https://codeload.github.com/Mxblu/bot-framework/tar.gz/3e1b115ef36b36ee566132ca15b108bb6e814216"
   dependencies:
     dotenv "16.0.1"
 

@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@typegoose/typegoose": "12.16.0",
-    "bot-framework": "Mxblu/bot-framework#9.0.9",
+    "bot-framework": "Mxblu/bot-framework#9.1.0",
     "bufferutil": "4.0.3",
     "discord-api-types": "0.37.103",
     "discord.js": "14.16.3",
