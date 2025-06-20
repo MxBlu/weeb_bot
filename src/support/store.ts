@@ -12,16 +12,6 @@ import { ScraperStatusModel } from '../models/ScraperStatus.js';
 
 /*
   API class to interact with underlying storage implementation
-  In this case, Redis
-
-  Schema:
-    <guildId>_roles: String                                 # Roles with subscriptions for a given guild ID
-    <guildId>_<roleId>_notifChannel: String                 # Channel ID to notify for alerts
-    <guildId>_<roleId>_<scraperType>_titles: Set<String>    # Title IDs to generate alerts for
-    title_<scraperType>_<titleId>: String                   # Friendly title name for a given title ID
-    <scraperType>_enabled: Boolean                          # State for a given parser
-    title_<titleId>_altTitles                               # LEGACY - Alternative title(s) (or ID(s)) for a given title Id
-    mangasee_altTitles_<altTitleId>                         # LEGACY - Inverted lookup for title IDs from alternative title IDs
 */
 class StoreImpl {
 
@@ -81,7 +71,7 @@ class StoreImpl {
       roleId
     }, { 
       channelId
-    });
+    }, { upsert: true });
   }
   
   // Delete operating channel for a given role and guild

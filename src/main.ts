@@ -20,11 +20,6 @@ const logger = new Logger("Server");
 const mongoUri = process.env.MONGO_URI;
 Store.init(mongoUri);
 
-// Redis DB
-// const redisHost = process.env.REDIS_HOST;
-// const redisPort = Number(process.env.REDIS_PORT);
-// Store.init(redisHost, redisPort);
-
 // Initialise the Mangadex API helper
 const mangadexUsername = process.env.MANGADEX_USERNAME;
 const mangadexPassword = process.env.MANGADEX_PASSWORD;
