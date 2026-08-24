@@ -1,5 +1,5 @@
 # BUILD STAGE
-FROM node:18-alpine as build
+FROM node:24-alpine as build
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . ./
 RUN yarn build
 
 # RUN STAGE
-FROM node:18-alpine as run
+FROM node:24-alpine as run
 
 WORKDIR /app
 
