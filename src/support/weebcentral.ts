@@ -77,12 +77,14 @@ export class WeebCentral {
 
         const chapterNode = articleNode.querySelector('a:nth-of-type(2)');
 
-        chapter.link = chapterNode.getAttribute('href');
+        const chapterLink = chapterNode.getAttribute('href');
+        chapter.link = WeebCentral.ensureAbsoluteUrl(chapterLink);
         const chapterText = chapterNode.querySelector('div:nth-of-type(2) > span').textContent.trim();
         chapter.chapter = WeebCentral.parseChapterNumber(chapterText);
         
         chapter.seriesName = chapterNode.querySelector('div.font-semibold.text-lg').textContent.trim();
-        const mangaLink = articleNode.querySelector('a:nth-of-type(1)').getAttribute('href');
+        let mangaLink = articleNode.querySelector('a:nth-of-type(1)').getAttribute('href');
+        mangaLink = WeebCentral.ensureAbsoluteUrl(mangaLink);
         chapter.seriesId = WeebCentral.parseIdFromSeriesLink(mangaLink);
 
         const publishDateText = chapterNode.querySelector('time').getAttribute('datetime');
@@ -160,12 +162,20 @@ export class WeebCentral {
   }
   
   private static parseChapterNumber(chapterText: string): string {
-    const matches = chapterText.match(/\d+/);
+    const matches = chapterText.match(/\d+(\.\d+)/);
     return matches ? matches[0] : chapterText;
   }
 
   private static parseIdFromSeriesLink(seriesLink: string): string {
     const matches = seriesLink.match(WEEBCENTRAL_SERIES_RX);
     return matches?.[1];
+  }
+
+  private static ensureAbsoluteUrl(link: string): string {
+    if (link.startsWith("https://weebcentral.com")) {
+      return link;
+    } else {
+      return "https://weebcentral.com" + link;
+    }
   }
 }
